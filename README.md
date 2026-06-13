@@ -1,7 +1,7 @@
 # ST-GCS
 This repository implements the Space-Time Graphs of Convex Sets (ST-GCS) from the following paper:
 
-- *Jingtao Tang, Zining Mao, Lufan Yang, and Hang Ma. "Space-Time Graphs of Convex Sets for Multi-Robot Motion Planning." [[paper]](https://arxiv.org/abs/2503.00583), [[project]](https://sites.google.com/view/stgcs)
+- *Jingtao Tang, Zining Mao, Lufan Yang, and Hang Ma. "Space-Time Graphs of Convex Sets for Multi-Robot Motion Planning." [[paper]](https://arxiv.org/abs/2503.00583), [[project]](https://sites.google.com/view/stgcs)*
 
 
 ## Installation
@@ -20,6 +20,8 @@ This repository implements the Space-Time Graphs of Convex Sets (ST-GCS) from th
 
 - data: the directory containing the problem instances and experiment results.
 - demos: a collection of demonstrations for space-time single-robot motion planning and MRMP.
+  - iros_formation.py: letter-formation demo using PBS+ST-GCS.
+  - iros_rearrange.py: rearrangement demo using PBS+ST-GCS on an empty environment.
 - environment:
   - examples.py: a collection of env examples.
   - env.py: the Environment class of the environment.

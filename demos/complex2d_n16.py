@@ -26,12 +26,13 @@ if __name__ == "__main__":
     sets = [make_hpolytope(V) for V in istc.C_Space]
     
     ts = time.perf_counter()
-    sol_pbs_stgcs, _ = PBS(istc, tf, vlimit, robot_radius, starts, goals, T0s, 150, scaler_multiplier=1.5)
+    sol_pbs_stgcs, _ = PBS(istc, tf, vlimit, starts, goals, T0s, 150, scaler_multiplier=1.5)
     print("STGCS solution time", time.perf_counter() - ts)
-    print("SoC", sum([p.cost for p in sol_pbs_stgcs]), "makespan", max([p.itvl.end for p in sol_pbs_stgcs]))
-
-
-    fig, ax = plt.subplots()
-    istc.animate_2d(ax, sol_pbs_stgcs, save_anim=True)
+    if not sol_pbs_stgcs:
+        print("No solution found")
+    else:
+        print("SoC", sum([p.cost for p in sol_pbs_stgcs]), "makespan", max([p.itvl.end for p in sol_pbs_stgcs]))
+        fig, ax = plt.subplots()
+        istc.animate_2d(ax, sol_pbs_stgcs, save_anim=True)
     # plt.show()
 

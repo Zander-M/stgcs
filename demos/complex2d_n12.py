@@ -27,10 +27,11 @@ if __name__ == "__main__":
     ts = time.perf_counter()
     sol_pbs_stgcs, _ = PBS(env, tf, vlimit, starts, goals, T0s, 150, scaler_multiplier=3)
     print("STGCS solution time", time.perf_counter() - ts)
-    print("SoC", sum([p.cost for p in sol_pbs_stgcs]), "makespan", max([p.itvl.end for p in sol_pbs_stgcs]))
-
-
-    fig, ax = plt.subplots()
-    env.animate_2d(ax, sol_pbs_stgcs, draw_CSpace=True, save_anim=True)
-    # plt.show()
+    if not sol_pbs_stgcs:
+        print("No solution found")
+    else:
+        print("SoC", sum([p.cost for p in sol_pbs_stgcs]), "makespan", max([p.itvl.end for p in sol_pbs_stgcs]))
+        fig, ax = plt.subplots()
+        env.animate_2d(ax, sol_pbs_stgcs, draw_CSpace=True, save_anim=True)
+        # plt.show()
 

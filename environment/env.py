@@ -1,4 +1,5 @@
 from __future__ import annotations
+import os
 from typing import List
 import numpy as np
 import matplotlib
@@ -19,6 +20,7 @@ from pydrake.all import (
     HPolyhedron, RandomGenerator
 )
 
+OUTPUT_DIR = "output"
 
 class Env:
 
@@ -51,10 +53,12 @@ class Env:
         ax.set_aspect('equal')
 
         anim = _animate_func_2d(ax, self.robot_radius, np.hstack([self.lb, -0.5]), np.hstack([self.ub, 0.5]), Pi, self.O_Dynamic, dt=dt)
-        
+
         if save_anim:
             anim.save(f"{self.name}.mp4", writer='ffmpeg', fps=1/dt, dpi=1000)
-        plt.show()
+            plt.close()
+        else:
+            plt.show()
 
     def animate_2d(self, ax:Axes, sols:List[ShortestPathSolution]=[], dt:float=0.02, draw_CSpace=False, save_anim:bool=False) -> None:
         if sols != []:
@@ -73,8 +77,10 @@ class Env:
 
         anim = _animate_func_2d(ax, self.robot_radius, self.lb, self.ub, Pi, self.O_Dynamic, dt=dt)
         if save_anim:
-            anim.save(f"{self.name}.mp4", writer='ffmpeg', fps=1/dt, dpi=1000)
-        plt.show()
+            anim.save(os.path.join(OUTPUT_DIR, f"{self.name}.mp4"), writer='ffmpeg', fps=1/dt, dpi=1000)
+            plt.close()
+        else:
+            plt.show()
     
     def draw_static(self, ax:Axes, alpha=0.8, draw_CSpace:bool=False) -> None:
         for obs in self.O_Static:

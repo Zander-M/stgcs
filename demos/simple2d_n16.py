@@ -29,9 +29,11 @@ if __name__ == "__main__":
     sol_pbs_stgcs, _ = PBS(env, tf, vlimit, starts, goals, T0s, 150, scaler_multiplier=3)
     # sol_pbs_stgcs = SP_STRRTStar(env, tmax=tf, vlimit=vlimit, safe_radius=robot_radius, starts=starts, goals=goals, t0s=T0s, seed=seed, timeout_secs=150, use_CSpace=True)
     print("STGCS solution time", time.perf_counter() - ts)
-    print("SoC", sum([p.cost for p in sol_pbs_stgcs]), "makespan", max([p.itvl.end for p in sol_pbs_stgcs]))
-
-    fig, ax = plt.subplots()
-    env.animate_2d(ax, sol_pbs_stgcs, draw_CSpace=True, save_anim=True)
-    # plt.show()
+    if not sol_pbs_stgcs:
+        print("No solution found")
+    else:
+        print("SoC", sum([p.cost for p in sol_pbs_stgcs]), "makespan", max([p.itvl.end for p in sol_pbs_stgcs]))
+        fig, ax = plt.subplots()
+        env.animate_2d(ax, sol_pbs_stgcs, draw_CSpace=True, save_anim=True)
+        # plt.show()
 

@@ -30,6 +30,15 @@ from mrmp.interval import Interval
 logger = logging.getLogger(__name__)
 
 
+def _solver_time(result: MathematicalProgramResult) -> float:
+    details = result.get_solver_details()
+    if hasattr(details, "optimizer_time"):   # Mosek
+        return details.optimizer_time
+    if hasattr(details, "solve_time"):       # Clarabel, SCS, etc.
+        return details.solve_time
+    return -1.0
+
+
 @dataclass
 class ShortestPathSolution:
     # Whether the optimization was successful
@@ -582,7 +591,7 @@ class Graph:
                 ShortestPathSolution(
                     result.is_success(),
                     result.get_optimal_cost(),
-                    result.get_solver_details().optimizer_time,
+                    _solver_time(result),
                     v_path,
                     a_path,
                     None,
@@ -621,7 +630,7 @@ class Graph:
         paths.
         """
         cost = result.get_optimal_cost()
-        time = result.get_solver_details().optimizer_time
+        time = _solver_time(result)
 
         return ShortestPathSolution(
             result.is_success(),
@@ -640,7 +649,7 @@ class Graph:
         should_return_result: bool = False,
     ) -> ShortestPathSolution:
         cost = result.get_optimal_cost()
-        time = result.get_solver_details().optimizer_time
+        time = _solver_time(result)
 
         ambient_path = []
         if result.is_success():
@@ -657,7 +666,7 @@ class Graph:
 
     def _parse_result(self, result: MathematicalProgramResult) -> ShortestPathSolution:
         cost = result.get_optimal_cost()
-        time = result.get_solver_details().optimizer_time
+        time = _solver_time(result)
         vertex_path = []
         ambient_path = []
         flows = []

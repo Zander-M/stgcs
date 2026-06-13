@@ -22,7 +22,7 @@ TIMEOUT = 150.0
 
 
 def exp_PBS_STGCS(ps: Dict[int, List[MRMP]]) -> None:
-    res, num_suceeds, num_problems = defaultdict(list), 0, 0
+    res, num_succeeds, num_problems = defaultdict(list), 0, 0
     for num_agents, problems in ps.items():
         for seed, p in enumerate(problems):
             ts = time.perf_counter()
@@ -31,16 +31,16 @@ def exp_PBS_STGCS(ps: Dict[int, List[MRMP]]) -> None:
             res[num_agents].append(([sol.cost for sol in solution], time_elapsed))
             num_problems += 1
             if solution != []:
-                num_suceeds += 1
+                num_succeeds += 1
         
-        # input(f"Finished {num_agents} agents. Success rate: {num_suceeds / len(problems)}. Press enter to continue.")
+        # input(f"Finished {num_agents} agents. Success rate: {num_succeeds / len(problems)}. Press enter to continue.")
     
-    print(f"Success rate: {num_suceeds / (len(ps) * len(problems))}")
+    print(f"Success rate: {num_succeeds / (len(ps) * len(problems))}")
     pickle.dump(res, open(f"{ps[1][0].env.name}-PBS+STGCS.pkl", "wb"))
 
 
 def exp_PP_STGCS(ps: Dict[int, List[MRMP]]) -> None:
-    res, num_suceeds, num_problems = defaultdict(list), 0, 0
+    res, num_succeeds, num_problems = defaultdict(list), 0, 0
     for num_agents, problems in ps.items():
         for seed, p in enumerate(problems):
             ts = time.perf_counter()
@@ -49,16 +49,16 @@ def exp_PP_STGCS(ps: Dict[int, List[MRMP]]) -> None:
             res[num_agents].append(([sol.cost for sol in solution], time_elapsed))
             num_problems += 1
             if solution != []:
-                num_suceeds += 1
+                num_succeeds += 1
 
-        # input(f"Finished {num_agents} agents. Success rate: {num_suceeds / len(problems)}. Press enter to continue.")
+        # input(f"Finished {num_agents} agents. Success rate: {num_succeeds / len(problems)}. Press enter to continue.")
     
-    print(f"Success rate: {num_suceeds / (len(ps) * len(problems))}")
+    print(f"Success rate: {num_succeeds / (len(ps) * len(problems))}")
     pickle.dump(res, open(f"{ps[1][0].env.name}-PP+STGCS.pkl", "wb"))
 
 
 def exp_SP_STGCS(ps: Dict[int, List[MRMP]]) -> None:
-    res, num_suceeds, num_problems = defaultdict(list), 0, 0
+    res, num_succeeds, num_problems = defaultdict(list), 0, 0
     for num_agents, problems in ps.items():
         for seed, p in enumerate(problems):
             ts = time.perf_counter()
@@ -67,18 +67,18 @@ def exp_SP_STGCS(ps: Dict[int, List[MRMP]]) -> None:
             res[num_agents].append(([sol.cost for sol in solution], time_elapsed))
             num_problems += 1
             if solution != []:
-                num_suceeds += 1
+                num_succeeds += 1
 
-            print("# agents:", num_agents, "# succeeds:", num_suceeds, "# problems:", num_problems)
+            print("# agents:", num_agents, "# succeeds:", num_succeeds, "# problems:", num_problems)
 
-        # input(f"Finished {num_agents} agents. Success rate: {num_suceeds / len(problems)}. Press enter to continue.")
+        # input(f"Finished {num_agents} agents. Success rate: {num_succeeds / len(problems)}. Press enter to continue.")
     
-    print(f"Success rate: {num_suceeds / (len(ps) * len(problems))}")
+    print(f"Success rate: {num_succeeds / (len(ps) * len(problems))}")
     pickle.dump(res, open(f"{ps[1][0].env.name}-SP+STGCS.pkl", "wb"))
 
 
 def exp_SP_TPRM_C(ps: Dict[int, List[MRMP]]) -> None:
-    res, num_suceeds, num_problems = defaultdict(list), 0, 0
+    res, num_succeeds, num_problems = defaultdict(list), 0, 0
     for num_agents, problems in ps.items():
         for seed, p in enumerate(problems):
             ts = time.perf_counter()
@@ -87,18 +87,18 @@ def exp_SP_TPRM_C(ps: Dict[int, List[MRMP]]) -> None:
             res[num_agents].append(([sol.cost for sol in solution], time_elapsed))
             num_problems += 1
             if solution != []:
-                num_suceeds += 1
+                num_succeeds += 1
 
-            print("# agents:", num_agents, "# succeeds:", num_suceeds, "# problems:", num_problems)
+            print("# agents:", num_agents, "# succeeds:", num_succeeds, "# problems:", num_problems)
 
-        # input(f"Finished {num_agents} agents. Success rate: {num_suceeds / len(problems)}. Press enter to continue.")
+        # input(f"Finished {num_agents} agents. Success rate: {num_succeeds / len(problems)}. Press enter to continue.")
     
-    print(f"Success rate: {num_suceeds / (len(ps) * len(problems))}")
+    print(f"Success rate: {num_succeeds / (len(ps) * len(problems))}")
     pickle.dump(res, open(f"{ps[1][0].env.name}-SP+TPRM-C.pkl", "wb"))
 
 
 def exp_SP_TPRM(ps: Dict[int, List[MRMP]]) -> None:
-    res, num_suceeds, num_problems = defaultdict(list), 0, 0
+    res, num_succeeds, num_problems = defaultdict(list), 0, 0
     for num_agents, problems in ps.items():
         for seed, p in enumerate(problems):
             ts = time.perf_counter()
@@ -107,18 +107,18 @@ def exp_SP_TPRM(ps: Dict[int, List[MRMP]]) -> None:
             res[num_agents].append(([sol.cost for sol in solution], time_elapsed))
             num_problems += 1
             if solution != []:
-                num_suceeds += 1
+                num_succeeds += 1
 
-            print("# agents:", num_agents, "# succeeds:", num_suceeds, "# problems:", num_problems)
+            print("# agents:", num_agents, "# succeeds:", num_succeeds, "# problems:", num_problems)
 
-        # input(f"Finished {num_agents} agents. Success rate: {num_suceeds / len(problems)}. Press enter to continue.")
+        # input(f"Finished {num_agents} agents. Success rate: {num_succeeds / len(problems)}. Press enter to continue.")
     
-    print(f"Success rate: {num_suceeds / (len(ps) * len(problems))}")
+    print(f"Success rate: {num_succeeds / (len(ps) * len(problems))}")
     pickle.dump(res, open(f"{ps[1][0].env.name}-SP+TPRM.pkl", "wb"))
 
 
 def exp_SP_STRRTStar(ps: Dict[int, List[MRMP]]) -> None:
-    res, num_suceeds, num_problems = defaultdict(list), 0, 0
+    res, num_succeeds, num_problems = defaultdict(list), 0, 0
     for num_agents, problems in ps.items():
         for seed, p in enumerate(problems):
             ts = time.perf_counter()
@@ -127,18 +127,18 @@ def exp_SP_STRRTStar(ps: Dict[int, List[MRMP]]) -> None:
             res[num_agents].append(([sol.cost for sol in solution], time_elapsed))
             num_problems += 1
             if solution != []:
-                num_suceeds += 1
+                num_succeeds += 1
 
-            print("# agents:", num_agents, "# succeeds:", num_suceeds, "# problems:", num_problems)
+            print("# agents:", num_agents, "# succeeds:", num_succeeds, "# problems:", num_problems)
 
-        # input(f"Finished {num_agents} agents. Success rate: {num_suceeds / len(problems)}. Press enter to continue.")
+        # input(f"Finished {num_agents} agents. Success rate: {num_succeeds / len(problems)}. Press enter to continue.")
     
-    print(f"Success rate: {num_suceeds / (len(ps) * len(problems))}")
+    print(f"Success rate: {num_succeeds / (len(ps) * len(problems))}")
     pickle.dump(res, open(f"{ps[1][0].env.name}-SP+ST-RRTStar.pkl", "wb"))
 
 
 def exp_SP_STRRTStar_C(ps: Dict[int, List[MRMP]]) -> None:
-    res, num_suceeds, num_problems = defaultdict(list), 0, 0
+    res, num_succeeds, num_problems = defaultdict(list), 0, 0
     for num_agents, problems in ps.items():
         for seed, p in enumerate(problems):
             ts = time.perf_counter()
@@ -147,13 +147,13 @@ def exp_SP_STRRTStar_C(ps: Dict[int, List[MRMP]]) -> None:
             res[num_agents].append(([sol.cost for sol in solution], time_elapsed))
             num_problems += 1
             if solution != []:
-                num_suceeds += 1
+                num_succeeds += 1
 
-            print("# agents:", num_agents, "# succeeds:", num_suceeds, "# problems:", num_problems)
+            print("# agents:", num_agents, "# succeeds:", num_succeeds, "# problems:", num_problems)
 
-        # input(f"Finished {num_agents} agents. Success rate: {num_suceeds / len(problems)}. Press enter to continue.")
+        # input(f"Finished {num_agents} agents. Success rate: {num_succeeds / len(problems)}. Press enter to continue.")
     
-    print(f"Success rate: {num_suceeds / (len(ps) * len(problems))}")
+    print(f"Success rate: {num_succeeds / (len(ps) * len(problems))}")
     pickle.dump(res, open(f"{ps[1][0].env.name}-SP+ST-RRTStar-C.pkl", "wb"))
 
 

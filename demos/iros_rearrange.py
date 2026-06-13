@@ -5,7 +5,7 @@ import os, sys, pickle
 sys.path.append(os.path.join(os.path.dirname(__file__), ".."))
 try:
     from mrmp.pbs import PBS
-    from baselines.rp_stgcs import sequential_planning as SP_STGCS, randomized_prioritized_planning as RP_STGCS, sequential_planning as SP_STGCS
+    from baselines.rp_stgcs import sequential_planning as SP_STGCS, randomized_prioritized_planning as RP_STGCS
     from baselines.sp_strrtstar import sequential_planning as SP_STRRTSTAR
     from baselines.sp_tprm import sequential_planning as SP_TPRM
     from mrmp.stgcs import STGCS
@@ -63,6 +63,6 @@ if __name__ == "__main__":
     
     dt = 0.02
     anim = _animate_func_2d(ax, env.robot_radius, env.lb, env.ub, Pi, dt=dt)
-    anim.save(f"rearange.mp4", writer='ffmpeg', fps=1/dt, dpi=1000)
+    anim.save(f"rearrange.mp4", writer='ffmpeg', fps=1/dt, dpi=1000)
     plt.show()
 
