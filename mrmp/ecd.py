@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import List, Tuple, Dict, Set
 from itertools import combinations, product
 from collections import defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 from copy import deepcopy
 import numpy as np
@@ -26,6 +26,26 @@ class ECDPair:
     top_halfspace: HPolyhedron
     mid_halfspaces: List[HPolyhedron]
     bounds: List[Interval]
+    _reservation: HPolyhedron|None = field(default=None, init=False, repr=False)
+
+    def reservation_hpoly(self) -> HPolyhedron:
+        """Convex hull of the reserved region (time-cropped parallelepiped interior)."""
+        if self._reservation is None:
+            rows_A = [
+                -self.bottom_halfspace.A(),   # t >= tlow
+                -self.top_halfspace.A(),       # t <= thigh
+            ]
+            rows_b = [
+                -self.bottom_halfspace.b(),
+                -self.top_halfspace.b(),
+            ]
+            for out_hs in self.mid_halfspaces:
+                rows_A.append(-out_hs.A())
+                rows_b.append(-out_hs.b())
+            self._reservation = HPolyhedron(
+                np.vstack(rows_A), np.concatenate(rows_b)
+            )
+        return self._reservation
 
 
 def reserve(
@@ -37,20 +57,29 @@ def reserve(
     for u, V in stgcs.G._adjacency_list.items():
         adj_graph.add_edges_from([(u, v) for v in V])
     
+    # Pre-compute base hpolys once; reused for both intersection checks and slicing.
+    v_hpolys = {
+        v_name: squash_multi_points(v.convex_set.set, dim=stgcs.dim)
+        for v_name, v in stgcs.G.vertices.items()
+    }
+
     split_list = defaultdict(list)
     tmin = stgcs.t0 if x0_staying else None
     tmax = stgcs.tmax if xt_staying else None
     for ecd_pair in generate_all_ECD_pairs(stgcs, trajectory, safe_radius, tmin, tmax):
+        reservation = ecd_pair.reservation_hpoly()
         for v_name in stgcs.G.vertex_names:
             v = stgcs.G.vertices[v_name]
             v_bounds = v.space_bounds + [v.itvl]
-            if AABB(ecd_pair.bounds, v_bounds):
+            if not AABB(ecd_pair.bounds, v_bounds):
+                continue
+            if v_hpolys[v_name].IntersectsWith(reservation):
                 split_list[v_name].append(ecd_pair)
 
     split_map = {v_name:set([v_name]) for v_name in stgcs.G.vertex_names}
     for v_name, ecd_pairs in split_list.items():
         v = new.remove_vertex(v_name)
-        hpoly = squash_multi_points(v.convex_set.set, dim=stgcs.dim)
+        hpoly = v_hpolys[v_name]
         for res in slice(hpoly, ecd_pairs, v.itvl.start, v.itvl.end):
             new_v = new.try_add_vertex(*res)
             if new_v is not None:
@@ -112,8 +141,8 @@ def update_edge(
 
 
 def generate_all_ECD_pairs(
-    stgcs:STGCS, trajectory:List[np.ndarray], safe_radius:float, 
-    staying_tmin:float=None, staying_tmax:float=None
+    stgcs:STGCS, trajectory:List[np.ndarray], safe_radius:float,
+    staying_tmin:float|None=None, staying_tmax:float|None=None
 ) -> List[ECDPair]:
     ret: List[ECDPair] = []
     

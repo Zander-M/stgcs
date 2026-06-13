@@ -83,11 +83,10 @@ def prioritized_planning(
     for i in ordering:
         print(f"\tplanning for agent {i}, STGCS: |V|={stgcs.G.n_vertices}, |E|={stgcs.G.n_edges}")
         start, goal, t0 = starts[i], goals[i], t0s[i]
-        scaler = np.clip(np.log(stgcs.G.n_edges), 1, 10) * scaler_multiplier
         sol = stgcs.solve(start, goal, t0,
-                            relaxation=True, 
-                            max_rounded_paths = int(BASE_MAX_ROUNDED_PATHS * scaler),
-                            max_rounding_trials = int(BASE_MAX_ROUNDING_TRIALS * scaler))
+                            relaxation=True,
+                            max_rounded_paths = int(BASE_MAX_ROUNDED_PATHS * scaler_multiplier),
+                            max_rounding_trials = int(BASE_MAX_ROUNDING_TRIALS * scaler_multiplier))
         if not sol.is_success:
             print(f"\t PP failed to find a solution for {i}")
             break

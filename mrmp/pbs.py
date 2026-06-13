@@ -46,20 +46,19 @@ class Node:
                 for k in high_priority_agents:
                     stgcs_reserved = ecd_reserve(stgcs_reserved, self.sols[k].trajectory, 2 * robot_radius)
                     
-                scaler = np.clip(np.log(stgcs_reserved.G.n_edges), 1, 10) * scaler_multiplier
                 sol = stgcs_reserved.solve(
                         starts[j], goals[j], t0s[j],
                         relaxation=True,
-                        max_rounded_paths = int(BASE_MAX_ROUNDED_PATHS * scaler), 
-                        max_rounding_trials = int(BASE_MAX_ROUNDING_TRIALS * scaler),
+                        max_rounded_paths = int(BASE_MAX_ROUNDED_PATHS * scaler_multiplier),
+                        max_rounding_trials = int(BASE_MAX_ROUNDING_TRIALS * scaler_multiplier),
                     )
-                
+                rounding_budget = int(BASE_MAX_ROUNDED_PATHS * scaler_multiplier)
                 if not sol.is_success:
-                    print(f"\t\u2713 Fails to update plan for {j} using STGCS: |V|={stgcs_reserved.G.n_vertices}, |E|={stgcs_reserved.G.n_edges}, |rounded_paths|={int(BASE_MAX_ROUNDED_PATHS * scaler)}")
+                    print(f"\t\u2713 Fails to update plan for {j} using STGCS: |V|={stgcs_reserved.G.n_vertices}, |E|={stgcs_reserved.G.n_edges}, |rounded_paths|={rounding_budget}")
                     return False
                 self.sols[j] = sol
                 self._stgcs_num_edges.append(stgcs_reserved.G.n_edges)
-                print(f"\t\u2713 Succeeds to update plan for {j} using STGCS: |V|={stgcs_reserved.G.n_vertices}, |E|={stgcs_reserved.G.n_edges}, |rounded_paths|={int(BASE_MAX_ROUNDED_PATHS * scaler)}")
+                print(f"\t\u2713 Succeeds to update plan for {j} using STGCS: |V|={stgcs_reserved.G.n_vertices}, |E|={stgcs_reserved.G.n_edges}, |rounded_paths|={rounding_budget}")
 
         return True
 
@@ -106,16 +105,17 @@ def PBS(
     for i in range(num_agents):
         G.add_node(i)
     root = Node(G)
-    scaler = np.clip(np.log(stgcs.G.n_edges), 1, 10) * scaler_multiplier
+    rounding_budget = int(BASE_MAX_ROUNDED_PATHS * scaler_multiplier)
+    rounding_trials  = int(BASE_MAX_ROUNDING_TRIALS * scaler_multiplier)
 
-    print(f"\n-> PBS: initial STGCS: |V|={stgcs.G.n_vertices}, |E|={stgcs.G.n_edges}, |rounded_paths|={int(BASE_MAX_ROUNDED_PATHS * scaler)}")
-    
+    print(f"\n-> PBS: initial STGCS: |V|={stgcs.G.n_vertices}, |E|={stgcs.G.n_edges}, |rounded_paths|={rounding_budget}")
+
     for start, goal, t0 in zip(starts, goals, t0s):
         sol = stgcs.solve(
             start, goal, t0,
             relaxation=True,
-            max_rounded_paths = int(BASE_MAX_ROUNDED_PATHS * scaler), 
-            max_rounding_trials = int(BASE_MAX_ROUNDED_PATHS  * scaler),
+            max_rounded_paths = rounding_budget,
+            max_rounding_trials = rounding_trials,
         )
         if not sol.is_success:
             print("\n-> PBS:intial solution not found")
