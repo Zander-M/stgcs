@@ -1,0 +1,4 @@
+"""
+    BSpline convex region reservation
+"""
+
