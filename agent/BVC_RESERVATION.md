@@ -1,8 +1,8 @@
 # BVC-Based Reservation: Design Discussion
 
-**Date:** 2026-06-13  
+**Date:** 2026-06-13 (updated 2026-06-16)
 **Branch:** RH (rolling-horizon)  
-**Status:** Design finalized, implementation pending
+**Status:** Hybrid halfplane/ECD implementation live in `mrmp/region_reservation/bvc.py`
 
 ---
 
@@ -132,6 +132,41 @@ stgcs = ecd_reserve(stgcs, sol.trajectory, 2*robot_radius)
 # After:
 stgcs = bvc_reserve(stgcs, sol.trajectory, robot_radius)
 ```
+
+---
+
+## 2026-06-16 Update: Hybrid Halfplane / ECD Implementation
+
+### Why the original single-halfplane failed at boundaries
+
+The original `halfplane_reserve` kept only ONE safe half of each vertex. For MOTION segments this is acceptable: the trajectory is moving, and cutting one side of a vertex still leaves a path. But for STAYING segments (agent stationary at start/goal from `t0` to `traj_start`, and from `traj_end` to `tmax`), a single halfplane discards the ENTIRE safe region on one side of the stationary position. At 4+ agents, some later-priority agent inevitably needs the discarded side, killing feasibility.
+
+ECD avoids this by creating **two** safe sub-vertices per segment (left and right of the parallelepiped), so any later agent can route around either side. The single halfplane cannot offer both sides.
+
+### Hybrid approach (current implementation)
+
+`halfplane_reserve` in `mrmp/region_reservation/bvc.py` now applies a different strategy per segment type:
+
+| Segment type | Halfspaces per vertex | Sub-vertices created |
+|---|---|---|
+| **Staying** (agent stationary) | 2 (parallelepiped sides, like ECD) | 2 (both safe sides) |
+| **Motion** (agent moving) | 1 (centroid-direction halfplane) | 1 (empty half only) |
+
+Vertex slicing uses ECD's `slice()` in both cases, so the before/during/after temporal structure is handled identically. The ECDPair for motion segments carries a single `mid_halfspace`; `slice()` produces exactly one during-sub-vertex and full before/after sub-vertices.
+
+### Graph size vs. ECD
+
+For a trajectory with $s$ staying-segment overlapping vertices and $m$ motion-segment overlapping vertices:
+- ECD: up to $2s + 4m$ during-sub-vertices (2 for 1D staying, 4 for 2D motion)
+- Hybrid: $2s + m$ during-sub-vertices
+
+In 2D spatial environments (3D space-time) this gives **4× fewer** sub-vertices from motion segments.
+
+### Safety reasoning
+
+- Staying segments: identical to ECD → same safety guarantee.
+- Motion segments: the halfplane is positioned at `max(n·p for p in traj_pts) + 2r` along the vertex-centroid direction. Any point in the safe sub-vertex satisfies `n·x ≥ b`, which guarantees Euclidean distance ≥ `2r` from all trajectory points in the vertex window.
+- Before/after slices: full original spatial extent (no spatial constraint), identical to ECD.
 
 ---
 
