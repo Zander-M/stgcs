@@ -2,3 +2,9 @@
 *.egg-info/
 *.pyc
 *.DS_Store
+*.so
+*.lock
+*.pid
+*.egg-info
+build*
+demos/runs*

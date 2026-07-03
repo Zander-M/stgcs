@@ -1,1 +1,0 @@
-Modified from https://github.com/shaoyuancc/large_gcs/geometry

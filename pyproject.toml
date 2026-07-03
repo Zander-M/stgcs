@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "stgcs"
+version = "0.1.0"
+description = "Motion planning on Graphs of Space-Time Convex Sets (ST-GCS)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "GPL-3.0-only"}
+authors = [
+  {name = "Jingtao Tang", email = "todd.j.tang@gmail.com"},
+]
+dependencies = [
+  "drake==1.36.0",
+  "matplotlib==3.10.1",
+  "networkx==3.4.2",
+  "numpy==2.2.3",
+  "plotly==5.24.1",
+  "pydrake==0.2.1",
+  "scipy==1.15.2",
+  "tqdm==4.67.1",
+]
+
+[tool.setuptools.packages.find]
+include = ["stgcs", "stgcs.*"]
+exclude = ["baselines*", "environment*", "experiments*", "visualization*", "demos*", "data*"]

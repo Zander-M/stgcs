@@ -1,0 +1,29 @@
+name: unlabeled_square_assignment
+instance_id: unlabeled-square-assignment
+task_type: unlabeled_mrmp
+robot_radius: 0.05
+vlimit: 0.5
+tmax: 20.0
+environment:
+  type: bounds
+  bounds:
+    - [0.0, 0.0]
+    - [2.0, 2.0]
+starts:
+  - [0.25, 0.25]
+  - [0.25, 1.75]
+  - [1.75, 0.25]
+  - [1.75, 1.75]
+stages:
+  - name: assign_to_middle
+    goals:
+      - [0.75, 0.75]
+      - [0.75, 1.25]
+      - [1.25, 0.75]
+      - [1.25, 1.25]
+  - name: assign_to_corners
+    goals:
+      - [0.25, 1.75]
+      - [1.75, 1.75]
+      - [0.25, 0.25]
+      - [1.75, 0.25]

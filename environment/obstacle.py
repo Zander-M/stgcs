@@ -1,30 +1,18 @@
 from __future__ import annotations
 from abc import abstractmethod, ABC
-from typing import List, Tuple, Set
-from itertools import product, combinations
-from collections import defaultdict
-from matplotlib.axes import Axes
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib.patches import Circle
-
+from typing import List
 import numpy as np
-import networkx as nx
 
 from pydrake.all import HPolyhedron, VPolytope
 
-from mrmp.interval import Interval
-from mrmp.utils import (
-    find_space_time_intersecting_pts, is_lineseg_colliding, squash_multi_points,
-    draw_cylinder, draw_3d_set, timeit
-)
-
-from mrmp.stgcs import STGCS
-from mrmp.ecd import ECDPair, reserve as ecd_reserve
-from mrmp.graph import ShortestPathSolution
+from stgcs.graph import STGCS
+from stgcs.ecd import reserve as ecd_reserve
+from stgcs.trajectory import STTrajectory
+from stgcs.interval import Interval
+from stgcs.collision_utils import is_lineseg_colliding, is_point_colliding
 
 
 """ Static Obstacles """
-
 
 class StaticObstacle(ABC):
     
@@ -34,10 +22,6 @@ class StaticObstacle(ABC):
 
     @abstractmethod
     def is_colliding_lineseg(self, p:np.ndarray, q:np.ndarray, robot_radius:float) -> bool:
-        raise NotImplementedError
-
-    @abstractmethod
-    def draw(self, ax:Axes, color='k') -> None:
         raise NotImplementedError
 
 
@@ -66,10 +50,6 @@ class StaticSphere(StaticObstacle):
         closest = p + p2m1 * t
         return np.linalg.norm(closest - self.pos) <= self.radius + robot_radius
 
-    def draw(self, ax:Axes, color='k') -> None:
-        circle = Circle(self.pos, self.radius, color=color)
-        ax.add_artist(circle)
-    
 
 class StaticPolygon(StaticObstacle):
 
@@ -78,25 +58,13 @@ class StaticPolygon(StaticObstacle):
         self.hpoly = HPolyhedron(VPolytope(vertices.T))
     
     def is_colliding(self, point:np.ndarray, robot_radius:float) -> bool:
-        assert len(point) == 2
-        for xc, yc in [[-1, -1], [1, -1], [1, 1], [-1, 1]]:
-            if self.hpoly.PointInSet(point + robot_radius * np.array([xc, yc])):
-                return True
-        return False
+        return is_point_colliding(self.hpoly, point, robot_radius)
 
     def is_colliding_lineseg(self, p:np.ndarray, q:np.ndarray, robot_radius:float) -> bool:
         return is_lineseg_colliding(self.hpoly, p, q, robot_radius)
 
-    def draw(self, ax:Axes, alpha=0.8, color='k') -> None:
-        ax.fill(self.vertices[:, 0], self.vertices[:, 1], alpha=alpha, fc=color, ec='black')
-
-    def draw_with_time(self, ax:Axes3D, tmax:float, color='k', alpha:float=1.0) -> None:
-        hpoly = self.hpoly.CartesianProduct(HPolyhedron.MakeBox([0], [tmax]))
-        draw_3d_set(hpoly, ax, alpha=alpha, fc=color)
-
 
 """ Dynamic Obstacles (assuming uniform speed) """
-
 
 class DynamicObstacle(ABC):
     x0: np.ndarray
@@ -120,40 +88,47 @@ class DynamicObstacle(ABC):
     def reserve(self, stgcs:STGCS, robot_radius:float, reserve_first_to_t0:bool, reserve_last_to_tf:bool) -> STGCS:
         raise NotImplementedError
     
-    @abstractmethod
-    def draw(self, ax:Axes3D, *args) -> None:
-        raise NotImplementedError
-
 
 class DynamicSphere(DynamicObstacle):
 
     def __init__(self, x0:np.ndarray, xt:np.ndarray, radius:float, itvl:Interval) -> None:
         self.x0, self.xt, self.radius, self.itvl = x0, xt, radius, itvl
-        self.velocity = (xt - x0) / self.itvl.duration
+        if self.itvl.duration <= 1e-12:
+            self.velocity = np.zeros_like(xt - x0, dtype=float)
+        else:
+            self.velocity = (xt - x0) / self.itvl.duration
     
     def collision_intervals(self, point:np.ndarray, robot_radius:float) -> List[Interval]:
         ret = []
         rr = self.radius + robot_radius
         vel_magnitude = np.linalg.norm(self.velocity)
-        x0_collision = np.linalg.norm(self.x0 - point) < rr
-        xt_collision = np.linalg.norm(self.xt - point) < rr
+        x0_collision = np.linalg.norm(self.x0 - point) <= rr
+        xt_collision = np.linalg.norm(self.xt - point) <= rr
         if x0_collision and self.itvl.start != 0:
             ret.append(Interval(0.0, self.itvl.start))
         if xt_collision and self.itvl.end != np.inf:
             ret.append(Interval(self.itvl.end, np.inf))
 
-        # solve ||q - f(t)||^2 = r^2   | q = point
-        # f(t) = p + v * t             | p = self.x0, v = self.velocity
+        if vel_magnitude <= 1e-12:
+            if x0_collision:
+                ret.append(Interval(self.itvl.start, self.itvl.end))
+            return ret
+
+        # Solve over the active motion phase using tau = t - self.itvl.start.
+        # The obstacle position during the interval is x0 + v * tau.
         a = vel_magnitude ** 2  # a > 0
         b = 2 * np.dot(self.velocity, self.x0 - point)
         c = np.linalg.norm(self.x0 - point) ** 2 - rr ** 2
         discriminant = b ** 2 - 4 * a * c
         if discriminant >= 0:
-            t1 = (-b - np.sqrt(discriminant)) / (2 * a)
-            t2 = (-b + np.sqrt(discriminant)) / (2 * a)
-            intersection = self.itvl.intersection(Interval(t1, t2))
+            tau1 = (-b - np.sqrt(discriminant)) / (2 * a)
+            tau2 = (-b + np.sqrt(discriminant)) / (2 * a)
+            intersection = Interval(tau1, tau2).intersection(Interval(0.0, self.itvl.duration))
             if intersection is not None:
-                ret.append(intersection)
+                ret.append(Interval(
+                    intersection.start + self.itvl.start,
+                    intersection.end + self.itvl.start,
+                ))
         
         return ret
 
@@ -170,12 +145,16 @@ class DynamicSphere(DynamicObstacle):
         A = P0 - Q0
         B = P1 - P0 - Q1 + Q0
         # D'(t) = 2 * (A + t*B) * B = 0
-        t = np.clip(- np.dot(A, B) / np.dot(B, B), 0, 1)
-        min_dist = np.min([
-            np.linalg.norm(A + t * B),
-            np.linalg.norm(A),          # at t=0
-            np.linalg.norm(A + B)       # at t=1
-        ])
+        denom = np.dot(B, B)
+        if denom <= 1e-12:
+            min_dist = np.linalg.norm(A)
+        else:
+            t = np.clip(- np.dot(A, B) / denom, 0, 1)
+            min_dist = np.min([
+                np.linalg.norm(A + t * B),
+                np.linalg.norm(A),          # at t=0
+                np.linalg.norm(A + B)       # at t=1
+            ])
 
         return min_dist <= self.radius + robot_radius
         
@@ -191,11 +170,6 @@ class DynamicSphere(DynamicObstacle):
         trajectory = [np.hstack([self.x0, self.itvl.start, self.xt, self.itvl.end])]
         return ecd_reserve(stgcs, trajectory, robot_radius + self.radius, reserve_first_to_t0, reserve_last_to_tf)
  
-    def draw(self, ax:Axes3D) -> None:
-        p = np.hstack([self.x0, self.itvl.start])
-        q = np.hstack([self.xt, self.itvl.end])
-        draw_cylinder(ax, p, q, self.radius)
-
 
 class ConcatDynamicSphere(DynamicObstacle):
     
@@ -206,13 +180,12 @@ class ConcatDynamicSphere(DynamicObstacle):
             self.segments.append(DynamicSphere(x0, xt, radius, itvl))
 
     @staticmethod
-    def from_solution(sol:ShortestPathSolution, radius:float) -> ConcatDynamicSphere:
+    def from_solution(sol:STTrajectory, radius:float) -> ConcatDynamicSphere:
         X0, Xt, itvls = [], [], []
-
-        for i in range(len(sol.trajectory)):
-            X0.append(sol.trajectory[i][: sol.dim-1])
-            Xt.append(sol.trajectory[i][sol.dim:-1])
-            itvls.append(Interval(sol.trajectory[i][sol.dim-1], sol.trajectory[i][-1]))
+        for i in range(len(sol.points)):
+            X0.append(sol.xA(i)[:-1])
+            Xt.append(sol.xB(i)[:-1])
+            itvls.append(Interval(sol.xA(i)[-1], sol.xB(i)[-1]))
 
         return ConcatDynamicSphere(X0, Xt, itvls, radius)
 
@@ -245,11 +218,8 @@ class ConcatDynamicSphere(DynamicObstacle):
         trajectory = []
         for seg in self.segments:
             trajectory.append(np.hstack([seg.x0, seg.itvl.start, seg.xt, seg.itvl.end]))
+        
         return ecd_reserve(stgcs, trajectory, robot_radius + self.radius, reserve_first_to_t0, reserve_last_to_tf)
-
-    def draw(self, ax:Axes3D) -> None:
-        for seg in self.segments:
-            seg.draw(ax)
 
 
 def lerp(p:np.ndarray, q:np.ndarray, tp:float, tq:float, t:float) -> np.ndarray:
@@ -258,4 +228,3 @@ def lerp(p:np.ndarray, q:np.ndarray, tp:float, tq:float, t:float) -> np.ndarray:
     if t >= tq:
         return q
     return p + (q - p) * ((t - tp) / (tq - tp))
-

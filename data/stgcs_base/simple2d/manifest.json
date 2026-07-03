@@ -1,0 +1,15 @@
+[
+  {
+    "instance_id": "base-simple2d-seed00000",
+    "domain": "simple2d",
+    "space_dim": 2,
+    "spatial_seed": 0,
+    "env_params": {
+      "robot_radius": 0.1,
+      "vlimit": 1.0
+    },
+    "supports_sampling": true,
+    "stgcs_num_vertices": 8,
+    "stgcs_num_edges": 16
+  }
+]
