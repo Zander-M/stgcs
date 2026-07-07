@@ -6,5 +6,4 @@
 *.lock
 *.pid
 *.egg-info
-build*
-demos/runs*
+build/*

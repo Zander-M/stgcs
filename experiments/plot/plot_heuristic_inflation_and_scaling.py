@@ -13,17 +13,17 @@ configure_matplotlib_for_latex(backend="Agg")
 
 from matplotlib.ticker import NullFormatter, NullLocator, PercentFormatter
 
-from experiments.base.heuristic_ablation_run_search import STHeuristicAblationRunner
-from experiments.base.heuristic_inflation_run_search import STHeuristicInflationRunCLI
-from experiments.base.manifest import BaseBenchmarkRecord, load_manifest
-from experiments.base.offline_heuristics import BaseOfflineHeuristicStore
-from experiments.mrmp.planner_defs import SearchPlannerSpec
+from experiments.st_runners.heuristic_ablation_run_search import STHeuristicAblationRunner
+from experiments.st_runners.heuristic_inflation_run_search import STHeuristicInflationRunCLI
+from benchmark.manifests.base import BaseBenchmarkRecord, load_manifest
+from benchmark.offline_heuristics import BaseOfflineHeuristicStore
+from benchmark.planners.mrmp import SearchPlannerSpec
 from experiments.plot.plot_results_common import BoxplotStyle, PlotPalette, _save_figure, dedupe_result_rows, plt
 
 
 class HeuristicInflationAndScalingPlot:
     DEFAULT_INFLATION_RESULTS_ROOT = STHeuristicInflationRunCLI.DEFAULT_OUTPUT_ROOT
-    DEFAULT_BASELINE_RESULTS_ROOT = Path("data/st_planning/heuristic_ablation/results")
+    DEFAULT_BASELINE_RESULTS_ROOT = Path("data/results/st_planning/heuristic_ablation")
     DEFAULT_SCALING_MANIFEST = Path("data/stgcs_base/heur_computation_time_scaling/manifest.json")
     DEFAULT_OUTPUT_PREFIX = Path("latex/figs/heur_inflation_and_scaling")
     DEFAULT_BUDGET = STHeuristicInflationRunCLI.DEFAULT_BUDGET
@@ -278,18 +278,8 @@ class HeuristicInflationAndScalingPlot:
         manifest_path: Path,
         heuristic: str,
     ) -> list[tuple[int, float, str]]:
-        records = load_manifest(manifest_path)
-        time_index = BaseOfflineHeuristicStore.load_time_index(manifest_path)
-        points: list[tuple[int, float, str]] = []
-        for record in records:
-            value = time_index.get(record.instance_id, {}).get(heuristic)
-            if value is None:
-                continue
-            runtime = float(value)
-            if not math.isfinite(runtime) or runtime <= 0.0:
-                continue
-            points.append((cls.graph_size(record), runtime, record.instance_id))
-        return sorted(points, key=lambda item: (item[0], item[1], item[2]))
+        del manifest_path, heuristic
+        return []
 
     @staticmethod
     def median_curve(points: Sequence[tuple[int, float, str]]) -> tuple[list[int], list[float]]:

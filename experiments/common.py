@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple, Callable
 import os
 
-from experiments.instance import Instance
+from benchmark.instance import Instance
 
 
 class ResultEntry:

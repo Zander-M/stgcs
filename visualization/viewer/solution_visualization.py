@@ -11,18 +11,15 @@ import numpy as np
 from baselines.common import ShortestPathSolution
 from baselines.ompl_strrt_star import OfficialOMPLSTRRTStar, OfficialOMPLSTRRTStarOptions
 from baselines.zeta_sipp import ZetaStarSIPPPlanner
-from experiments.base.common import BaseManifestStore
-from experiments.base.heuristic_ablation_run_search import STHeuristicAblationRunner
-from experiments.base.heuristic_ablation_st_manifest import (
-    STHeuristicAblationManifestBuilder,
+from benchmark.base import BaseManifestStore
+from benchmark.manifests.mrmp import MRMPBenchmarkRecord
+from benchmark.planners.mrmp import MRMPPerformanceComparison, SearchPlannerSpec
+from benchmark.manifests.st_planning import (
     STHeuristicAblationRecord,
     STHeuristicAblationResultEntry,
+    STPlanningManifestStore,
 )
-from experiments.base.offline_heuristics import BaseOfflineHeuristicStore
-from experiments.base.performance_comparison_run_search import STPerformanceComparisonRunner
-from experiments.mrmp.common import MRMPExperiment, MRMPResultEntry
-from experiments.mrmp.manifest import MRMPBenchmarkRecord
-from experiments.mrmp.planner_defs import MRMPPerformanceComparison, SearchPlannerSpec
+from benchmark.planners.st_planning import STPerformanceComparisonConfig as STPerformanceComparisonRunner
 from stgcs.st_planner import MICPPlanner, STPlanStatus
 from stgcs.trajectory import STTrajectory
 
@@ -43,7 +40,7 @@ class ViewerMRMPSolutionRun:
     planner_name: str
     budget: float
     status: str
-    entry: MRMPResultEntry
+    entry: Any
     solutions: Sequence[STTrajectory] | None
 
 
@@ -290,6 +287,8 @@ class SolutionVisualizationService:
         planner_name: str,
         budget: float,
     ) -> tuple[STTrajectory | None, STHeuristicAblationResultEntry, str]:
+        from experiments.mrmp_runners.common import MRMPExperiment
+
         planner = MRMPExperiment._build_low_level_planner(
             instance,
             STPerformanceComparisonRunner.search_spec_for_planner(planner_name),
@@ -374,7 +373,7 @@ class SolutionVisualizationService:
             query.start,
             query.goal,
             t_start=float(query.t_start),
-            t_max=STHeuristicAblationManifestBuilder.TMAX,
+            t_max=STPlanningManifestStore.TMAX,
             is_stay=bool(query.is_stay),
         )
         entry = STPerformanceComparisonRunner.entry_from_shortest_path_solution(
@@ -394,11 +393,13 @@ class SolutionVisualizationService:
         budget_value = self.positive_finite_float(budget, "Solution budget")
         planner_name = self._require_single_planner(planner_key)
 
-        instance, query, base_manifest_path, base_record = STHeuristicAblationRunner.reconstruct_instance(
+        instance, query, base_manifest_path, base_record = STPlanningManifestStore.reconstruct_instance(
             record,
             self.base_root,
         )
         if planner_name in STPerformanceComparisonRunner.SEARCH_SPEC_BY_PLANNER:
+            from benchmark.offline_heuristics import BaseOfflineHeuristicStore
+
             search_spec = STPerformanceComparisonRunner.search_spec_for_planner(planner_name)
             BaseOfflineHeuristicStore.prepare_instance_for_search(
                 instance,
@@ -515,9 +516,13 @@ class SolutionVisualizationService:
 
         base_manifest_path = BaseManifestStore.manifest_path(self.base_root, domain_key=record.domain_key)
         base_record = BaseManifestStore.record_by_id(base_manifest_path, record.base_instance_id)
+        from experiments.mrmp_runners.common import MRMPExperiment
+
         instance, queries = MRMPExperiment.reconstruct_instance(record, base_record, compute_heuristics=False)
 
         if planner_key in MRMPPerformanceComparison.SEARCH_BASED_PLANNER_KEYS:
+            from benchmark.offline_heuristics import BaseOfflineHeuristicStore
+
             BaseOfflineHeuristicStore.prepare_instance_for_search(
                 instance,
                 base_manifest_path,

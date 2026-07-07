@@ -12,12 +12,12 @@ configure_matplotlib_for_latex(backend="Agg")
 
 from matplotlib.ticker import FixedLocator, FormatStrFormatter, FuncFormatter, NullFormatter
 
-from experiments.base.heuristic_ablation_run_search import STHeuristicAblationRunner
+from experiments.st_runners.heuristic_ablation_run_search import STHeuristicAblationRunner
 from experiments.plot.plot_results_common import BoxplotStyle, PlotPalette, _save_figure, dedupe_result_rows, plt
 
 
 class STHeuristicAblationGroupReport:
-    DEFAULT_RESULTS_ROOT = Path("data/st_planning/heuristic_ablation/results")
+    DEFAULT_RESULTS_ROOT = Path("data/results/st_planning/heuristic_ablation")
     DEFAULT_OUTPUT_PREFIX = Path("latex/figs/heur_ablation")
     DEFAULT_TABLE_OUTPUT = Path("latex/tables/st_heuristic_ablation_group_table.tex")
     DEFAULT_BUDGET = 600.0

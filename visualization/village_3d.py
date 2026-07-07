@@ -2,23 +2,20 @@ from __future__ import annotations
 
 import json
 import math
-import sys
 from datetime import datetime, timezone
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from types import SimpleNamespace
 from typing import Any
-from urllib.parse import urlencode, urlparse
+from urllib.parse import urlparse
 
 import numpy as np
 
 from stgcs.trajectory import STTrajectory
-from stgcs.trajopt_postprocessing import GlobalTrajOptConfig, GlobalTrajOptResult
+from demos.trajopt.optimization import GlobalTrajOptConfig, GlobalTrajOptResult
 from stgcs.windowed_coordination import WindowedCoordinationReturn
-
-REPO_ROOT = Path(__file__).resolve().parents[1]
-VISUALIZATION_DIR = Path(__file__).resolve().parent
+from visualization.viewer.static_assets import ViewerStaticAssets
 
 
 class Village3DVisualizationMixin:
@@ -145,8 +142,8 @@ class Village3DVisualizationMixin:
         continuous_pairwise_collision_free: bool | None = None,
         continuous_environment_collision_free: bool | None = None,
     ) -> dict[str, Any]:
-        selected_planner_key = cls.PWL_PLANNER_KEY if planner_key is None else planner_key
-        selected_planner_name = cls.PWL_PLANNER_NAME if planner_name is None else planner_name
+        selected_planner_key = cls.MRMP_PLANNER_KEY if planner_key is None else planner_key
+        selected_planner_name = cls.MRMP_PLANNER_NAME if planner_name is None else planner_name
         is_success = bool(result.success)
         output_solutions = global_result.trajectories if is_success and global_result is not None else solutions
         trajectories = [
@@ -154,12 +151,12 @@ class Village3DVisualizationMixin:
             for solution in output_solutions
         ] if is_success else []
         durations = [float(solution.duration) for solution in output_solutions] if is_success else []
-        pwl_trajectories = [
+        mrmp_trajectories = [
             cls.trajectory_to_viewer_json(solution)
             for solution in solutions
         ] if is_success else []
-        pwl_durations = [float(solution.duration) for solution in solutions] if is_success else []
-        pwl_runtime = float(result.runtime[0])
+        mrmp_durations = [float(solution.duration) for solution in solutions] if is_success else []
+        mrmp_runtime = float(result.runtime[0])
         global_runtime = 0.0 if global_result is None else float(global_result.runtime)
         return {
             "ok": True,
@@ -169,7 +166,7 @@ class Village3DVisualizationMixin:
             "budget": cls.finite_float_or_none(budget),
             "status": "SUCCESS" if is_success else "FAIL",
             "is_success": is_success,
-            "runtime": cls.finite_float_or_none(pwl_runtime + global_runtime),
+            "runtime": cls.finite_float_or_none(mrmp_runtime + global_runtime),
             "cost": cls.finite_float_or_none(sum(durations) if is_success else math.inf),
             "makespan": cls.finite_float_or_none(max(durations, default=math.inf) if is_success else math.inf),
             "num_agents": int(record["num_agents"]),
@@ -178,15 +175,15 @@ class Village3DVisualizationMixin:
             "body_alpha": 0.82,
             "body_model": "uav",
             "uav_materials": cls.UAV_MATERIALS,
-            "pwl_planner_key": cls.PWL_PLANNER_KEY,
-            "pwl_planner_name": cls.PWL_PLANNER_NAME,
-            "pwl_runtime": cls.finite_float_or_none(pwl_runtime),
-            "pwl_cost": cls.finite_float_or_none(sum(pwl_durations) if is_success else math.inf),
-            "pwl_makespan": cls.finite_float_or_none(
-                max(pwl_durations, default=math.inf) if is_success else math.inf
+            "mrmp_planner_key": cls.MRMP_PLANNER_KEY,
+            "mrmp_planner_name": cls.MRMP_PLANNER_NAME,
+            "mrmp_runtime": cls.finite_float_or_none(mrmp_runtime),
+            "mrmp_cost": cls.finite_float_or_none(sum(mrmp_durations) if is_success else math.inf),
+            "mrmp_makespan": cls.finite_float_or_none(
+                max(mrmp_durations, default=math.inf) if is_success else math.inf
             ),
-            "pwl_trajectory": pwl_trajectories[0] if pwl_trajectories else cls.trajectory_to_viewer_json(None),
-            "pwl_trajectories": pwl_trajectories,
+            "mrmp_trajectory": mrmp_trajectories[0] if mrmp_trajectories else cls.trajectory_to_viewer_json(None),
+            "mrmp_trajectories": mrmp_trajectories,
             "window_alpha": float(window_span * record["queries"][0]["vlimit"] / record["robot_radius"]),
             "window_span": float(window_span),
             "dynamic_window_adjustment": True,
@@ -249,7 +246,7 @@ class Village3DVisualizationMixin:
             "instance_id": record["instance_id"],
             "base_instance_id": record["base_instance_id"],
             "problem_kind": "mrmp",
-            "domain": "village-3d",
+            "domain": "fastpathplanning-village3d",
             "space_dim": 3,
             "spatial_seed": int(record["spatial_seed"]),
             "env_params": {
@@ -313,9 +310,7 @@ class Village3DVisualizationMixin:
 
     @classmethod
     def meshcat_viewer_class(cls) -> Any:
-        if str(VISUALIZATION_DIR) not in sys.path:
-            sys.path.insert(0, str(VISUALIZATION_DIR))
-        from village_3d_meshcat import Village3DMeshcatViewer
+        from visualization.village_3d_meshcat import Village3DMeshcatViewer
 
         return Village3DMeshcatViewer
 
@@ -359,8 +354,8 @@ class Village3DVisualizationMixin:
     def planner_options(cls) -> list[dict[str, Any]]:
         return [
             {
-                "key": cls.PWL_PLANNER_KEY,
-                "name": cls.PWL_PLANNER_NAME,
+                "key": cls.MRMP_PLANNER_KEY,
+                "name": cls.MRMP_PLANNER_NAME,
                 "button_label": "MRMP planner",
                 "space_dims": [3],
             },
@@ -409,24 +404,16 @@ class Village3DVisualizationMixin:
         solution_budget: float,
         window_alpha: float,
         epsilon: float,
-        pwl_cache_path: Path | None,
+        mrmp_cache_path: Path | None,
         trajopt_output_path: Path | None,
     ) -> None:
         payload_bytes = json.dumps(payload).encode("utf-8")
         planner_payload_bytes = json.dumps(
             cls.planner_payload(solution_budget, window_alpha, epsilon)
         ).encode("utf-8")
-        viewer_path = Path("visualization/viewer/instance_manifest_viewer.html")
-        viewer_mtime_ns = (REPO_ROOT / viewer_path).stat().st_mtime_ns
-        viewer_url = (
-            f"/{viewer_path.as_posix()}?"
-            f"{urlencode({'manifest': '/api/manifest', 'v': str(viewer_mtime_ns)})}"
-        )
+        viewer_url = ViewerStaticAssets.viewer_url()
 
         class Handler(SimpleHTTPRequestHandler):
-            def __init__(self, *handler_args, **handler_kwargs):
-                super().__init__(*handler_args, directory=str(REPO_ROOT), **handler_kwargs)
-
             def end_headers(self) -> None:
                 self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
                 self.send_header("Pragma", "no-cache")
@@ -435,6 +422,9 @@ class Village3DVisualizationMixin:
 
             def do_HEAD(self) -> None:
                 parsed = urlparse(self.path)
+                if ViewerStaticAssets.is_viewer_path(parsed.path):
+                    ViewerStaticAssets.write_html_response(self)
+                    return
                 if parsed.path == "/":
                     self.send_response(HTTPStatus.FOUND)
                     self.send_header("Location", viewer_url)
@@ -444,6 +434,9 @@ class Village3DVisualizationMixin:
 
             def do_GET(self) -> None:
                 parsed = urlparse(self.path)
+                if ViewerStaticAssets.is_viewer_path(parsed.path):
+                    ViewerStaticAssets.write_html_response(self)
+                    return
                 if parsed.path == "/api/manifest":
                     self.send_response(HTTPStatus.OK)
                     self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -463,7 +456,7 @@ class Village3DVisualizationMixin:
                     self.send_header("Location", viewer_url)
                     self.end_headers()
                     return
-                return super().do_GET()
+                self.send_error(HTTPStatus.NOT_FOUND)
 
             def do_POST(self) -> None:
                 parsed = urlparse(self.path)
@@ -497,7 +490,7 @@ class Village3DVisualizationMixin:
                         window_alpha=request_window_alpha,
                         epsilon=request_epsilon,
                         planner_key=planner_key,
-                        pwl_cache_path=pwl_cache_path,
+                        mrmp_cache_path=mrmp_cache_path,
                         trajopt_output_path=trajopt_output_path,
                     )
                     status = HTTPStatus.OK

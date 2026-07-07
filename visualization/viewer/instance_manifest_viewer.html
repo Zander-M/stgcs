@@ -284,24 +284,8 @@
       <p class="lede">WebGL viewer for enriched base, MRMP, and ST heuristic-ablation manifests. It renders spatial sets and query start-goal pairs.</p>
 
       <section class="block">
-        <h2>Manifest</h2>
-        <label for="manifestFile">Load JSON manifest</label>
-        <input id="manifestFile" type="file" accept=".json,application/json">
-        <button id="fitButton" class="secondary" type="button">Fit Current Instance</button>
-        <button id="exportFigureButton" class="secondary" type="button">Export Figure</button>
-      </section>
-
-      <section class="block">
-        <h2>Instance</h2>
-        <label for="instanceSelect">Choose instance</label>
-        <select id="instanceSelect" disabled>
-          <option>No manifest loaded</option>
-        </select>
-      </section>
-
-      <section class="block">
         <h2>Time</h2>
-        <label for="timeSlider">Dynamic obstacle time</label>
+        <label for="timeSlider">Simulation time</label>
         <input id="timeSlider" type="range" min="0" max="0" step="0.01" value="0" disabled>
         <div id="timeReadout" class="meta">t = 0.00</div>
       </section>
@@ -316,46 +300,24 @@
         <label><input id="toggleQueries" type="checkbox" checked> Queries</label>
         <label><input id="toggleSolutionPath" type="checkbox" checked> Solution paths</label>
         <label><input id="toggleSolutionBody" type="checkbox" checked> Solution body</label>
-        <label><input id="toggleGrid" type="checkbox" checked> Background grid</label>
       </section>
 
       <section class="block">
         <h2>Solutions</h2>
-        <label for="solutionPlannerSelect">Planner</label>
-        <select id="solutionPlannerSelect" disabled>
-          <option>No baseline runner</option>
-        </select>
-        <div id="solutionPlannerButtons" class="solution-planner-buttons"></div>
-        <div class="control-row">
-          <div>
-            <label for="solutionBudgetInput">Budget seconds</label>
-            <input id="solutionBudgetInput" type="number" min="0.01" step="0.1" value="10" disabled>
-          </div>
-          <button id="runSolutionButton" type="button" disabled>Run</button>
-        </div>
-        <div class="control-grid">
-          <div>
-            <label for="solutionWindowAlphaInput">Alpha</label>
-            <input id="solutionWindowAlphaInput" type="number" min="0.01" step="0.1" value="5" disabled>
-          </div>
-          <div>
-            <label for="solutionWindowBetaInput">Beta</label>
-            <input id="solutionWindowBetaInput" type="number" min="0" max="1" step="0.05" value="1" disabled>
-          </div>
-          <div>
-            <label for="solutionEpsilonInput">Epsilon</label>
-            <input id="solutionEpsilonInput" type="number" min="0.01" step="1" value="1000" disabled>
-          </div>
-        </div>
         <div id="solutionStatus" class="solution-status empty">No solution loaded.</div>
         <div id="solutionList" class="solution-list"></div>
       </section>
 
-      <section class="block">
-        <h2>Manifest Stats</h2>
-        <div id="manifestMeta" class="meta empty">Load a manifest to inspect it.</div>
-      </section>
     </aside>
+
+    <div hidden>
+      <input id="manifestFile" type="file" accept=".json,application/json">
+      <button id="fitButton" class="secondary" type="button">Fit Current Instance</button>
+      <button id="exportFigureButton" class="secondary" type="button">Export Figure</button>
+      <select id="instanceSelect" disabled>
+        <option>No manifest loaded</option>
+      </select>
+    </div>
 
     <main class="viewer-shell">
       <canvas id="glCanvas"></canvas>
@@ -375,7 +337,6 @@
     const timeReadout = document.getElementById("timeReadout");
     const fitButton = document.getElementById("fitButton");
     const exportFigureButton = document.getElementById("exportFigureButton");
-    const manifestMeta = document.getElementById("manifestMeta");
     const hud = document.getElementById("hud");
     const toggleSetFill = document.getElementById("toggleSetFill");
     const toggleSetOutline = document.getElementById("toggleSetOutline");
@@ -385,14 +346,6 @@
     const toggleQueries = document.getElementById("toggleQueries");
     const toggleSolutionPath = document.getElementById("toggleSolutionPath");
     const toggleSolutionBody = document.getElementById("toggleSolutionBody");
-    const toggleGrid = document.getElementById("toggleGrid");
-    const solutionPlannerSelect = document.getElementById("solutionPlannerSelect");
-    const solutionPlannerButtons = document.getElementById("solutionPlannerButtons");
-    const solutionBudgetInput = document.getElementById("solutionBudgetInput");
-    const solutionWindowAlphaInput = document.getElementById("solutionWindowAlphaInput");
-    const solutionWindowBetaInput = document.getElementById("solutionWindowBetaInput");
-    const solutionEpsilonInput = document.getElementById("solutionEpsilonInput");
-    const runSolutionButton = document.getElementById("runSolutionButton");
     const solutionStatus = document.getElementById("solutionStatus");
     const solutionList = document.getElementById("solutionList");
     const hint = document.getElementById("hint");
@@ -425,13 +378,7 @@
         boundsRadius: 1,
       },
       drag: null,
-      solutionPlanners: {},
-      defaultSolutionBudget: 10,
-      defaultWindowAlpha: 5,
-      defaultWindowBeta: 1,
-      defaultEpsilon: 1000,
       solutionsByInstanceId: {},
-      solutionRequestActive: false,
     };
 
     const vertexShader2dSource = `#version 300 es
@@ -504,6 +451,9 @@
       [0.16, 0.53, 0.68, 0.95],
     ];
 
+    const spatialSetFill = [0.804, 0.835, 0.808, 0.9];
+    const spatialSetBorder = [0.0, 0.0, 0.0, 0.9];
+
     const solutionPalette = [
       [0.82, 0.16, 0.18, 0.96],
       [0.02, 0.42, 0.78, 0.96],
@@ -547,6 +497,15 @@
         obstacle?.line_color || obstacle?.material?.line_color,
         staticObstacleLine,
       );
+    }
+
+    function spatialSetFillColor(index, alpha = null) {
+      return [
+        spatialSetFill[0],
+        spatialSetFill[1],
+        spatialSetFill[2],
+        alpha === null ? spatialSetFill[3] : alpha,
+      ];
     }
 
     function solutionUsesUavModel(solution, instance) {
@@ -679,6 +638,31 @@
       return Array.isArray(instance?.static_obstacles) ? instance.static_obstacles : [];
     }
 
+    function layerDefaults(instance) {
+      const directDefaults = instance?.viewer_layer_defaults;
+      if (directDefaults && typeof directDefaults === "object") {
+        return directDefaults;
+      }
+      const envDefaults = instance?.env_params?.viewer_layer_defaults;
+      if (envDefaults && typeof envDefaults === "object") {
+        return envDefaults;
+      }
+      return {};
+    }
+
+    function booleanLayerDefault(defaults, key, fallback) {
+      if (typeof defaults?.[key] === "boolean") {
+        return defaults[key];
+      }
+      return fallback;
+    }
+
+    function applyLayerDefaults(instance) {
+      const defaults = layerDefaults(instance);
+      toggleSetFill.checked = booleanLayerDefault(defaults, "spatial_sets_fill", true);
+      toggleSetOutline.checked = booleanLayerDefault(defaults, "spatial_sets_outline", true);
+    }
+
     function solutionColor(index, alpha = null) {
       const base = solutionPalette[index % solutionPalette.length];
       return [
@@ -745,147 +729,8 @@
       });
     }
 
-    function plannerSupportedForInstance(option, instance) {
-      const dims = Array.isArray(option.space_dims) ? option.space_dims.map(Number) : [];
-      return !dims.length || dims.includes(Number(instance.dimension));
-    }
-
-    function updateSolutionControls(instance) {
-      const rawOptions = instance ? (state.solutionPlanners[instance.problem_kind] || []) : [];
-      const options = rawOptions.filter((option) => plannerSupportedForInstance(option, instance));
-      const selectedValue = solutionPlannerSelect.value;
-      solutionPlannerSelect.innerHTML = "";
-      solutionPlannerButtons.innerHTML = "";
-      options.forEach((option) => {
-        const item = document.createElement("option");
-        item.value = option.key;
-        item.textContent = option.name;
-        solutionPlannerSelect.appendChild(item);
-      });
-      const enabled = Boolean(instance && options.length);
-      if (!enabled) {
-        const item = document.createElement("option");
-        item.textContent = "No baseline runner";
-        solutionPlannerSelect.appendChild(item);
-      }
-      solutionPlannerSelect.disabled = !enabled || state.solutionRequestActive;
-      solutionBudgetInput.disabled = !enabled || state.solutionRequestActive;
-      solutionWindowAlphaInput.disabled = !enabled || state.solutionRequestActive;
-      solutionWindowBetaInput.disabled = !enabled || state.solutionRequestActive;
-      solutionEpsilonInput.disabled = !enabled || state.solutionRequestActive;
-      runSolutionButton.disabled = !enabled || state.solutionRequestActive;
-      options
-        .filter((option) => typeof option.button_label === "string" && option.button_label)
-        .forEach((option) => {
-          const button = document.createElement("button");
-          button.type = "button";
-          button.textContent = option.button_label;
-          button.title = option.name;
-          button.disabled = !enabled || state.solutionRequestActive;
-          button.addEventListener("click", () => {
-            solutionPlannerSelect.value = option.key;
-            runSolution(option.key);
-          });
-          solutionPlannerButtons.appendChild(button);
-        });
-      if (enabled && options.some((option) => option.key === selectedValue)) {
-        solutionPlannerSelect.value = selectedValue;
-      }
-      if (Number.isFinite(state.defaultSolutionBudget) && !solutionBudgetInput.value) {
-        solutionBudgetInput.value = String(state.defaultSolutionBudget);
-      }
-      if (Number.isFinite(state.defaultWindowAlpha) && !solutionWindowAlphaInput.value) {
-        solutionWindowAlphaInput.value = String(state.defaultWindowAlpha);
-      }
-      if (Number.isFinite(state.defaultWindowBeta) && !solutionWindowBetaInput.value) {
-        solutionWindowBetaInput.value = String(state.defaultWindowBeta);
-      }
-      if (Number.isFinite(state.defaultEpsilon) && !solutionEpsilonInput.value) {
-        solutionEpsilonInput.value = String(state.defaultEpsilon);
-      }
+    function updateLoadedSolutionsUi() {
       renderSolutionList();
-    }
-
-    async function loadSolutionPlanners() {
-      try {
-        const response = await fetch("/api/solution-planners");
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const payload = await response.json();
-        if (!payload.ok) {
-          throw new Error(payload.error || "Could not load solution planners.");
-        }
-        state.solutionPlanners = payload.planners || {};
-        const defaultBudget = Number(payload.default_budget);
-        const defaultWindowAlpha = Number(payload.default_window_alpha);
-        const defaultWindowBeta = Number(payload.default_window_beta);
-        const defaultEpsilon = Number(payload.default_epsilon);
-        state.defaultSolutionBudget = Number.isFinite(defaultBudget) ? defaultBudget : state.defaultSolutionBudget;
-        state.defaultWindowAlpha = Number.isFinite(defaultWindowAlpha) ? defaultWindowAlpha : state.defaultWindowAlpha;
-        state.defaultWindowBeta = Number.isFinite(defaultWindowBeta) ? defaultWindowBeta : state.defaultWindowBeta;
-        state.defaultEpsilon = Number.isFinite(defaultEpsilon) ? defaultEpsilon : state.defaultEpsilon;
-        solutionBudgetInput.value = String(state.defaultSolutionBudget);
-        solutionWindowAlphaInput.value = String(state.defaultWindowAlpha);
-        solutionWindowBetaInput.value = String(state.defaultWindowBeta);
-        solutionEpsilonInput.value = String(state.defaultEpsilon);
-        updateSolutionControls(currentInstance());
-      } catch (_error) {
-        state.solutionPlanners = {};
-        updateSolutionControls(currentInstance());
-      }
-    }
-
-    async function runSolution(selectedPlannerKey = null) {
-      const instance = currentInstance();
-      if (!instance) {
-        return;
-      }
-      let errorMessage = null;
-      const plannerKey = typeof selectedPlannerKey === "string" ? selectedPlannerKey : solutionPlannerSelect.value;
-      const budget = Number(solutionBudgetInput.value);
-      const windowAlpha = Number(solutionWindowAlphaInput.value);
-      const windowBeta = Number(solutionWindowBetaInput.value);
-      const epsilon = Number(solutionEpsilonInput.value);
-      state.solutionRequestActive = true;
-      updateSolutionControls(instance);
-      setSolutionStatus("Running solution...", false);
-      try {
-        const response = await fetch("/api/solution", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            instance_id: instance.instance_id,
-            planner_key: plannerKey,
-            budget,
-            window_alpha: windowAlpha,
-            window_beta: windowBeta,
-            epsilon,
-          }),
-        });
-        const payload = await response.json();
-        if (!response.ok || !payload.ok) {
-          throw new Error(payload.error || "Solution request failed.");
-        }
-        const key = instance.instance_id;
-        const existing = state.solutionsByInstanceId[key] || [];
-        const replaced = existing.find((item) => item.planner_name === payload.planner_name);
-        payload.__viewer_visible = replaced ? solutionVisible(replaced) : true;
-        state.solutionsByInstanceId[key] = [
-          ...existing.filter((item) => item.planner_name !== payload.planner_name),
-          payload,
-        ];
-        updateTimeUi(instance);
-        render();
-      } catch (error) {
-        errorMessage = error.message;
-      } finally {
-        state.solutionRequestActive = false;
-        updateSolutionControls(instance);
-        if (errorMessage) {
-          setSolutionStatus(errorMessage, false);
-        }
-      }
     }
 
     function clamp(value, minValue, maxValue) {
@@ -973,6 +818,11 @@
       return 0.018 * maxSpan;
     }
 
+    function robotMarkerRadius(instance) {
+      const robotRadius = Number(instance?.robot_radius || 0.0);
+      return robotRadius > 0.0 ? robotRadius : queryMarkerRadius(instance);
+    }
+
     function endpointMarkers(instance) {
       if (!Array.isArray(instance?.endpoint_markers)) {
         return [];
@@ -994,7 +844,7 @@
       return Math.hypot(edge[0] - anchor[0], edge[1] - anchor[1]);
     }
 
-    function drawMarkerLabel(screenPoint, label, radiusPx, textColor, strokeColor) {
+    function drawMarkerLabel(screenPoint, label, radiusPx, textColor) {
       if (!screenPoint || !Number.isFinite(radiusPx) || radiusPx <= 0.0) {
         return;
       }
@@ -1005,15 +855,11 @@
       ) {
         return;
       }
-      const fontSize = Math.min(Math.max(radiusPx * 0.82, 7.0), 18.0);
-      labelCtx.font = `700 ${fontSize}px "Avenir Next", "Segoe UI", sans-serif`;
+      const fontSize = Math.min(Math.max(radiusPx * 1.15, 9.0), 24.0);
+      labelCtx.font = `400 ${fontSize}px "Avenir Next", "Segoe UI", sans-serif`;
       labelCtx.textAlign = "center";
       labelCtx.textBaseline = "middle";
-      labelCtx.lineJoin = "round";
-      labelCtx.lineWidth = Math.max(1.5, fontSize * 0.18);
-      labelCtx.strokeStyle = strokeColor;
       labelCtx.fillStyle = textColor;
-      labelCtx.strokeText(label, screenPoint[0], screenPoint[1]);
       labelCtx.fillText(label, screenPoint[0], screenPoint[1]);
     }
 
@@ -1026,22 +872,20 @@
       }
 
       if (instance.dimension === 2) {
-        const markerRadius = queryMarkerRadius(instance);
+        const markerRadius = robotMarkerRadius(instance);
         const markerRadiusPx = markerScreenRadius2d(markerRadius);
         instance.queries.forEach((query, index) => {
           drawMarkerLabel(
             projectPoint2dToScreen(query.start),
             `S${index + 1}`,
             markerRadiusPx,
-            "rgba(255, 255, 255, 0.98)",
-            "rgba(3, 40, 25, 0.92)",
+            "rgba(0, 0, 0, 1.0)",
           );
           drawMarkerLabel(
             projectPoint2dToScreen(query.goal),
             `G${index + 1}`,
             markerRadiusPx,
-            "rgba(48, 31, 4, 0.98)",
-            "rgba(255, 246, 214, 0.95)",
+            "rgba(0, 0, 0, 1.0)",
           );
         });
         return;
@@ -1049,21 +893,19 @@
 
       if (instance.dimension === 3 && matrix) {
         const basis = cameraBasis();
-        const markerRadius = queryMarkerRadius(instance);
+        const markerRadius = robotMarkerRadius(instance);
         instance.queries.forEach((query, index) => {
           drawMarkerLabel(
             projectPoint3dToScreen(query.start, matrix),
             `S${index + 1}`,
             markerScreenRadius3d(query.start, markerRadius, matrix, basis),
-            "rgba(255, 255, 255, 0.98)",
-            "rgba(3, 40, 25, 0.92)",
+            "rgba(0, 0, 0, 1.0)",
           );
           drawMarkerLabel(
             projectPoint3dToScreen(query.goal, matrix),
             `G${index + 1}`,
             markerScreenRadius3d(query.goal, markerRadius, matrix, basis),
-            "rgba(48, 31, 4, 0.98)",
-            "rgba(255, 246, 214, 0.95)",
+            "rgba(0, 0, 0, 1.0)",
           );
         });
       }
@@ -1234,6 +1076,16 @@
       pushLineStrip2d(positionData, colorData, buildCircle2d(center, radius), color, false);
     }
 
+    function pushSquareOutline2d(positionData, colorData, center, radius, color) {
+      const points = [
+        [center[0] - radius, center[1] - radius],
+        [center[0] + radius, center[1] - radius],
+        [center[0] + radius, center[1] + radius],
+        [center[0] - radius, center[1] + radius],
+      ];
+      pushLineStrip2d(positionData, colorData, points, color, true);
+    }
+
     function pushCross2d(positionData, colorData, center, radius, color) {
       const r = radius;
       const points = [
@@ -1277,34 +1129,6 @@
         [center[0] - radius, center[1]],
       ];
       pushLineStrip2d(positionData, colorData, points, color, true);
-    }
-
-    function buildGridLines2d(instance, positionData, colorData) {
-      const min = instance.bounds.min;
-      const max = instance.bounds.max;
-      const color = [0.72, 0.70, 0.66, 0.25];
-      const step = pickGridStep(instance);
-      const startX = Math.floor(min[0] / step) * step;
-      const endX = Math.ceil(max[0] / step) * step;
-      const startY = Math.floor(min[1] / step) * step;
-      const endY = Math.ceil(max[1] / step) * step;
-      for (let x = startX; x <= endX + 1e-9; x += step) {
-        pushLineStrip2d(positionData, colorData, [[x, startY], [x, endY]], color, false);
-      }
-      for (let y = startY; y <= endY + 1e-9; y += step) {
-        pushLineStrip2d(positionData, colorData, [[startX, y], [endX, y]], color, false);
-      }
-    }
-
-    function pickGridStep(instance) {
-      const span = Math.max(
-        instance.bounds.max[0] - instance.bounds.min[0],
-        instance.bounds.max[1] - instance.bounds.min[1],
-      );
-      if (span <= 2) return 0.25;
-      if (span <= 10) return 0.5;
-      if (span <= 30) return 1.0;
-      return 2.0;
     }
 
     function add3(a, b) {
@@ -1435,7 +1259,11 @@
     }
 
     function trajectoryTubeRadius3d(instance) {
-      return Math.max(queryMarkerRadius(instance) * 0.12, 0.018);
+      const min = instance?.bounds?.min || [];
+      const max = instance?.bounds?.max || [];
+      const spans = max.map((value, index) => Math.abs(Number(value) - Number(min[index])));
+      const maxSpan = Math.max(1.0, ...spans.filter((span) => Number.isFinite(span)));
+      return Math.max(queryMarkerRadius(instance) * 0.08, maxSpan * 0.001);
     }
 
     function pushTrajectorySegment3d(positionData, colorData, start, end, radius, color, sides = 6) {
@@ -1631,6 +1459,25 @@
       pushIndexedEdges3d(positionData, colorData, vertices, edges, color);
     }
 
+    function pushWireBox3d(positionData, colorData, center, radius, color) {
+      const vertices = [
+        [center[0] - radius, center[1] - radius, center[2] - radius],
+        [center[0] + radius, center[1] - radius, center[2] - radius],
+        [center[0] + radius, center[1] + radius, center[2] - radius],
+        [center[0] - radius, center[1] + radius, center[2] - radius],
+        [center[0] - radius, center[1] - radius, center[2] + radius],
+        [center[0] + radius, center[1] - radius, center[2] + radius],
+        [center[0] + radius, center[1] + radius, center[2] + radius],
+        [center[0] - radius, center[1] + radius, center[2] + radius],
+      ];
+      const edges = [
+        [0, 1], [1, 2], [2, 3], [3, 0],
+        [4, 5], [5, 6], [6, 7], [7, 4],
+        [0, 4], [1, 5], [2, 6], [3, 7],
+      ];
+      pushIndexedEdges3d(positionData, colorData, vertices, edges, color);
+    }
+
     function pushUav3d(trianglePositions, triangleColors, linePositions, lineColors, center, radius, materials) {
       const bodyHalfSize = [radius * 0.62, radius * 0.42, radius * 0.16];
       pushBox3d(trianglePositions, triangleColors, center, bodyHalfSize, materials.body);
@@ -1707,40 +1554,6 @@
           );
         });
       }
-    }
-
-    function buildGridLines3d(instance, positionData, colorData) {
-      const min = instance.bounds.min;
-      const max = instance.bounds.max;
-      const z = min[2];
-      const color = [0.72, 0.70, 0.66, 0.24];
-      const step = pickGridStep(instance);
-      const startX = Math.floor(min[0] / step) * step;
-      const endX = Math.ceil(max[0] / step) * step;
-      const startY = Math.floor(min[1] / step) * step;
-      const endY = Math.ceil(max[1] / step) * step;
-      for (let x = startX; x <= endX + 1e-9; x += step) {
-        pushLine3d(positionData, colorData, [x, startY, z], [x, endY, z], color);
-      }
-      for (let y = startY; y <= endY + 1e-9; y += step) {
-        pushLine3d(positionData, colorData, [startX, y, z], [endX, y, z], color);
-      }
-    }
-
-    function updateManifestMeta() {
-      if (!state.manifest) {
-        manifestMeta.textContent = "Load a manifest to inspect it.";
-        manifestMeta.classList.add("empty");
-        return;
-      }
-      manifestMeta.classList.remove("empty");
-      const current = currentInstance();
-      manifestMeta.textContent =
-        `instances: ${state.manifest.instance_count || state.manifest.instances.length}\n` +
-        `generated_at: ${state.manifest.generated_at || "unknown"}\n` +
-        `schema: v${state.manifest.schema_version || "?"}\n` +
-        `source: ${state.manifest.source_kind || "unknown"}\n` +
-        (current ? `current: ${current.instance_id}` : "");
     }
 
     function updateHud(instance) {
@@ -1850,10 +1663,10 @@
       if (instance && Array.isArray(instance.time_range)) {
         state.time = Number(instance.time_range[0] || 0);
       }
-      updateManifestMeta();
+      applyLayerDefaults(instance);
       updateHud(instance);
       updateTimeUi(instance);
-      updateSolutionControls(instance);
+      updateLoadedSolutionsUi();
       setHint(instance);
       if (instance) {
         setFitView(instance);
@@ -1867,30 +1680,24 @@
       const linePositions = [];
       const lineColors = [];
 
-      if (toggleGrid.checked) {
-        buildGridLines2d(instance, linePositions, lineColors);
-      }
-
       if (toggleSetFill.checked) {
         instance.spatial_sets.forEach((setData, index) => {
-          const shade = palette[index % palette.length];
           pushTriangles2d(
             trianglePositions,
             triangleColors,
             setData.vertices,
-            [shade[0], shade[1], shade[2], 0.16],
+            spatialSetFillColor(index),
           );
         });
       }
 
       if (toggleSetOutline.checked) {
-        instance.spatial_sets.forEach((setData, index) => {
-          const shade = palette[index % palette.length];
+        instance.spatial_sets.forEach((setData) => {
           pushLineStrip2d(
             linePositions,
             lineColors,
             setData.vertices,
-            [shade[0] * 0.9, shade[1] * 0.9, shade[2] * 0.9, 0.85],
+            spatialSetBorder,
             true,
           );
         });
@@ -1941,7 +1748,7 @@
         if (endpointPositions.length) {
           const endpointFill = [0.12, 0.40, 0.84, 0.86];
           const endpointStroke = [0.02, 0.13, 0.36, 1.0];
-          const markerRadius = queryMarkerRadius(instance);
+          const markerRadius = robotMarkerRadius(instance);
 
           endpointPositions.forEach((position) => {
             pushCircle2d(
@@ -1961,19 +1768,10 @@
           });
         } else {
           instance.queries.forEach((query, index) => {
-            const startFill = [0.07, 0.56, 0.36, 0.82];
             const startStroke = [0.03, 0.28, 0.19, 1.0];
-            const goalFill = [0.90, 0.76, 0.16, 0.90];
             const goalStroke = [0.55, 0.34, 0.03, 1.0];
-            const markerRadius = queryMarkerRadius(instance);
+            const markerRadius = robotMarkerRadius(instance);
 
-            pushCircle2d(
-              trianglePositions,
-              triangleColors,
-              query.start,
-              markerRadius,
-              startFill,
-            );
             pushCircleOutline2d(
               linePositions,
               lineColors,
@@ -1982,14 +1780,7 @@
               startStroke,
             );
 
-            pushCircle2d(
-              trianglePositions,
-              triangleColors,
-              query.goal,
-              markerRadius,
-              goalFill,
-            );
-            pushCircleOutline2d(
+            pushSquareOutline2d(
               linePositions,
               lineColors,
               query.goal,
@@ -2003,34 +1794,32 @@
       visibleSolutions().forEach((solution) => {
         solutionTrajectories(solution).forEach((trajectory, agentIndex) => {
           const color = solutionColor(agentIndex);
-          const pathAlpha = solutionAlpha(solution, "path_alpha", 0.96);
-          const bodyAlpha = solutionAlpha(solution, "body_alpha", 0.82);
           if (toggleSolutionPath.checked && Array.isArray(trajectory.path)) {
             pushLineStrip2d(
               linePositions,
               lineColors,
               trajectory.path,
-              solutionColor(agentIndex, pathAlpha),
+              solutionColor(agentIndex, 0.96),
               false,
             );
           }
           if (toggleSolutionBody.checked) {
             const pos = trajectoryPosition(trajectory, state.time);
             if (pos) {
-              const markerRadius = queryMarkerRadius(instance);
-              pushDiamond2d(
+              const markerRadius = robotMarkerRadius(instance);
+              pushCircle2d(
                 trianglePositions,
                 triangleColors,
                 pos,
                 markerRadius,
-                solutionColor(agentIndex, bodyAlpha),
+                solutionColor(agentIndex, 0.82),
               );
-              pushDiamondOutline2d(
+              pushCircleOutline2d(
                 linePositions,
                 lineColors,
                 pos,
                 markerRadius,
-                [color[0] * 0.75, color[1] * 0.75, color[2] * 0.75, 1.0],
+                [0.0, 0.0, 0.0, 1.0],
               );
             }
           }
@@ -2051,36 +1840,30 @@
       const linePositions = [];
       const lineColors = [];
 
-      if (toggleGrid.checked) {
-        buildGridLines3d(instance, linePositions, lineColors);
-      }
-
       if (toggleSetFill.checked) {
         instance.spatial_sets.forEach((setData, index) => {
           if (!Array.isArray(setData.faces) || !setData.faces.length) {
             return;
           }
-          const shade = palette[index % palette.length];
           pushIndexedTriangles3d(
             trianglePositions,
             triangleColors,
             setData.vertices,
             setData.faces,
-            [shade[0], shade[1], shade[2], 0.10],
+            spatialSetFillColor(index, 0.52),
           );
         });
       }
 
       if (toggleSetOutline.checked) {
-        instance.spatial_sets.forEach((setData, index) => {
-          const shade = palette[index % palette.length];
+        instance.spatial_sets.forEach((setData) => {
           if (Array.isArray(setData.edges) && setData.edges.length) {
             pushIndexedEdges3d(
               linePositions,
               lineColors,
               setData.vertices,
               setData.edges,
-              [shade[0] * 0.9, shade[1] * 0.9, shade[2] * 0.9, 0.92],
+              spatialSetBorder,
             );
             return;
           }
@@ -2088,7 +1871,7 @@
             linePositions,
             lineColors,
             setData.vertices,
-            [shade[0] * 0.9, shade[1] * 0.9, shade[2] * 0.9, 0.92],
+            spatialSetBorder,
             true,
           );
         });
@@ -2145,7 +1928,7 @@
         if (endpointPositions.length) {
           const endpointFill = [0.12, 0.40, 0.84, 0.86];
           const endpointStroke = [0.02, 0.13, 0.36, 1.0];
-          const markerRadius = queryMarkerRadius(instance);
+          const markerRadius = robotMarkerRadius(instance);
 
           endpointPositions.forEach((position) => {
             pushSphere3d(
@@ -2171,29 +1954,14 @@
           });
         } else {
           instance.queries.forEach((query, index) => {
-            const startFill = [0.07, 0.56, 0.36, 0.82];
-            const goalFill = [0.90, 0.76, 0.16, 0.92];
-            const markerRadius = queryMarkerRadius(instance);
+            const startStroke = [0.03, 0.28, 0.19, 1.0];
+            const goalStroke = [0.55, 0.34, 0.03, 1.0];
+            const markerRadius = robotMarkerRadius(instance);
 
-            pushSphere3d(
-              trianglePositions,
-              triangleColors,
-              query.start,
-              markerRadius,
-              startFill,
-              6,
-              10,
-            );
-
-            pushSphere3d(
-              trianglePositions,
-              triangleColors,
-              query.goal,
-              markerRadius,
-              goalFill,
-              6,
-              10,
-            );
+            ["x", "y", "z"].forEach((axis) => {
+              pushRing3d(linePositions, lineColors, query.start, markerRadius, startStroke, axis, 28);
+            });
+            pushWireBox3d(linePositions, lineColors, query.goal, markerRadius, goalStroke);
           });
         }
       }
@@ -2215,33 +1983,19 @@
           if (toggleSolutionBody.checked) {
             const pos = trajectoryPosition(trajectory, state.time);
             if (pos) {
-              const markerRadius = queryMarkerRadius(instance);
-              if (solutionUsesUavModel(solution, instance)) {
-                pushUav3d(
-                  trianglePositions,
-                  triangleColors,
-                  linePositions,
-                  lineColors,
-                  pos,
-                  uavVisualRadius(instance, markerRadius),
-                  uavMaterials(solution, instance, agentIndex, bodyAlpha),
-                );
-              } else {
-                pushOctahedron3d(
-                  trianglePositions,
-                  triangleColors,
-                  pos,
-                  markerRadius,
-                  solutionColor(agentIndex, bodyAlpha),
-                );
-                pushOctahedronWire3d(
-                  linePositions,
-                  lineColors,
-                  pos,
-                  markerRadius,
-                  [color[0] * 0.75, color[1] * 0.75, color[2] * 0.75, 1.0],
-                );
-              }
+              const markerRadius = robotMarkerRadius(instance);
+              pushSphere3d(
+                trianglePositions,
+                triangleColors,
+                pos,
+                markerRadius,
+                solutionColor(agentIndex, bodyAlpha),
+                8,
+                12,
+              );
+              ["x", "y", "z"].forEach((axis) => {
+                pushRing3d(linePositions, lineColors, pos, markerRadius, [0.0, 0.0, 0.0, 1.0], axis, 24);
+              });
             }
           }
         });
@@ -2486,7 +2240,7 @@
     function render() {
       resizeCanvas();
       clearLabelCanvas();
-      gl.clearColor(1.0, 1.0, 1.0, 0.0);
+      gl.clearColor(1.0, 1.0, 1.0, 1.0);
       gl.clearDepth(1.0);
       gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.enable(gl.BLEND);
@@ -2585,9 +2339,9 @@
       state.currentIndex = Number(event.target.value);
       const instance = currentInstance();
       state.time = instance && Array.isArray(instance.time_range) ? Number(instance.time_range[0] || 0) : 0;
-      updateManifestMeta();
+      applyLayerDefaults(instance);
       updateTimeUi(instance);
-      updateSolutionControls(instance);
+      updateLoadedSolutionsUi();
       setHint(instance);
       setFitView(instance);
       render();
@@ -2601,14 +2355,13 @@
       setFitView(currentInstance());
       render();
     });
-    runSolutionButton.addEventListener("click", () => runSolution());
     exportFigureButton.addEventListener("click", () => {
       exportCurrentFigure().catch((error) => {
         console.error(error);
         setSolutionStatus(`Figure export failed: ${error.message || error}`, false);
       });
     });
-    [toggleSetFill, toggleSetOutline, toggleStaticObstacles, toggleObstaclePath, toggleObstacleBody, toggleQueries, toggleSolutionPath, toggleSolutionBody, toggleGrid]
+    [toggleSetFill, toggleSetOutline, toggleStaticObstacles, toggleObstaclePath, toggleObstacleBody, toggleQueries, toggleSolutionPath, toggleSolutionBody]
       .forEach((checkbox) => checkbox.addEventListener("change", render));
 
     canvas.addEventListener("contextmenu", (event) => event.preventDefault());
@@ -2670,7 +2423,7 @@
 
     resizeCanvas();
     render();
-    loadSolutionPlanners().finally(loadManifestFromUrl);
+    loadManifestFromUrl();
   </script>
 </body>
 </html>

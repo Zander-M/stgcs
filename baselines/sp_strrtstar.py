@@ -8,7 +8,7 @@ from typing import List, Optional, Sequence
 import time
 import numpy as np
 
-from environment.env import Env
+from benchmark.environment.env import Env
 
 from baselines.common import ShortestPathSolution
 from baselines.ompl_strrt_star import OfficialOMPLSTRRTStar, OfficialOMPLSTRRTStarOptions

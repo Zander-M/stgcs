@@ -1,0 +1,23 @@
+[
+  {
+    "instance_id": "base-empty-square2d-seed00000",
+    "domain": "empty-square2d",
+    "space_dim": 2,
+    "spatial_seed": 0,
+    "env_params": {
+      "name": "empty-square2d",
+      "square_size": 10.0,
+      "endpoint_margin": 0.5,
+      "min_query_distance": 3.25,
+      "max_query_distance": 6.5,
+      "random_query_seed_offset": 7000,
+      "vlimit": 1.0,
+      "robot_radius": 0.15,
+      "tmax": 1000.0,
+      "sampling": "bounded-random-local-queries"
+    },
+    "supports_sampling": true,
+    "stgcs_num_vertices": 1,
+    "stgcs_num_edges": 0
+  }
+]

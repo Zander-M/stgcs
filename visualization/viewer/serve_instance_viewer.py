@@ -2,17 +2,14 @@ from __future__ import annotations
 
 import argparse
 import json
-import sys
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from typing import Sequence
-from urllib.parse import urlencode, urlparse
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
+from urllib.parse import urlparse
 
 from visualization.viewer.build_viewer_manifest import ViewerManifestBuilder, build_viewer_manifest, load_raw_manifest
 from visualization.viewer.solution_visualization import SolutionVisualizationService
+from visualization.viewer.static_assets import ViewerStaticAssets
 
 
 def parse_args() -> argparse.Namespace:
@@ -43,6 +40,13 @@ def parse_args() -> argparse.Namespace:
         default=None,
         help="Optional override for the shared base manifest root.",
     )
+    parser.add_argument(
+        "--solution-json",
+        action="append",
+        default=[],
+        type=Path,
+        help="Viewer solution JSON to preload. Can be repeated.",
+    )
     parser.add_argument("--host", type=str, default="127.0.0.1")
     parser.add_argument("--port", type=int, default=8765)
     return parser.parse_args()
@@ -58,6 +62,15 @@ def main() -> None:
         limit=args.limit,
         base_root=args.base_root,
     )
+    solution_payloads = []
+    for solution_path in args.solution_json:
+        solution_payload = json.loads(Path(solution_path).read_text())
+        if isinstance(solution_payload, list):
+            solution_payloads.extend(solution_payload)
+        else:
+            solution_payloads.append(solution_payload)
+    if solution_payloads:
+        payload["solutions"] = solution_payloads
     payload_bytes = json.dumps(payload).encode("utf-8")
     exposed_instance_ids = {
         str(instance["instance_id"])
@@ -71,25 +84,32 @@ def main() -> None:
     solution_service = SolutionVisualizationService(
         ViewerManifestBuilder.base_root_for_manifest(args.input, args.base_root)
     )
-    viewer_path = Path("visualization/viewer/instance_manifest_viewer.html")
-    viewer_mtime_ns = (REPO_ROOT / viewer_path).stat().st_mtime_ns
-    viewer_url = (
-        f"/{viewer_path.as_posix()}?"
-        f"{urlencode({'manifest': '/api/manifest', 'v': str(viewer_mtime_ns)})}"
-    )
+    viewer_url = ViewerStaticAssets.viewer_url()
 
     class Handler(SimpleHTTPRequestHandler):
-        def __init__(self, *handler_args, **handler_kwargs):
-            super().__init__(*handler_args, directory=str(REPO_ROOT), **handler_kwargs)
-
         def end_headers(self) -> None:
             self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
             self.send_header("Pragma", "no-cache")
             self.send_header("Expires", "0")
             super().end_headers()
 
+        def do_HEAD(self) -> None:
+            parsed = urlparse(self.path)
+            if ViewerStaticAssets.is_viewer_path(parsed.path):
+                ViewerStaticAssets.write_html_response(self)
+                return
+            if parsed.path == "/":
+                self.send_response(HTTPStatus.FOUND)
+                self.send_header("Location", viewer_url)
+                self.end_headers()
+                return
+            self.send_error(HTTPStatus.NOT_FOUND)
+
         def do_GET(self) -> None:
             parsed = urlparse(self.path)
+            if ViewerStaticAssets.is_viewer_path(parsed.path):
+                ViewerStaticAssets.write_html_response(self)
+                return
             if parsed.path == "/api/manifest":
                 self.send_response(HTTPStatus.OK)
                 self.send_header("Content-Type", "application/json; charset=utf-8")
@@ -105,7 +125,7 @@ def main() -> None:
                 self.send_header("Location", viewer_url)
                 self.end_headers()
                 return
-            return super().do_GET()
+            self.send_error(HTTPStatus.NOT_FOUND)
 
         def do_POST(self) -> None:
             parsed = urlparse(self.path)

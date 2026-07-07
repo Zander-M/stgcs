@@ -10,8 +10,8 @@ import numpy as np
 
 from baselines.common import ShortestPathSolution
 from baselines.zeta_sipp import ZetaStarSIPPPlanner
-from environment.env import Env
-from environment.obstacle import DynamicSphere
+from benchmark.environment.env import Env
+from benchmark.environment.obstacle import DynamicSphere
 from stgcs.interval import Interval
 from stgcs.pbs import (
     DEFAULT_CHILD_EXPANSION_MODE,

@@ -1,0 +1,7322 @@
+[
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00000-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00000",
+    "queries": [
+      {
+        "start": [
+          1.0936047763655123,
+          2.7813500607240162
+        ],
+        "goal": [
+          3.194138434875054,
+          0.6772085092719087
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.029527079655976,
+          1.5773784733235279
+        ],
+        "goal": [
+          2.048016136650127,
+          3.1123385528229197
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.2281826528755233,
+          4.186908507903851
+        ],
+        "goal": [
+          2.6146796858617214,
+          1.4352083561908473
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.4019042334744555,
+          1.5658594205708543
+        ],
+        "goal": [
+          4.15538327235206,
+          3.8749096767588105
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.487189926979263,
+          0.5680858076938613
+        ],
+        "goal": [
+          4.3488659136607986,
+          1.7683706852173993
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.9141113414763145,
+          1.9793472796628213
+        ],
+        "goal": [
+          3.14082037555956,
+          2.546597060181881
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.2069382347323243,
+          1.048862490357403
+        ],
+        "goal": [
+          1.3423685217572592,
+          2.2422552664346624
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.6529698008201406,
+          0.44909566706886156
+        ],
+        "goal": [
+          0.5926494727687092,
+          4.139678543046926
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 22.32805487592056,
+    "independent_makespan": 4.292344649243886,
+    "independent_runtime": 0.29984824964776635,
+    "num_conflicting_pairs": 6,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 5,
+    "conflict_density": 0.21428571428571427,
+    "stgcs_num_vertices": 14,
+    "stgcs_num_edges": 34
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00001-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00001",
+    "queries": [
+      {
+        "start": [
+          2.3511753639736135,
+          4.060527257068342
+        ],
+        "goal": [
+          0.8666909598251317,
+          2.227786986778153
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8503776557648475,
+          1.773412129609803
+        ],
+        "goal": [
+          2.7288258587000453,
+          3.593798578963494
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.2922623564661416,
+          3.2783793871647653
+        ],
+        "goal": [
+          3.8551673805662463,
+          2.614143144896838
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.7829316508736395,
+          0.3214020227768797
+        ],
+        "goal": [
+          4.303675567284594,
+          2.193960450173428
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.1871064939742073,
+          1.3354424429900162
+        ],
+        "goal": [
+          1.2440978107577438,
+          3.680167062050459
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.167386945577113,
+          3.534096143261961
+        ],
+        "goal": [
+          1.0152988901331994,
+          1.4353568372098193
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.007058563241226,
+          2.9608923193994396
+        ],
+        "goal": [
+          0.8927135347908322,
+          3.992031790037351
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.540220301416723,
+          4.160565797394282
+        ],
+        "goal": [
+          2.6052396218785963,
+          0.5858885292151039
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 25.532785698113805,
+    "independent_makespan": 3.6333334319237798,
+    "independent_runtime": 0.2610277063213289,
+    "num_conflicting_pairs": 12,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.42857142857142855,
+    "stgcs_num_vertices": 15,
+    "stgcs_num_edges": 34
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00002-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00002",
+    "queries": [
+      {
+        "start": [
+          3.402971915958739,
+          3.9094939362774683
+        ],
+        "goal": [
+          0.9484163435879489,
+          1.9217339407340528
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.409214891472798,
+          0.44411927176960153
+        ],
+        "goal": [
+          2.2558668746030066,
+          4.196810807849503
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.1243563553384477,
+          3.237911911882623
+        ],
+        "goal": [
+          0.3843569443685192,
+          1.2626676494766707
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.2289244508771642,
+          0.7036785281905312
+        ],
+        "goal": [
+          4.361919516068529,
+          2.066671476150862
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.000299018211061,
+          0.9320178871128133
+        ],
+        "goal": [
+          2.5688661042790666,
+          4.306952122618985
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.2602327974890442,
+          1.6824306324284535
+        ],
+        "goal": [
+          3.5714644160768363,
+          0.9195196356172022
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.407348326877201,
+          3.58581208262705
+        ],
+        "goal": [
+          1.2869676753739263,
+          1.2778982581335572
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.6717296434449573,
+          0.910413002672079
+        ],
+        "goal": [
+          1.6933455627789253,
+          3.939015194372955
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 22.86944432106007,
+    "independent_makespan": 4.117683532406482,
+    "independent_runtime": 0.26106087770313025,
+    "num_conflicting_pairs": 6,
+    "num_conflicting_agents": 6,
+    "conflict_largest_component": 4,
+    "conflict_density": 0.21428571428571427,
+    "stgcs_num_vertices": 13,
+    "stgcs_num_edges": 28
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00003-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00003",
+    "queries": [
+      {
+        "start": [
+          3.6059399355092787,
+          3.0633917066816423
+        ],
+        "goal": [
+          1.6828436998292187,
+          1.783579881422686
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.9785834789122607,
+          0.46294865150258746
+        ],
+        "goal": [
+          3.88254909361501,
+          2.037569786163139
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.1575584252150026,
+          0.7516240438049171
+        ],
+        "goal": [
+          4.328691590597619,
+          3.2259313388179067
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.738721992302227,
+          1.4085386391692034
+        ],
+        "goal": [
+          1.540038536728151,
+          0.4461999968509285
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.2270701535512354,
+          2.474322086089393
+        ],
+        "goal": [
+          3.0363869532208527,
+          1.3515616146578964
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.9196500598108017,
+          1.0682638161925677
+        ],
+        "goal": [
+          0.8149177480162179,
+          3.4366319534636975
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.053634583107954,
+          2.9050167683896695
+        ],
+        "goal": [
+          0.7959279934365819,
+          3.1296074728000787
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.072612744475233,
+          1.6077456936894614
+        ],
+        "goal": [
+          3.8187292517683544,
+          4.055775739617283
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 20.643117131985935,
+    "independent_makespan": 3.4334558707156138,
+    "independent_runtime": 0.24835825012996793,
+    "num_conflicting_pairs": 8,
+    "num_conflicting_agents": 6,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.2857142857142857,
+    "stgcs_num_vertices": 12,
+    "stgcs_num_edges": 28
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00004-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00004",
+    "queries": [
+      {
+        "start": [
+          3.3006812654376834,
+          3.3154674525740724
+        ],
+        "goal": [
+          3.004107690467725,
+          0.7138932480057198
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.253105950174155,
+          3.548317974177966
+        ],
+        "goal": [
+          1.2887742717428396,
+          0.7258256240914136
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.1687031760347013,
+          3.7520554497511185
+        ],
+        "goal": [
+          2.965039961302037,
+          1.2360527070592409
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.3946275255727878,
+          0.41939735935094125
+        ],
+        "goal": [
+          4.2953949135267155,
+          2.9739342220696536
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.6417164821268198,
+          3.6018207835900182
+        ],
+        "goal": [
+          4.278661695325736,
+          1.9019188374298852
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.0804782127464152,
+          3.412495616338684
+        ],
+        "goal": [
+          0.8600184662370287,
+          0.9443750725376926
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.6247956236365306,
+          0.6934270772511506
+        ],
+        "goal": [
+          3.975626932374529,
+          3.4182184146384986
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.1902986402754676,
+          2.0904307233794652
+        ],
+        "goal": [
+          1.749760631373429,
+          3.8977574403970303
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 33.171952309733015,
+    "independent_makespan": 4.98516082249714,
+    "independent_runtime": 0.3592114192433655,
+    "num_conflicting_pairs": 17,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.6071428571428571,
+    "stgcs_num_vertices": 15,
+    "stgcs_num_edges": 34
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00005-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00005",
+    "queries": [
+      {
+        "start": [
+          2.4656542352999424,
+          3.143004063322559
+        ],
+        "goal": [
+          0.44599450916918293,
+          0.7813465130035322
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.8457336299156566,
+          1.0980838964129895
+        ],
+        "goal": [
+          2.4333841127015674,
+          3.5042701266251024
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.7245693863445277,
+          0.6037162743784088
+        ],
+        "goal": [
+          0.58910393783815,
+          2.2369276972198313
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.9537151074228842,
+          0.8852648347901988
+        ],
+        "goal": [
+          1.9489603888612617,
+          2.9775907076542714
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.8087596443108844,
+          2.5319035009687427
+        ],
+        "goal": [
+          0.4784386516242733,
+          1.1905877942376775
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.5320882809307148,
+          3.8966085828672643
+        ],
+        "goal": [
+          2.985249887090565,
+          0.08225070704224804
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.794320992989941,
+          1.774845811766667
+        ],
+        "goal": [
+          2.915186126620094,
+          3.280911877884396
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.1469360804587106,
+          1.3377474891483523
+        ],
+        "goal": [
+          2.2796435658794567,
+          1.9419827761474688
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 21.069504340823794,
+    "independent_makespan": 4.070590033583131,
+    "independent_runtime": 0.24886737577617168,
+    "num_conflicting_pairs": 12,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.42857142857142855,
+    "stgcs_num_vertices": 11,
+    "stgcs_num_edges": 26
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00006-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00006",
+    "queries": [
+      {
+        "start": [
+          2.8796492719322986,
+          0.41536358118144057
+        ],
+        "goal": [
+          1.210441373950322,
+          2.923736959051936
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.7090488400970203,
+          4.05665161035967
+        ],
+        "goal": [
+          4.076016251804232,
+          0.9789547840376542
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.575101572855932,
+          3.69080456843911
+        ],
+        "goal": [
+          3.406699418894493,
+          0.7352582467977591
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.15786309235911053,
+          1.670088803588579
+        ],
+        "goal": [
+          3.494421978383246,
+          3.639399645555108
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8697824758941133,
+          3.8657726933005665
+        ],
+        "goal": [
+          4.091277892878301,
+          1.8235193081946184
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.16835881647336942,
+          3.0323614148304268
+        ],
+        "goal": [
+          3.152350747748799,
+          1.2131733977676327
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.302223944134675,
+          2.5014558134447267
+        ],
+        "goal": [
+          0.6282476898589823,
+          2.731751903376014
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.5210262829012025,
+          2.0206620766166368
+        ],
+        "goal": [
+          3.6410925160741323,
+          2.2591302827505726
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 27.875893211724833,
+    "independent_makespan": 4.4634166203704275,
+    "independent_runtime": 0.3494183328002691,
+    "num_conflicting_pairs": 8,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.2857142857142857,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 44
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00007-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00007",
+    "queries": [
+      {
+        "start": [
+          3.930458058420483,
+          1.1701869300378291
+        ],
+        "goal": [
+          1.5956401882683853,
+          1.0341046374331155
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.0860421256037671,
+          2.2406313551122947
+        ],
+        "goal": [
+          2.624091651086937,
+          3.9372523030438895
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.8619912087293256,
+          0.7344506156947275
+        ],
+        "goal": [
+          1.6519620964169657,
+          0.18262043159496533
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.7242907646649535,
+          3.723772019623949
+        ],
+        "goal": [
+          3.5560051669283856,
+          0.623880115257134
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.9314337153998777,
+          3.2000922992242935
+        ],
+        "goal": [
+          2.268542458629998,
+          1.754839740820209
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.4918306227360043,
+          0.9242298605904788
+        ],
+        "goal": [
+          0.7429008882445094,
+          4.285155887147068
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.010511120059899,
+          1.734588020608281
+        ],
+        "goal": [
+          0.8637652240854355,
+          1.713015469306769
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.777282042710605,
+          2.262172235900134
+        ],
+        "goal": [
+          0.8443049067213655,
+          3.258780026322332
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 23.671721233629764,
+    "independent_makespan": 4.224268004996667,
+    "independent_runtime": 0.3293419159017503,
+    "num_conflicting_pairs": 3,
+    "num_conflicting_agents": 6,
+    "conflict_largest_component": 2,
+    "conflict_density": 0.10714285714285714,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 46
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00008-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00008",
+    "queries": [
+      {
+        "start": [
+          4.1112421192858095,
+          3.1172021692090355
+        ],
+        "goal": [
+          1.11338727976831,
+          2.54249527431862
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.6403531511556053,
+          3.9245147660929383
+        ],
+        "goal": [
+          3.1165883832633643,
+          1.9413325840524582
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.1443617526782286,
+          2.96726911893896
+        ],
+        "goal": [
+          3.291046570976832,
+          2.4583881007111374
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.5323525847417816,
+          1.7915118027451187
+        ],
+        "goal": [
+          3.077335525423684,
+          4.069974054537391
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.8522050127883363,
+          3.5154870047140143
+        ],
+        "goal": [
+          1.7908843774616088,
+          3.4844559280595955
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.064633831269298,
+          2.2336133442568085
+        ],
+        "goal": [
+          1.99590952250532,
+          3.9987562623085715
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.63080408049701,
+          2.1299547397058936
+        ],
+        "goal": [
+          1.6546372826158835,
+          4.240736385652474
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.4331637011718446,
+          2.5554386105496625
+        ],
+        "goal": [
+          4.117070109223969,
+          4.120964358344083
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 20.59234539777597,
+    "independent_makespan": 3.0199379238278214,
+    "independent_runtime": 0.2426125812344253,
+    "num_conflicting_pairs": 15,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.5357142857142857,
+    "stgcs_num_vertices": 10,
+    "stgcs_num_edges": 26
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00009-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00009",
+    "queries": [
+      {
+        "start": [
+          2.3421481145680056,
+          0.698458220080244
+        ],
+        "goal": [
+          1.279870784468235,
+          2.8738923327517467
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.003297133525966,
+          1.3049509792459772
+        ],
+        "goal": [
+          2.0921564955125076,
+          3.14814418792247
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.645009153510465,
+          3.600847594065084
+        ],
+        "goal": [
+          1.3714914387181805,
+          1.3515629940331462
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.3803191705870475,
+          2.539486196533235
+        ],
+        "goal": [
+          0.6988178505738238,
+          0.552034459451566
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.3198896055082111,
+          3.401862168935006
+        ],
+        "goal": [
+          1.3824634587721576,
+          1.9110381586361573
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.0564836138963014,
+          2.268349644583098
+        ],
+        "goal": [
+          2.149019401405536,
+          0.3631709198013766
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.06669631728763,
+          3.5850792903018465
+        ],
+        "goal": [
+          1.1668137546662796,
+          0.8705914234242041
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.5337941084522398,
+          2.8316461144428233
+        ],
+        "goal": [
+          0.28083564042457826,
+          0.9638757712667043
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 16.969968613179084,
+    "independent_makespan": 2.7144878669958574,
+    "independent_runtime": 0.2952880812808871,
+    "num_conflicting_pairs": 8,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 4,
+    "conflict_density": 0.2857142857142857,
+    "stgcs_num_vertices": 8,
+    "stgcs_num_edges": 22
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00010-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00010",
+    "queries": [
+      {
+        "start": [
+          2.4814278098696327,
+          1.794162852467381
+        ],
+        "goal": [
+          3.0432474160648733,
+          3.8813684453682993
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.8783330496122157,
+          3.239076036222048
+        ],
+        "goal": [
+          2.465336387582302,
+          1.227979553093902
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.254322435563739,
+          2.4923859216737823
+        ],
+        "goal": [
+          3.243619202468604,
+          0.575749091890769
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.399609076791549,
+          1.7364086435000508
+        ],
+        "goal": [
+          1.3446381286283893,
+          3.47774789899124
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.8274493590417267,
+          4.31982421319017
+        ],
+        "goal": [
+          3.9309824572366736,
+          0.8993760827217717
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.595227899138716,
+          4.0924077008403215
+        ],
+        "goal": [
+          3.177120450153748,
+          1.0283967857484781
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.763239560514188,
+          0.982566245026057
+        ],
+        "goal": [
+          1.4232266234789055,
+          4.305995170486315
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.3975506864722527,
+          3.947473724386634
+        ],
+        "goal": [
+          3.2565770438600943,
+          1.322683894013409
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 26.556666338988723,
+    "independent_makespan": 4.851302724381253,
+    "independent_runtime": 0.313467251136899,
+    "num_conflicting_pairs": 15,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.5357142857142857,
+    "stgcs_num_vertices": 10,
+    "stgcs_num_edges": 24
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00011-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00011",
+    "queries": [
+      {
+        "start": [
+          3.6152371198316966,
+          1.0276273356327608
+        ],
+        "goal": [
+          0.679080992314194,
+          0.6815310177212999
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.467982901266077,
+          0.9963458588667515
+        ],
+        "goal": [
+          3.42806018865915,
+          3.620968464387511
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8798250001436746,
+          1.0290313688986223
+        ],
+        "goal": [
+          2.047885260833849,
+          3.133948044698328
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.08963225438149,
+          0.4891952221255582
+        ],
+        "goal": [
+          3.0468896082143604,
+          3.7073694386473495
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.3063591590657344,
+          2.748628520348067
+        ],
+        "goal": [
+          2.8607243104819657,
+          0.5299973722608049
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.2123289063293803,
+          2.790109651609474
+        ],
+        "goal": [
+          0.225555750668771,
+          4.4623198121425345
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.1326372225457237,
+          0.3706513138912383
+        ],
+        "goal": [
+          3.4781659360788275,
+          2.673034591105246
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.9072220802255635,
+          3.3458937394493833
+        ],
+        "goal": [
+          0.3072063487678259,
+          2.7100059046976135
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 22.880144438054735,
+    "independent_makespan": 3.9366827343118476,
+    "independent_runtime": 0.3120871661230922,
+    "num_conflicting_pairs": 7,
+    "num_conflicting_agents": 6,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.25,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 44
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00012-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00012",
+    "queries": [
+      {
+        "start": [
+          4.1782986095354575,
+          1.9160810571565516
+        ],
+        "goal": [
+          2.085831478899979,
+          3.52826214756827
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.141070708846072,
+          3.1352065757116887
+        ],
+        "goal": [
+          2.1258806730415567,
+          0.2232346997939311
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.9854471780910345,
+          3.4728294336769077
+        ],
+        "goal": [
+          3.23457273124546,
+          1.0867878555401362
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.2684944496247446,
+          1.894152924876827
+        ],
+        "goal": [
+          3.7550429575592594,
+          1.0755587925125927
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.3398843502155102,
+          3.1382348790141075
+        ],
+        "goal": [
+          3.5756587857871613,
+          3.8154761750748802
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.36314147855303874,
+          1.136140732765704
+        ],
+        "goal": [
+          2.8844711952687616,
+          2.2188238836198386
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.828481735024603,
+          1.3984145522593179
+        ],
+        "goal": [
+          0.20994446224170202,
+          2.9639828081796473
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.6576213098553847,
+          3.4789910005673956
+        ],
+        "goal": [
+          1.1159369851812144,
+          2.2921452941788827
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 25.16061166501806,
+    "independent_makespan": 4.9949048593661685,
+    "independent_runtime": 0.4701978317461908,
+    "num_conflicting_pairs": 10,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.35714285714285715,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 48
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00013-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00013",
+    "queries": [
+      {
+        "start": [
+          2.530200971378575,
+          1.0980819199888197
+        ],
+        "goal": [
+          3.730686657338872,
+          3.1698484384491414
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.877161950295526,
+          0.9608995319521914
+        ],
+        "goal": [
+          2.1355341165139614,
+          3.5461191144393522
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.322764850701238,
+          1.1670740666547097
+        ],
+        "goal": [
+          1.491522393804129,
+          0.6534543020918941
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.2807454939363634,
+          3.233929411073501
+        ],
+        "goal": [
+          3.845172922422007,
+          1.0136060303870034
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.4431609456555528,
+          2.0247617301670355
+        ],
+        "goal": [
+          1.7407330983431637,
+          4.263027710979026
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.8263474596623914,
+          0.13636594659823767
+        ],
+        "goal": [
+          3.110433735770656,
+          2.85753631668378
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.183810645602933,
+          3.8952655399532015
+        ],
+        "goal": [
+          3.0101477472729408,
+          1.7682069459355891
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.2478520707626095,
+          1.6387298277444957
+        ],
+        "goal": [
+          2.365841486882667,
+          3.8490036428207612
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 20.882511285335795,
+    "independent_makespan": 3.629471344035586,
+    "independent_runtime": 0.20478933164849877,
+    "num_conflicting_pairs": 5,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 5,
+    "conflict_density": 0.17857142857142858,
+    "stgcs_num_vertices": 12,
+    "stgcs_num_edges": 24
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00014-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00014",
+    "queries": [
+      {
+        "start": [
+          3.6200595368522404,
+          1.5734109506665717
+        ],
+        "goal": [
+          1.5187415985957602,
+          2.6634239479347825
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.7436005465399464,
+          1.1995996598484966
+        ],
+        "goal": [
+          2.7257965607975128,
+          3.1495404315955846
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.379609550695737,
+          4.415525353681362
+        ],
+        "goal": [
+          2.1086375191596227,
+          0.9054249889566622
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.8262224135891256,
+          2.0137387374318934
+        ],
+        "goal": [
+          0.656451193831917,
+          3.9883664668514123
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.974423448254184,
+          2.506847559606611
+        ],
+        "goal": [
+          1.3380237747896837,
+          4.115534336176124
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.5084670832207074,
+          3.6653502344681916
+        ],
+        "goal": [
+          3.8225462593552497,
+          3.82484063558603
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.7491785654214528,
+          0.8245975148723396
+        ],
+        "goal": [
+          4.090116721680218,
+          0.3903947659572828
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.99576166900638,
+          4.2457633598800255
+        ],
+        "goal": [
+          1.492767388196434,
+          1.8802839292066362
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 21.900691391292668,
+    "independent_makespan": 3.7152682925469005,
+    "independent_runtime": 0.28000170830637217,
+    "num_conflicting_pairs": 7,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 5,
+    "conflict_density": 0.25,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 40
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00015-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00015",
+    "queries": [
+      {
+        "start": [
+          0.7180221951761201,
+          0.24111447794380003
+        ],
+        "goal": [
+          0.9724031827876025,
+          2.0961874095380826
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.6930941043915448,
+          2.805713980417815
+        ],
+        "goal": [
+          0.6724119750456451,
+          1.4474849666845082
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.5965379508592692,
+          2.6049319299246734
+        ],
+        "goal": [
+          1.5135538527161736,
+          0.7192255077081754
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8598289588420768,
+          0.8962185590624189
+        ],
+        "goal": [
+          0.13861855615128604,
+          2.5424098784116826
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.9765924470437444,
+          0.6108050187899655
+        ],
+        "goal": [
+          1.3234722339737655,
+          2.3360826807560473
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.4514867328169147,
+          2.210610656508883
+        ],
+        "goal": [
+          1.5248525233365593,
+          0.35814245432520464
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.5068614447417201,
+          0.9334783237050301
+        ],
+        "goal": [
+          2.217039424546016,
+          2.911106279486419
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.2601551255113378,
+          2.835730316396425
+        ],
+        "goal": [
+          2.3287660124050364,
+          0.6522269300437123
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 16.456939387176064,
+    "independent_makespan": 3.0454117900203093,
+    "independent_runtime": 0.12002900149673223,
+    "num_conflicting_pairs": 20,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.7142857142857143,
+    "stgcs_num_vertices": 5,
+    "stgcs_num_edges": 8
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00016-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00016",
+    "queries": [
+      {
+        "start": [
+          3.997637818962254,
+          3.129672378877385
+        ],
+        "goal": [
+          0.7524529124099775,
+          2.122405402289326
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.5420293259814906,
+          3.137194566949757
+        ],
+        "goal": [
+          0.36004348181619544,
+          0.43145608444922534
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.15942282308022,
+          1.4678873338198584
+        ],
+        "goal": [
+          3.4883442237169624,
+          0.5843654682114501
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.6609183934125413,
+          3.826029481673667
+        ],
+        "goal": [
+          0.6840866444075704,
+          0.49510805812973246
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.6751200701565256,
+          4.194376669177208
+        ],
+        "goal": [
+          1.6904812894895134,
+          0.7763739223139331
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.554976430756349,
+          1.1154340364526178
+        ],
+        "goal": [
+          0.5300181056379414,
+          2.9387322163948455
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.9730833074203828,
+          2.7553589556911966
+        ],
+        "goal": [
+          2.0310178761810453,
+          0.31351064368432063
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.898157579771397,
+          2.6977421222897786
+        ],
+        "goal": [
+          0.6475241851487283,
+          1.2576635502782774
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 30.74320305817999,
+    "independent_makespan": 5.864584517342885,
+    "independent_runtime": 0.4797573355026543,
+    "num_conflicting_pairs": 11,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.39285714285714285,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 42
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00017-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00017",
+    "queries": [
+      {
+        "start": [
+          0.649712182392648,
+          0.4429179448040556
+        ],
+        "goal": [
+          2.7241186299379265,
+          1.8607523079680421
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.24648806385345226,
+          2.6420805842339874
+        ],
+        "goal": [
+          2.885074017216186,
+          0.3745401917115772
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.1423424816507906,
+          0.8491417555854612
+        ],
+        "goal": [
+          0.605822696663771,
+          3.137615898122054
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.826175567140501,
+          1.4162548654463865
+        ],
+        "goal": [
+          3.90563974843754,
+          1.300638954636561
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.101420446604198,
+          1.5995665011406512
+        ],
+        "goal": [
+          0.2769087253542209,
+          0.8470183617865497
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.0149625138019556,
+          2.1160999516016044
+        ],
+        "goal": [
+          3.4730564042782857,
+          1.2741938521475396
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.906649974273288,
+          2.88926478894221
+        ],
+        "goal": [
+          0.5940633131264711,
+          2.4260771882120475
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.534341745258323,
+          0.6797401316877942
+        ],
+        "goal": [
+          0.2910415809299841,
+          1.483375556639172
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 27.726066983601967,
+    "independent_makespan": 4.225619312183488,
+    "independent_runtime": 0.18429312761873007,
+    "num_conflicting_pairs": 22,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.7857142857142857,
+    "stgcs_num_vertices": 9,
+    "stgcs_num_edges": 16
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00018-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00018",
+    "queries": [
+      {
+        "start": [
+          3.5107439904557705,
+          1.3327622705705553
+        ],
+        "goal": [
+          0.36294065827373967,
+          3.540197120364591
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.1261579439347744,
+          2.570202902495179
+        ],
+        "goal": [
+          1.99915979180302,
+          0.3194402885718748
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.5802889809942807,
+          1.6750066629200204
+        ],
+        "goal": [
+          3.6943455352852523,
+          3.1810204462369347
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.34563518836085666,
+          4.022693439436703
+        ],
+        "goal": [
+          2.9883823562921332,
+          0.6294583931299487
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.823730413482386,
+          2.492811120045466
+        ],
+        "goal": [
+          1.3838468753004094,
+          4.0678911617328355
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.349502315408003,
+          3.2649494761593942
+        ],
+        "goal": [
+          1.7791416504579374,
+          0.7855689819070978
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.172817220805595,
+          2.5406513894626515
+        ],
+        "goal": [
+          1.201053466127897,
+          2.2762370116496085
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.1413307303347096,
+          3.378248269847883
+        ],
+        "goal": [
+          0.6331229611369279,
+          2.1034874696554566
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 24.889856727562492,
+    "independent_makespan": 4.015525182738866,
+    "independent_runtime": 0.35267704259604216,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 15,
+    "stgcs_num_edges": 40
+  },
+  {
+    "instance_id": "mrmp-base-grid2d-s4-seed00019-8-robot-intersection",
+    "base_instance_id": "base-grid2d-s4-seed00019",
+    "queries": [
+      {
+        "start": [
+          0.5197719946398012,
+          1.0439044588431552
+        ],
+        "goal": [
+          1.1038479904876486,
+          3.8930247434378766
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.46574500804694746,
+          2.790428041146367
+        ],
+        "goal": [
+          2.5760044946674294,
+          4.413992063605502
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.034175430872516,
+          3.810841765950983
+        ],
+        "goal": [
+          2.939963784981077,
+          1.2202634102706111
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.231132020616134,
+          1.2431507061801232
+        ],
+        "goal": [
+          2.1178622079107323,
+          0.4106272052580085
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.7733127149205028,
+          3.430033696179924
+        ],
+        "goal": [
+          1.2270831499236479,
+          0.8592928975641821
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.4226125205672915,
+          0.5875313987133252
+        ],
+        "goal": [
+          1.4479115958413762,
+          2.3659738277524576
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.0740399916718224,
+          0.5722407937948674
+        ],
+        "goal": [
+          2.461281691037428,
+          3.715012482564102
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8234900821980276,
+          1.3357225791519767
+        ],
+        "goal": [
+          2.3664250169272756,
+          3.0081418181921644
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 26.029071476212287,
+    "independent_makespan": 5.395011111095726,
+    "independent_runtime": 0.21325912792235613,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 30
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00000-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00000",
+    "queries": [
+      {
+        "start": [
+          8.353911047430456,
+          5.526174966710119
+        ],
+        "goal": [
+          2.826939697487548,
+          0.8281895827656418
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.063921843855486,
+          0.3172536439830598
+        ],
+        "goal": [
+          1.2560024343455627,
+          3.8979804655502903
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.253062816344461,
+          0.5690584633625896
+        ],
+        "goal": [
+          3.412702765646849,
+          5.415917309800287
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.227334742007915,
+          2.050413921120378
+        ],
+        "goal": [
+          6.776358578520492,
+          7.794476727518754
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.721926104786546,
+          9.79768327933223
+        ],
+        "goal": [
+          0.961366944608163,
+          0.1896700901326922
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.9696864675701304,
+          9.583623537569446
+        ],
+        "goal": [
+          6.397372022084752,
+          0.5522247010147685
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.915387956604986,
+          3.8253239666426584
+        ],
+        "goal": [
+          1.045544454946748,
+          4.738001763287844
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.6660384946039075,
+          9.458051212285518
+        ],
+        "goal": [
+          4.497881216012124,
+          1.8465901166852836
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 78.83176831662675,
+    "independent_makespan": 14.478088831508515,
+    "independent_runtime": 0.12748112669214606,
+    "num_conflicting_pairs": 6,
+    "num_conflicting_agents": 6,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.21428571428571427,
+    "stgcs_num_vertices": 13,
+    "stgcs_num_edges": 28
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00001-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00001",
+    "queries": [
+      {
+        "start": [
+          1.0095166781112117,
+          6.994883734091091
+        ],
+        "goal": [
+          7.539492894271919,
+          5.456143669219564
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.885242432322177,
+          9.692023612055506
+        ],
+        "goal": [
+          7.672508725871165,
+          0.2093891064289961
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.828801719535919,
+          6.865245021387719
+        ],
+        "goal": [
+          2.999778485054489,
+          2.966154480749341
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.548351080417818,
+          2.449352531714245
+        ],
+        "goal": [
+          2.54313108416037,
+          3.783850088271065
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.19848297573957,
+          7.85731324621281
+        ],
+        "goal": [
+          3.081361034137506,
+          9.058682998505581
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.2215330682002494,
+          7.695530209706302
+        ],
+        "goal": [
+          9.00596009814696,
+          5.343697967001771
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.467619490600761,
+          2.497645973940499
+        ],
+        "goal": [
+          3.401965684533778,
+          2.1498351745933326
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.6098669180059737,
+          3.7698599741775674
+        ],
+        "goal": [
+          9.662945625638587,
+          0.7507633363318769
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 63.54077358340152,
+    "independent_makespan": 12.434768964808965,
+    "independent_runtime": 0.17199491895735264,
+    "num_conflicting_pairs": 3,
+    "num_conflicting_agents": 5,
+    "conflict_largest_component": 3,
+    "conflict_density": 0.10714285714285714,
+    "stgcs_num_vertices": 17,
+    "stgcs_num_edges": 44
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00002-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00002",
+    "queries": [
+      {
+        "start": [
+          2.076179168102231,
+          7.680164977332652
+        ],
+        "goal": [
+          8.624322319806907,
+          1.8820795609405359
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.1149736516766973,
+          9.652882945200057
+        ],
+        "goal": [
+          4.117391407170948,
+          5.300318001336961
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.875092156503133,
+          4.193238341148955
+        ],
+        "goal": [
+          2.843471450295382,
+          5.745410362890382
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.897112363936678,
+          7.274352433827751
+        ],
+        "goal": [
+          4.753486507233571,
+          2.5344471019151267
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.439728444741798,
+          7.110763215401196
+        ],
+        "goal": [
+          2.3881335655676734,
+          0.9528287937780126
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.338317642568345,
+          0.24620819600116828
+        ],
+        "goal": [
+          0.2935994198379378,
+          6.592166156035328
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.45059655572044,
+          0.534685463078521
+        ],
+        "goal": [
+          5.920892300388889,
+          5.516017576175114
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.88282642911189,
+          5.353993665081379
+        ],
+        "goal": [
+          2.5747006151551863,
+          4.0323115293814045
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 66.54164737001949,
+    "independent_makespan": 10.930483801065392,
+    "independent_runtime": 0.16843408439308405,
+    "num_conflicting_pairs": 8,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.2857142857142857,
+    "stgcs_num_vertices": 15,
+    "stgcs_num_edges": 40
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00003-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00003",
+    "queries": [
+      {
+        "start": [
+          3.5097822926978273,
+          0.7966812447511984
+        ],
+        "goal": [
+          1.1752536054421876,
+          6.719329055070296
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.9044383018426942,
+          5.046601117281692
+        ],
+        "goal": [
+          6.995405470328702,
+          0.6967104008217556
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.32337516676862,
+          5.847518927397462
+        ],
+        "goal": [
+          1.7954290731230502,
+          7.632466410762948
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.5839010172839645,
+          2.9255234605422036
+        ],
+        "goal": [
+          7.251067521309716,
+          8.680389824472654
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.6191812702088084,
+          5.123622828041486
+        ],
+        "goal": [
+          9.395786641282266,
+          3.0566903310122995
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.418858791753716,
+          6.005192042455291
+        ],
+        "goal": [
+          2.4324587998969864,
+          0.9205975531235113
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.370435359848243,
+          8.225359042444907
+        ],
+        "goal": [
+          9.188366469565006,
+          1.2424558332729168
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.084577370748976,
+          2.4912158842957908
+        ],
+        "goal": [
+          9.175955525780584,
+          9.273711481067844
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 116.05210693983031,
+    "independent_makespan": 24.209546762588342,
+    "independent_runtime": 0.15574466483667493,
+    "num_conflicting_pairs": 14,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.5,
+    "stgcs_num_vertices": 13,
+    "stgcs_num_edges": 26
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00004-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00004",
+    "queries": [
+      {
+        "start": [
+          1.5774006470790458,
+          5.993155180172302
+        ],
+        "goal": [
+          8.060783373543858,
+          2.2699491853835756
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.677468983903394,
+          6.893655495764219
+        ],
+        "goal": [
+          0.7425604588687792,
+          9.25738877039358
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.208642764161185,
+          4.429229686170934
+        ],
+        "goal": [
+          0.6291569428449006,
+          2.965466891465605
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.7959030702652244,
+          0.29218823811705824
+        ],
+        "goal": [
+          2.6512797159282195,
+          9.138374915429857
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.5715772232564755,
+          0.3121573896444312
+        ],
+        "goal": [
+          1.7331154283572572,
+          6.883256304401627
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.905080900035339,
+          8.574389747834664
+        ],
+        "goal": [
+          1.9216632731912868,
+          0.5209206505307592
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.208935944878461,
+          8.508352290758092
+        ],
+        "goal": [
+          9.270874146057029,
+          9.176542669456158
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.053126774352817,
+          0.8380441613448599
+        ],
+        "goal": [
+          7.892690845619362,
+          9.03893741817337
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 93.20693430571124,
+    "independent_makespan": 19.77922643775987,
+    "independent_runtime": 0.12329712370410562,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 12,
+    "stgcs_num_edges": 24
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00005-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00005",
+    "queries": [
+      {
+        "start": [
+          8.334214981409133,
+          2.881676854658648
+        ],
+        "goal": [
+          7.035903318697133,
+          9.324067364938065
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.1385329944250495,
+          2.286641434887731
+        ],
+        "goal": [
+          3.3372792856740405,
+          5.714180690027331
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.7274044314643668,
+          9.941086060549317
+        ],
+        "goal": [
+          9.0215138388486,
+          5.562555449398119
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.833042468646354,
+          8.460763051519258
+        ],
+        "goal": [
+          2.7431460181748832,
+          0.06149414668014519
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.870342013300462,
+          1.7247072343753813
+        ],
+        "goal": [
+          3.9293870112540654,
+          9.287550872660246
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.45256645171533405,
+          7.56726236551534
+        ],
+        "goal": [
+          6.936133068737547,
+          7.280580816020939
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.7032309919851096,
+          5.547006707091223
+        ],
+        "goal": [
+          5.586778172784614,
+          8.470081397850265
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.1654280722350197,
+          5.974903966650755
+        ],
+        "goal": [
+          8.363596685657825,
+          4.448527511938118
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 106.71476194254045,
+    "independent_makespan": 17.799729024962616,
+    "independent_runtime": 0.13939254079014063,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 11,
+    "stgcs_num_edges": 22
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00006-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00006",
+    "queries": [
+      {
+        "start": [
+          7.430815070358041,
+          0.3450433173585059
+        ],
+        "goal": [
+          1.2352732363737853,
+          9.689456751759444
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.524059614061184,
+          0.9316336805487797
+        ],
+        "goal": [
+          1.8375376177921616,
+          0.7567069131282671
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.9453152869144054,
+          6.424812712695941
+        ],
+        "goal": [
+          0.5364162865312211,
+          0.6090488689678053
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.927716896407467,
+          6.871008048471605
+        ],
+        "goal": [
+          3.688276857800823,
+          0.265523450770196
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.5111898925171685,
+          1.9342015243060176
+        ],
+        "goal": [
+          6.974271421266884,
+          8.3931554607346
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8140190248951309,
+          8.414909013866556
+        ],
+        "goal": [
+          7.28898529016806,
+          9.737235079939442
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.0617401942451268,
+          3.1708080248728585
+        ],
+        "goal": [
+          6.700236078363219,
+          0.8508357753683882
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.3973580059144108,
+          1.7231137198458066
+        ],
+        "goal": [
+          4.874027722573235,
+          9.491815806090445
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 80.07163020236116,
+    "independent_makespan": 18.152144113525317,
+    "independent_runtime": 0.1391341253183782,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 34
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00007-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00007",
+    "queries": [
+      {
+        "start": [
+          7.007263172671315,
+          9.072148802659784
+        ],
+        "goal": [
+          6.373513171646488,
+          3.3693206040903094
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.251653855142234,
+          2.6792137777351748
+        ],
+        "goal": [
+          3.358410226133938,
+          9.59109245866546
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.6035690766378186,
+          0.026967963910456083
+        ],
+        "goal": [
+          7.774481586829466,
+          9.44554060852549
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.29177270102598485,
+          7.260247738080339
+        ],
+        "goal": [
+          7.109908664797797,
+          4.704237184528136
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.28665795379567,
+          9.952024974501592
+        ],
+        "goal": [
+          3.9939752916681153,
+          1.0879921265958143
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.278823961109563,
+          9.566468285302804
+        ],
+        "goal": [
+          2.54409613649405,
+          8.817557572872635
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.954429552602727,
+          3.7672433779846726
+        ],
+        "goal": [
+          2.2390941872073915,
+          9.576403453312693
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.032035405475105,
+          6.7283861488200385
+        ],
+        "goal": [
+          0.3607581241953477,
+          4.063480774999916
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 104.75655871722726,
+    "independent_makespan": 16.91085572701887,
+    "independent_runtime": 0.15681396005675197,
+    "num_conflicting_pairs": 18,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.6428571428571429,
+    "stgcs_num_vertices": 12,
+    "stgcs_num_edges": 26
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00008-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00008",
+    "queries": [
+      {
+        "start": [
+          3.1086823610874337,
+          2.766080499093353
+        ],
+        "goal": [
+          6.928147818279463,
+          8.409609252943717
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.0578320533580805,
+          6.8705517023383695
+        ],
+        "goal": [
+          0.308126031994983,
+          0.2337100317762667
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.872886068922097,
+          1.153627339338923
+        ],
+        "goal": [
+          1.551232914897961,
+          4.883883437047972
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.7402387234233623,
+          4.331919654779091
+        ],
+        "goal": [
+          8.785179362492986,
+          6.730482670480434
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.679349313282121,
+          9.31751366554008
+        ],
+        "goal": [
+          2.685917012849085,
+          0.385141048469239
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.77043088031182,
+          8.994173905791019
+        ],
+        "goal": [
+          5.107991705075237,
+          0.9389390388443944
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.14784977164984975,
+          0.9536228856250605
+        ],
+        "goal": [
+          7.7139852844093175,
+          0.6674437297903915
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.411251295782453,
+          9.48760288244879
+        ],
+        "goal": [
+          3.5466721259430245,
+          9.838368307848329
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 76.5833170953871,
+    "independent_makespan": 15.821322266553604,
+    "independent_runtime": 0.1729165012948215,
+    "num_conflicting_pairs": 12,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.42857142857142855,
+    "stgcs_num_vertices": 19,
+    "stgcs_num_edges": 40
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00009-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00009",
+    "queries": [
+      {
+        "start": [
+          9.112675841727917,
+          0.3582713131914672
+        ],
+        "goal": [
+          3.670766290820889,
+          2.9859520983631294
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.534160388925862,
+          7.717337447488661
+        ],
+        "goal": [
+          0.14594877401522655,
+          2.746862100743547
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.579606488882571,
+          0.6909913955804289
+        ],
+        "goal": [
+          9.016074372415142,
+          2.557479912250058
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.7312280968461993,
+          9.164299258851997
+        ],
+        "goal": [
+          9.92098545394213,
+          7.505921350825121
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.5940647712863765,
+          3.6350597204563684
+        ],
+        "goal": [
+          8.130765402080064,
+          9.984062528222816
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.37884554050815,
+          9.115022443976326
+        ],
+        "goal": [
+          9.262533221813417,
+          3.6986607644061
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.020157672307192,
+          8.53718848629049
+        ],
+        "goal": [
+          8.423994248880511,
+          1.0831807980430963
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.7951702246655113,
+          0.8112023838398715
+        ],
+        "goal": [
+          7.237918317172016,
+          6.442941634911371
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 70.02165965115951,
+    "independent_makespan": 13.022126595645759,
+    "independent_runtime": 0.18276079092174768,
+    "num_conflicting_pairs": 11,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.39285714285714285,
+    "stgcs_num_vertices": 16,
+    "stgcs_num_edges": 38
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00010-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00010",
+    "queries": [
+      {
+        "start": [
+          1.5413841082353952,
+          9.525125101342752
+        ],
+        "goal": [
+          2.6756495359116044,
+          3.42998193694026
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.97288862778958,
+          0.8334142823787429
+        ],
+        "goal": [
+          1.2499797479286974,
+          5.922185816471302
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.9290232600163474,
+          0.7593166378274444
+        ],
+        "goal": [
+          7.672579081145177,
+          7.575294053358024
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8455792486019548,
+          3.720970184067763
+        ],
+        "goal": [
+          8.211312875870636,
+          1.064425914678331
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.433317622063459,
+          3.870240311180066
+        ],
+        "goal": [
+          1.8620693861585256,
+          1.3469056211073605
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.778826437238584,
+          3.367617470586793
+        ],
+        "goal": [
+          5.173391318878747,
+          9.788781386653895
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.729473079134989,
+          7.207916978877338
+        ],
+        "goal": [
+          3.24331920876634,
+          7.731559670695626
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.107986094567423,
+          7.397421691826649
+        ],
+        "goal": [
+          4.80249983022869,
+          0.5436411805778201
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 76.07936542101402,
+    "independent_makespan": 16.567607823912876,
+    "independent_runtime": 0.130022207275033,
+    "num_conflicting_pairs": 10,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.35714285714285715,
+    "stgcs_num_vertices": 14,
+    "stgcs_num_edges": 30
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00011-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00011",
+    "queries": [
+      {
+        "start": [
+          3.710267053342289,
+          9.008169566223584
+        ],
+        "goal": [
+          5.177336001557988,
+          0.9464248712957133
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.44442276318849205,
+          0.13702046724429273
+        ],
+        "goal": [
+          7.577420888486628,
+          6.625556890654724
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.189919608450138,
+          0.14004629079532704
+        ],
+        "goal": [
+          7.252331164768108,
+          7.625594808237185
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.39280503180397625,
+          6.51757276848631
+        ],
+        "goal": [
+          9.751881779179186,
+          6.703149543531549
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.943176145888012,
+          9.479302432745568
+        ],
+        "goal": [
+          0.8069090611075748,
+          5.127849079732823
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.191928346058417,
+          4.609145886009504
+        ],
+        "goal": [
+          1.8379164090677105,
+          7.428562452762961
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8682586556552927,
+          3.394718683800809
+        ],
+        "goal": [
+          5.645805463773719,
+          7.693942200034917
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.4129201254982261,
+          8.196390020065978
+        ],
+        "goal": [
+          1.3699179866130684,
+          0.0752675674474425
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 73.05582075244436,
+    "independent_makespan": 13.763842186088826,
+    "independent_runtime": 0.15064350189641118,
+    "num_conflicting_pairs": 4,
+    "num_conflicting_agents": 5,
+    "conflict_largest_component": 5,
+    "conflict_density": 0.14285714285714285,
+    "stgcs_num_vertices": 13,
+    "stgcs_num_edges": 30
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00012-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00012",
+    "queries": [
+      {
+        "start": [
+          3.369938017132791,
+          3.3418990455186472
+        ],
+        "goal": [
+          9.467212422523446,
+          1.16036076598062
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.659896640330238,
+          5.745473242101666
+        ],
+        "goal": [
+          0.31420357140589417,
+          5.662769407900211
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.42909163624497837,
+          2.0691147638409073
+        ],
+        "goal": [
+          7.7438058245679295,
+          0.2594249905913547
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.256803017622945,
+          0.5433134295009325
+        ],
+        "goal": [
+          4.029542538338555,
+          8.076960451257152
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.1550231784770584,
+          6.18764195321153
+        ],
+        "goal": [
+          9.7686283151344,
+          2.8677692605073064
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.145893215614481,
+          9.929497032050525
+        ],
+        "goal": [
+          1.8765398028124094,
+          5.534311988256259
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.361552006252557,
+          7.705163931418257
+        ],
+        "goal": [
+          9.399296124114642,
+          2.140765228965009
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.2606169411983204,
+          0.15215326891838288
+        ],
+        "goal": [
+          3.9903889518682205,
+          6.975729682655069
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 98.9766015713046,
+    "independent_makespan": 19.674691063042737,
+    "independent_runtime": 0.15967741841450334,
+    "num_conflicting_pairs": 17,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.6071428571428571,
+    "stgcs_num_vertices": 18,
+    "stgcs_num_edges": 36
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00013-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00013",
+    "queries": [
+      {
+        "start": [
+          6.399662999642555,
+          6.618135387611411
+        ],
+        "goal": [
+          2.251693537975664,
+          2.748650184233674
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.358626587583695,
+          7.8550115146597
+        ],
+        "goal": [
+          7.296412181374677,
+          0.7244917012236877
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.5041399086086227,
+          9.473985303272245
+        ],
+        "goal": [
+          4.721774842866657,
+          2.627750528764259
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.068803909064933,
+          9.385316791488414
+        ],
+        "goal": [
+          8.742774011166379,
+          2.7853816168798398
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.9488428930429204,
+          2.248469766136266
+        ],
+        "goal": [
+          8.911558236214667,
+          5.714499699987332
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.402336194343611,
+          1.7157512826479473
+        ],
+        "goal": [
+          3.267682430545591,
+          6.457360873000908
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.833855771754457,
+          4.2916564372595625
+        ],
+        "goal": [
+          2.5364602380167045,
+          8.267657248543525
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.1244602100310264,
+          8.32694123976699
+        ],
+        "goal": [
+          5.9327437803784955,
+          0.7899172005450049
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 69.33794779927916,
+    "independent_makespan": 12.851686952739941,
+    "independent_runtime": 0.09887012420222163,
+    "num_conflicting_pairs": 16,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.5714285714285714,
+    "stgcs_num_vertices": 14,
+    "stgcs_num_edges": 26
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00014-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00014",
+    "queries": [
+      {
+        "start": [
+          3.2713537138941984,
+          9.500091576571458
+        ],
+        "goal": [
+          4.842721710024414,
+          3.0141536507176845
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.8892895317707494,
+          1.92309869269326
+        ],
+        "goal": [
+          9.804517980677474,
+          7.227976297850444
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.66323866967871,
+          0.17963078002214938
+        ],
+        "goal": [
+          0.5804061393013924,
+          3.1447190195608874
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.291750356823766,
+          9.450808115013691
+        ],
+        "goal": [
+          5.57380635365422,
+          6.003478513911551
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.485352834140349,
+          3.3559516957463496
+        ],
+        "goal": [
+          3.1898137579872463,
+          4.925380665732366
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.1195708794300727,
+          4.3879141595455575
+        ],
+        "goal": [
+          5.735914204392708,
+          8.583984479629459
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.27678027075156164,
+          8.467128892009617
+        ],
+        "goal": [
+          5.172835182097931,
+          7.456977138937873
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.762603505556433,
+          0.3043719741786761
+        ],
+        "goal": [
+          3.1673892741290652,
+          8.750386835497816
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 75.81435433605412,
+    "independent_makespan": 17.55038456193087,
+    "independent_runtime": 0.1552081652916968,
+    "num_conflicting_pairs": 6,
+    "num_conflicting_agents": 6,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.21428571428571427,
+    "stgcs_num_vertices": 15,
+    "stgcs_num_edges": 34
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00015-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00015",
+    "queries": [
+      {
+        "start": [
+          5.632465830644922,
+          7.709046924544029
+        ],
+        "goal": [
+          7.711620389478457,
+          1.1641107317471184
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.825598571567426,
+          1.9975425419191142
+        ],
+        "goal": [
+          1.1119619002452188,
+          7.000091780509942
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.432037119763493,
+          4.4637811195452795
+        ],
+        "goal": [
+          4.1291155283914085,
+          1.712220673546838
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.123322316308364,
+          9.083281005889646
+        ],
+        "goal": [
+          0.06488952190442167,
+          6.383810979788186
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.970552740032064,
+          2.30850173804931
+        ],
+        "goal": [
+          7.0852476169945255,
+          8.380585913903845
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.946157657018703,
+          0.41319030987542793
+        ],
+        "goal": [
+          5.731193998203656,
+          5.5560109956668144
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.607592442012528,
+          4.390106377646756
+        ],
+        "goal": [
+          2.9101124639546483,
+          9.564992611646034
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.549524176615726,
+          0.08674383197819903
+        ],
+        "goal": [
+          3.1664831000147067,
+          1.2963093582611847
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 89.84352426107256,
+    "independent_makespan": 16.351138653954855,
+    "independent_runtime": 0.14659483497962356,
+    "num_conflicting_pairs": 11,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.39285714285714285,
+    "stgcs_num_vertices": 14,
+    "stgcs_num_edges": 28
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00016-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00016",
+    "queries": [
+      {
+        "start": [
+          1.672244805328651,
+          0.6095168298142637
+        ],
+        "goal": [
+          3.8783846372630912,
+          8.337779494084213
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.1905417494912243,
+          5.0103964179597416
+        ],
+        "goal": [
+          8.144373263617302,
+          6.806978247655848
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.2097837985967193,
+          4.171836656580133
+        ],
+        "goal": [
+          0.5298444362229471,
+          8.803602763834967
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.2824162340086,
+          8.964398184227615
+        ],
+        "goal": [
+          0.5542906076893653,
+          6.7733939450876175
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.057815416827761,
+          0.6087154979385958
+        ],
+        "goal": [
+          1.5924031311413869,
+          3.9862605220156393
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.9884081454636813,
+          4.0634012635570045
+        ],
+        "goal": [
+          8.45396670721016,
+          0.6882552741959277
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.085496474556008,
+          1.557285868622587
+        ],
+        "goal": [
+          6.317079131786066,
+          8.154949313062023
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.647760809875427,
+          3.8577195963938857
+        ],
+        "goal": [
+          7.301355712135267,
+          9.761460134902752
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 60.156987060880816,
+    "independent_makespan": 10.512098536191486,
+    "independent_runtime": 0.12545458367094398,
+    "num_conflicting_pairs": 10,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.35714285714285715,
+    "stgcs_num_vertices": 14,
+    "stgcs_num_edges": 30
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00017-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00017",
+    "queries": [
+      {
+        "start": [
+          4.481165359850984,
+          4.228236711864859
+        ],
+        "goal": [
+          9.347461499007004,
+          5.557520444461583
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.45893507905138,
+          2.0957677249486957
+        ],
+        "goal": [
+          4.045571446243484,
+          1.6714199919338404
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.648343672164388,
+          9.599941936597874
+        ],
+        "goal": [
+          3.932005212980545,
+          3.2643891503348095
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.709951771133093,
+          9.477581945092455
+        ],
+        "goal": [
+          6.489555568039122,
+          3.8047688238943627
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.29693425389513617,
+          8.689665862314113
+        ],
+        "goal": [
+          7.763310053831913,
+          3.3559270988351235
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.774414162070385,
+          3.03629009789169
+        ],
+        "goal": [
+          0.3367603649044286,
+          6.098056138954314
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.2559709832522525,
+          9.248884401711752
+        ],
+        "goal": [
+          9.001631128751937,
+          0.8785418627351538
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.983256548472479,
+          7.043480153697132
+        ],
+        "goal": [
+          3.5260684474555233,
+          8.374836150906676
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 85.68827690112502,
+    "independent_makespan": 19.569550536916406,
+    "independent_runtime": 0.1132215391844511,
+    "num_conflicting_pairs": 8,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.2857142857142857,
+    "stgcs_num_vertices": 13,
+    "stgcs_num_edges": 30
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00018-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00018",
+    "queries": [
+      {
+        "start": [
+          5.021001698585251,
+          0.9135461940339384
+        ],
+        "goal": [
+          7.641034448994988,
+          8.73511927208303
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.3896580621161125,
+          9.44128099694276
+        ],
+        "goal": [
+          8.958765588408536,
+          9.662550883307429
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.058334226852999,
+          8.705038860280512
+        ],
+        "goal": [
+          4.679461339116408,
+          5.20573996922841
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.971076522422363,
+          6.007852176017821
+        ],
+        "goal": [
+          9.747912470809023,
+          7.373955736905456
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.726120168458805,
+          5.309686619382363
+        ],
+        "goal": [
+          0.8608619658845057,
+          2.836294046068183
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.878247262016347,
+          5.183427190503109
+        ],
+        "goal": [
+          5.550127194347518,
+          9.80212612867171
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.977646155916252,
+          9.061349928517362
+        ],
+        "goal": [
+          0.44088781993079773,
+          7.853202001045014
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.146828711054358,
+          0.9121381153033958
+        ],
+        "goal": [
+          1.666388535638904,
+          3.878993404217199
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 65.06766871398798,
+    "independent_makespan": 15.379967249782911,
+    "independent_runtime": 0.14176824735477567,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 15,
+    "stgcs_num_edges": 36
+  },
+  {
+    "instance_id": "mrmp-base-maze-10x10-seed00019-8-robot-intersection",
+    "base_instance_id": "base-maze-10x10-seed00019",
+    "queries": [
+      {
+        "start": [
+          4.501724227515422,
+          4.220030882405077
+        ],
+        "goal": [
+          2.2840787751505536,
+          9.937286207062188
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.145949524483839,
+          4.68583914608754
+        ],
+        "goal": [
+          7.690630845550198,
+          6.842954959254034
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.2549850927337165,
+          3.168587888021611
+        ],
+        "goal": [
+          5.435853497414322,
+          9.4353757955908
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.5469438877495754,
+          9.738342061816843
+        ],
+        "goal": [
+          2.6179016648869906,
+          0.06504335757842694
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.519082442439538,
+          4.8271978691281925
+        ],
+        "goal": [
+          1.5208674424561845,
+          5.669536370322763
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.2282233270083915,
+          6.5867300368808
+        ],
+        "goal": [
+          9.912820717605982,
+          8.134335255125867
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.664840873871668,
+          2.9187941303676452
+        ],
+        "goal": [
+          1.354661750788179,
+          8.107965385427967
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.4663472350812186,
+          9.814437550620669
+        ],
+        "goal": [
+          4.947489480109845,
+          0.34781282439583583
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 100.20357305972273,
+    "independent_makespan": 17.38801275474734,
+    "independent_runtime": 0.13842725288122892,
+    "num_conflicting_pairs": 13,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.4642857142857143,
+    "stgcs_num_vertices": 13,
+    "stgcs_num_edges": 26
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00008-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00008",
+    "queries": [
+      {
+        "start": [
+          7.790979664588598,
+          3.982814996408545
+        ],
+        "goal": [
+          2.0429009242621774,
+          7.077233223742438
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.067800922300993,
+          9.94723389441349
+        ],
+        "goal": [
+          3.1078594426638424,
+          8.987345256857298
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.0587930592527974,
+          5.794337203982987
+        ],
+        "goal": [
+          7.540526726773977,
+          4.7639112936750285
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.15666649721288,
+          8.90399168427038
+        ],
+        "goal": [
+          1.9819980242117443,
+          3.3693207613185883
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.863748268998329,
+          8.817533368671777
+        ],
+        "goal": [
+          0.7366065659886991,
+          1.015336781054305
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.786049491374033,
+          0.991286432180956
+        ],
+        "goal": [
+          4.197475572357038,
+          9.664819243166642
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.230135208604543,
+          0.6236718384316817
+        ],
+        "goal": [
+          5.0148229077022135,
+          6.365657521194118
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.992510111578726,
+          2.1920260521993638
+        ],
+        "goal": [
+          3.297200309929406,
+          7.031332698108522
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 64.42650512848103,
+    "independent_makespan": 15.33900979052255,
+    "independent_runtime": 0.1736770432908088,
+    "num_conflicting_pairs": 11,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.39285714285714285,
+    "stgcs_num_vertices": 6,
+    "stgcs_num_edges": 12
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00021-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00021",
+    "queries": [
+      {
+        "start": [
+          0.17804676300432817,
+          0.1663516818970623
+        ],
+        "goal": [
+          9.949972759744709,
+          1.7682846202073244
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.6270665529568749,
+          0.37971200909054814
+        ],
+        "goal": [
+          5.6793381433524175,
+          8.60856748687658
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.026316555826452,
+          0.6648558420626554
+        ],
+        "goal": [
+          5.519218527037925,
+          7.673675144104594
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.5446680458522013,
+          5.558525732581185
+        ],
+        "goal": [
+          9.31240231573864,
+          2.924036479994715
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.453175825410547,
+          2.957015213031528
+        ],
+        "goal": [
+          8.876327648449662,
+          4.258787495034532
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.26194423490306024,
+          1.556577880098741
+        ],
+        "goal": [
+          6.89001008768437,
+          8.460350468979161
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.7830529818798295,
+          3.212490075826127
+        ],
+        "goal": [
+          7.548786104965887,
+          9.867133939225635
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.512755018399258,
+          5.905510462292545
+        ],
+        "goal": [
+          9.032387831745051,
+          0.20960980255210088
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 57.961194781863384,
+    "independent_makespan": 9.77192599677311,
+    "independent_runtime": 0.1704750438220799,
+    "num_conflicting_pairs": 8,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.2857142857142857,
+    "stgcs_num_vertices": 6,
+    "stgcs_num_edges": 12
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00014-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00014",
+    "queries": [
+      {
+        "start": [
+          6.5565789612615175,
+          4.570697348937976
+        ],
+        "goal": [
+          0.009998644153018245,
+          2.4319997115094845
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.7526623017852518,
+          2.3727886278381876
+        ],
+        "goal": [
+          9.333979879950816,
+          3.492096154466337
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.849073211131891,
+          7.950569489697936
+        ],
+        "goal": [
+          1.7205924059129523,
+          3.2788845118152197
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.2192409004477747,
+          0.9423859162159128
+        ],
+        "goal": [
+          5.957097582578308,
+          8.597307356865498
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.25401909766663,
+          9.301045619072447
+        ],
+        "goal": [
+          0.49008530941993467,
+          4.730714604153443
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.612023220429969,
+          3.993481341587589
+        ],
+        "goal": [
+          7.509197213870657,
+          8.681003624509296
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.980452638476919,
+          3.8651637606746583
+        ],
+        "goal": [
+          1.4034286017904911,
+          7.688191835656624
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.027515909282409486,
+          0.7649030476414944
+        ],
+        "goal": [
+          5.706013833767103,
+          4.791336982642642
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 67.36013534177683,
+    "independent_makespan": 11.68006472017813,
+    "independent_runtime": 0.2191310003399849,
+    "num_conflicting_pairs": 11,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.39285714285714285,
+    "stgcs_num_vertices": 7,
+    "stgcs_num_edges": 16
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00020-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00020",
+    "queries": [
+      {
+        "start": [
+          6.840615620805179,
+          3.786102970071118
+        ],
+        "goal": [
+          1.2656296859556107,
+          3.0344696114552505
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.1852341814835186,
+          5.830848997528852
+        ],
+        "goal": [
+          6.839133160729335,
+          2.827584897804152
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.2880283227065974,
+          8.887943137961832
+        ],
+        "goal": [
+          3.589848027820559,
+          3.4899354414793735
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.050457397906637,
+          2.389988412550314
+        ],
+        "goal": [
+          1.5045420446357571,
+          4.0074254895448735
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.396613644136803,
+          5.259525798115086
+        ],
+        "goal": [
+          0.3353010120478716,
+          6.946825226026076
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.9103298739679166,
+          9.222924952569834
+        ],
+        "goal": [
+          9.909158220481602,
+          0.4527607347853738
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.62056631846058,
+          2.4354050585451095
+        ],
+        "goal": [
+          1.6515690770540399,
+          7.761065704338827
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.13562677277971077,
+          8.503133861609912
+        ],
+        "goal": [
+          1.3353088289154784,
+          2.055089455169089
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 49.95723744593307,
+    "independent_makespan": 9.226769061617539,
+    "independent_runtime": 0.20646574907004833,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 8,
+    "stgcs_num_edges": 16
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00002-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00002",
+    "queries": [
+      {
+        "start": [
+          9.082580558881848,
+          1.3958871126157069
+        ],
+        "goal": [
+          5.022944127894537,
+          5.578615015516833
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.904845899989101,
+          4.901440663371166
+        ],
+        "goal": [
+          3.0500064884847284,
+          2.529162110617941
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.7215259933574591,
+          9.815038030456481
+        ],
+        "goal": [
+          2.0733358945369798,
+          3.827924775813223
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.852929669650401,
+          0.2552622150460269
+        ],
+        "goal": [
+          2.0781137056243155,
+          2.4671060788873858
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.7943302119021097,
+          5.53922092784931
+        ],
+        "goal": [
+          9.00715044461846,
+          2.391694855732306
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.511853997984794,
+          9.362190980117907
+        ],
+        "goal": [
+          9.773683455538297,
+          9.391193967720332
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.5920915175464,
+          0.6415769707139841
+        ],
+        "goal": [
+          8.712966757567292,
+          6.2566821393347425
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.8255352389395005,
+          3.786259985447117
+        ],
+        "goal": [
+          0.5295620819271126,
+          8.886592799616954
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 47.236924169877454,
+    "independent_makespan": 8.212820323199152,
+    "independent_runtime": 0.1917739175260067,
+    "num_conflicting_pairs": 4,
+    "num_conflicting_agents": 5,
+    "conflict_largest_component": 5,
+    "conflict_density": 0.14285714285714285,
+    "stgcs_num_vertices": 7,
+    "stgcs_num_edges": 18
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00012-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00012",
+    "queries": [
+      {
+        "start": [
+          3.3705764395893416,
+          3.777274061132385
+        ],
+        "goal": [
+          0.5809080895988259,
+          9.408514233688466
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.361416416834887,
+          0.4091868554235011
+        ],
+        "goal": [
+          3.38299957411152,
+          8.001178050194557
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.191641913977012,
+          2.8441871581394627
+        ],
+        "goal": [
+          0.5133714791053926,
+          3.042459095540072
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.086360294502128,
+          0.036146817271857264
+        ],
+        "goal": [
+          9.084148199617923,
+          8.858257164863913
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.862029103586881,
+          7.593399303397892
+        ],
+        "goal": [
+          2.070932995975345,
+          4.413609095234547
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.41608213850732,
+          7.666446723088725
+        ],
+        "goal": [
+          1.5318736851906731,
+          2.2529031543199465
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.068886675675323,
+          2.405533368331546
+        ],
+        "goal": [
+          9.409380771750094,
+          4.3993301545359245
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.9216251893263923,
+          6.2575030873362
+        ],
+        "goal": [
+          8.822595101352453,
+          6.73801391681023
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 65.01684220941708,
+    "independent_makespan": 12.448878092128673,
+    "independent_runtime": 0.20714400126598775,
+    "num_conflicting_pairs": 8,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.2857142857142857,
+    "stgcs_num_vertices": 8,
+    "stgcs_num_edges": 18
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00022-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00022",
+    "queries": [
+      {
+        "start": [
+          2.108827790031854,
+          4.843404890559176
+        ],
+        "goal": [
+          5.885448385180543,
+          9.22085202793838
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.972211077537546,
+          4.2869109110069274
+        ],
+        "goal": [
+          1.271871166242746,
+          7.349806666781612
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.26782840715801,
+          9.604336231636989
+        ],
+        "goal": [
+          4.981191768940162,
+          4.085242122338169
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.04306232099938,
+          1.9600028067911945
+        ],
+        "goal": [
+          6.5670262569122375,
+          7.332003795851542
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.0568527709097495,
+          6.717822818200448
+        ],
+        "goal": [
+          9.782614276442922,
+          1.3301753239723262
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.837411335138628,
+          8.610483332992557
+        ],
+        "goal": [
+          8.640351788254216,
+          6.968152215882332
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.543405049198313,
+          3.1721030832147976
+        ],
+        "goal": [
+          8.975365179413988,
+          8.752988726561636
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.874897272231452,
+          9.698937220541742
+        ],
+        "goal": [
+          3.4486028862895917,
+          5.747354246282922
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 50.32709020334184,
+    "independent_makespan": 10.480922218604851,
+    "independent_runtime": 0.5057942485436797,
+    "num_conflicting_pairs": 7,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.25,
+    "stgcs_num_vertices": 6,
+    "stgcs_num_edges": 22
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00009-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00009",
+    "queries": [
+      {
+        "start": [
+          3.4029099430466023,
+          4.363063433832998
+        ],
+        "goal": [
+          8.758227487635247,
+          1.0000389742524756
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.750526568240597,
+          2.134946324123608
+        ],
+        "goal": [
+          2.270239558322251,
+          0.38413023819167713
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.393849094359192,
+          2.9400232887917785
+        ],
+        "goal": [
+          6.969670859776849,
+          8.395942894004195
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.565413023731535,
+          9.390800101134714
+        ],
+        "goal": [
+          4.172799496187641,
+          5.201482751449293
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.197560436727374,
+          4.425820789683694
+        ],
+        "goal": [
+          3.3350623817227087,
+          0.022240047514088306
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.7520950105026687,
+          9.032480912098498
+        ],
+        "goal": [
+          9.759334716399989,
+          3.621769617686903
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.4695297950947994,
+          9.84317591909282
+        ],
+        "goal": [
+          4.451714177480343,
+          1.2552346114281137
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.559504505638509,
+          1.7845671798216571
+        ],
+        "goal": [
+          8.806725054065897,
+          8.880907489756547
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 64.07860230448148,
+    "independent_makespan": 12.243762252309761,
+    "independent_runtime": 0.3071473753079772,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 8,
+    "stgcs_num_edges": 22
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00001-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00001",
+    "queries": [
+      {
+        "start": [
+          4.568950074643432,
+          0.7890529309976251
+        ],
+        "goal": [
+          4.623728961011608,
+          8.532461912985317
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.823348907165567,
+          0.28778292987562115
+        ],
+        "goal": [
+          1.7296025370100474,
+          5.855985726018109
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.040526560118371,
+          8.753681929182209
+        ],
+        "goal": [
+          5.387142612236163,
+          3.587259818872089
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.20946881712264112,
+          1.4589401871157137
+        ],
+        "goal": [
+          2.9662302614442084,
+          7.150150900781986
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.32165243942959865,
+          7.100554763488747
+        ],
+        "goal": [
+          7.3861845071849555,
+          7.398506143381889
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.5250927939981627,
+          9.349794756815694
+        ],
+        "goal": [
+          1.1076939321620565,
+          4.597410181714589
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.0166569078630552,
+          9.09094262453711
+        ],
+        "goal": [
+          7.096370799307806,
+          1.9663929490658805
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.9101347929718955,
+          0.2358471839467133
+        ],
+        "goal": [
+          5.274906405050221,
+          7.57788945896235
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 73.240430438184,
+    "independent_makespan": 12.360840002003345,
+    "independent_runtime": 0.29435012536123395,
+    "num_conflicting_pairs": 13,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.4642857142857143,
+    "stgcs_num_vertices": 8,
+    "stgcs_num_edges": 24
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00015-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00015",
+    "queries": [
+      {
+        "start": [
+          8.197980471723014,
+          1.3159612694111047
+        ],
+        "goal": [
+          3.772647592481193,
+          5.35915001088956
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.724789876007742,
+          0.406958636075769
+        ],
+        "goal": [
+          8.660600837019986,
+          6.694194778795117
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.329542915004273,
+          1.7584542417885571
+        ],
+        "goal": [
+          3.4992206525785003,
+          6.115571603976302
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.19979692059591556,
+          0.0466690348165042
+        ],
+        "goal": [
+          9.353756005925316,
+          0.7921509177279644
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.2673257055384925,
+          3.1498801345173533
+        ],
+        "goal": [
+          5.81301382546359,
+          4.592356439737507
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.738697887619983,
+          5.604185462846819
+        ],
+        "goal": [
+          1.0024121512021003,
+          2.7140654779998616
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.812839173899088,
+          3.4592587268289363
+        ],
+        "goal": [
+          7.738446878667091,
+          7.3640023185990975
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.761916032938785,
+          4.78329626962622
+        ],
+        "goal": [
+          1.8006999780223631,
+          2.516075092578977
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 50.711025071271365,
+    "independent_makespan": 9.153959085350593,
+    "independent_runtime": 0.4114525846671313,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 9,
+    "stgcs_num_edges": 26
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00011-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00011",
+    "queries": [
+      {
+        "start": [
+          1.4142973167538684,
+          7.3129664139642525
+        ],
+        "goal": [
+          6.963700138275664,
+          4.780186033341625
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.230439002775787,
+          1.9118062897736898
+        ],
+        "goal": [
+          0.8634605889733409,
+          3.763095960006237
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.857217255896964,
+          1.5152019432428918
+        ],
+        "goal": [
+          0.48823173978073137,
+          8.813523026502311
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.147726876342707,
+          5.562223010549634
+        ],
+        "goal": [
+          4.126839424744642,
+          0.15378754182589474
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.64038140043822,
+          5.757554394936683
+        ],
+        "goal": [
+          8.87705374448266,
+          4.690371239711925
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.254160037771962,
+          5.40625304348353
+        ],
+        "goal": [
+          0.6324094713895861,
+          7.372377234112632
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.150173345056344,
+          3.723427868590111
+        ],
+        "goal": [
+          1.2564707710562173,
+          4.69508223170749
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.3918743325289,
+          0.010525691728678982
+        ],
+        "goal": [
+          1.7105909874749832,
+          5.807036852191679
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 53.749888096500264,
+    "independent_makespan": 8.366978413802794,
+    "independent_runtime": 0.4237446263432503,
+    "num_conflicting_pairs": 9,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.32142857142857145,
+    "stgcs_num_vertices": 8,
+    "stgcs_num_edges": 30
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00007-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00007",
+    "queries": [
+      {
+        "start": [
+          3.77014838359164,
+          0.4142445176156681
+        ],
+        "goal": [
+          3.290048022648179,
+          6.721669881606257
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.3055341916640826,
+          7.425080648841301
+        ],
+        "goal": [
+          8.928348594602877,
+          5.659514498351064
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.997489495065791,
+          9.924370484956315
+        ],
+        "goal": [
+          1.5465387262909696,
+          0.793351541633832
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.5807100687395446,
+          5.151679603431788
+        ],
+        "goal": [
+          7.134650297664915,
+          0.585559139811498
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.22161547330855283,
+          0.7400336812333576
+        ],
+        "goal": [
+          0.18579371768782216,
+          6.095933578190931
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.119930036191604,
+          9.268560361861669
+        ],
+        "goal": [
+          9.476784136915466,
+          3.711100354277303
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.7897392714004683,
+          5.744472551626964
+        ],
+        "goal": [
+          8.716500567245765,
+          4.306223735857783
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.0296356524685346,
+          4.987627389928416
+        ],
+        "goal": [
+          8.864252907934157,
+          2.7104219296857828
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 70.75897951678071,
+    "independent_makespan": 15.904852802039786,
+    "independent_runtime": 0.42330795829184353,
+    "num_conflicting_pairs": 4,
+    "num_conflicting_agents": 5,
+    "conflict_largest_component": 5,
+    "conflict_density": 0.14285714285714285,
+    "stgcs_num_vertices": 9,
+    "stgcs_num_edges": 30
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00006-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00006",
+    "queries": [
+      {
+        "start": [
+          4.389032762636696,
+          8.744342863862933
+        ],
+        "goal": [
+          1.752612396562765,
+          4.163733471293638
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.574343597481576,
+          3.33980393279951
+        ],
+        "goal": [
+          0.7995897883773925,
+          0.18808238400452262
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.5283988078553248,
+          2.070927918055874
+        ],
+        "goal": [
+          7.4173450582946945,
+          6.688719518738411
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.6103859348521685,
+          1.1516409550856317
+        ],
+        "goal": [
+          7.450182706272561,
+          9.521291593613824
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.39236302685026,
+          5.003587758782856
+        ],
+        "goal": [
+          4.857574667359574,
+          9.701497455346432
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.4555777343519058,
+          7.191226611178515
+        ],
+        "goal": [
+          8.363755631114593,
+          6.008586974245902
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.279044557526457,
+          6.65158151127935
+        ],
+        "goal": [
+          0.585242578857127,
+          5.580685227825424
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.8977982105425055,
+          2.5690560443918438
+        ],
+        "goal": [
+          8.997969567810458,
+          9.724276072210737
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 51.80627706099016,
+    "independent_makespan": 8.369650638553923,
+    "independent_runtime": 0.3806667916942388,
+    "num_conflicting_pairs": 6,
+    "num_conflicting_agents": 6,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.21428571428571427,
+    "stgcs_num_vertices": 9,
+    "stgcs_num_edges": 32
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00024-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00024",
+    "queries": [
+      {
+        "start": [
+          6.65436915654189,
+          0.26867975507359665
+        ],
+        "goal": [
+          5.3956510230776,
+          5.412497568763662
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.942736598483563,
+          8.385271429019372
+        ],
+        "goal": [
+          8.187268480292916,
+          1.597633327949131
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.04974613408248228,
+          1.7112713738766006
+        ],
+        "goal": [
+          7.694412791021919,
+          5.170492445942606
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.782801146658071,
+          4.286278532799163
+        ],
+        "goal": [
+          8.919500475701764,
+          2.53833132558021
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.535621111000353,
+          1.311015926168992
+        ],
+        "goal": [
+          1.3862101759472034,
+          8.38536194664057
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.0522345054108024,
+          8.867529514450906
+        ],
+        "goal": [
+          6.2091620014843265,
+          4.4462287642185565
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.540589916724002,
+          8.832397847660378
+        ],
+        "goal": [
+          8.870169174801518,
+          5.827029125274978
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.490700356474772,
+          8.350631278835042
+        ],
+        "goal": [
+          2.074204776164951,
+          6.661609610801041
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 59.83116509890429,
+    "independent_makespan": 8.963364423258508,
+    "independent_runtime": 0.32547212997451425,
+    "num_conflicting_pairs": 7,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.25,
+    "stgcs_num_vertices": 10,
+    "stgcs_num_edges": 32
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00016-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00016",
+    "queries": [
+      {
+        "start": [
+          0.5854833327360975,
+          6.823329001755935
+        ],
+        "goal": [
+          2.4508282710385276,
+          1.2406599752942258
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.32471320121069264,
+          8.63631069946779
+        ],
+        "goal": [
+          6.374544823655204,
+          1.6795471371483528
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.6301961781428815,
+          5.171134300269552
+        ],
+        "goal": [
+          5.14232971268238,
+          9.387128579273663
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.68972983164472,
+          2.989061894639524
+        ],
+        "goal": [
+          3.988078444526099,
+          9.03067976326451
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.6636485865920205,
+          2.2689766924262
+        ],
+        "goal": [
+          2.011670881321727,
+          6.034035535872047
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.4541760845007006,
+          8.54196110905832
+        ],
+        "goal": [
+          4.494199122370133,
+          3.8675552289659607
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.480223129779745,
+          6.677764855269353
+        ],
+        "goal": [
+          7.791573715515773,
+          9.535808512729357
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.20750091883372612,
+          9.59933778458817
+        ],
+        "goal": [
+          5.0854226770040425,
+          5.268272011381806
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 43.13835443860406,
+    "independent_makespan": 6.956763562306761,
+    "independent_runtime": 0.5025470827240497,
+    "num_conflicting_pairs": 6,
+    "num_conflicting_agents": 6,
+    "conflict_largest_component": 6,
+    "conflict_density": 0.21428571428571427,
+    "stgcs_num_vertices": 8,
+    "stgcs_num_edges": 34
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00005-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00005",
+    "queries": [
+      {
+        "start": [
+          0.0684886342668149,
+          6.787286001993547
+        ],
+        "goal": [
+          5.473093065208465,
+          1.6361905714670457
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.973972504545054,
+          6.3754671048459235
+        ],
+        "goal": [
+          0.3915531824313013,
+          2.578619525385526
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.12534087213844783,
+          0.4951033800086052
+        ],
+        "goal": [
+          1.6150002595866617,
+          5.586130983877267
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.9456481853382616,
+          4.762962527572597
+        ],
+        "goal": [
+          7.3042560297888315,
+          0.23975533266985102
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.5698077099437013,
+          3.0731246821959473
+        ],
+        "goal": [
+          7.174665193367189,
+          2.5998897854165937
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.790967998925419,
+          3.943105891389532
+        ],
+        "goal": [
+          0.3295085833361005,
+          8.11396305559663
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.754996768642169,
+          9.451909271881656
+        ],
+        "goal": [
+          1.9228780796285285,
+          4.028339876074182
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.256138176710129,
+          0.02555224471148651
+        ],
+        "goal": [
+          6.489559310432349,
+          4.899038122315281
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 66.41331345798861,
+    "independent_makespan": 14.13069302177109,
+    "independent_runtime": 0.5571834570728242,
+    "num_conflicting_pairs": 7,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.25,
+    "stgcs_num_vertices": 9,
+    "stgcs_num_edges": 34
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00013-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00013",
+    "queries": [
+      {
+        "start": [
+          1.2888695367793397,
+          9.072543320139074
+        ],
+        "goal": [
+          2.1209952017587574,
+          2.0508224371955213
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.908352314847563,
+          3.372990050733116
+        ],
+        "goal": [
+          0.8763900851274156,
+          6.294657628525862
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.573816043779763,
+          2.061214780942636
+        ],
+        "goal": [
+          5.60306048399691,
+          7.725103747195715
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.7984026729341516,
+          4.277222857885127
+        ],
+        "goal": [
+          1.813667403621469,
+          9.852243117650968
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.413647909981962,
+          3.5436370636343124
+        ],
+        "goal": [
+          0.035195255426415634,
+          6.678939136861785
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.08115555526149916,
+          4.470074123801122
+        ],
+        "goal": [
+          4.303508958146406,
+          8.633751396626565
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          1.3380442564167758,
+          2.557136220415112
+        ],
+        "goal": [
+          4.606402073566986,
+          9.36127490945271
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.710344363541473,
+          4.799075840353494
+        ],
+        "goal": [
+          3.619863821938371,
+          1.0864795789358437
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 53.870011873940996,
+    "independent_makespan": 8.115586970170064,
+    "independent_runtime": 0.4452847877983004,
+    "num_conflicting_pairs": 7,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.25,
+    "stgcs_num_vertices": 9,
+    "stgcs_num_edges": 34
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00004-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00004",
+    "queries": [
+      {
+        "start": [
+          1.067392529015885,
+          9.033634640436834
+        ],
+        "goal": [
+          6.3340329680383,
+          2.4292594236655196
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.842017122070332,
+          6.864761950490251
+        ],
+        "goal": [
+          1.607028803983998,
+          0.4732180809768822
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.189332202344481,
+          4.1249210521587765
+        ],
+        "goal": [
+          1.13033730936686,
+          3.754666692549407
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.2158552597757435,
+          1.1058254840153658
+        ],
+        "goal": [
+          2.7725032186012033,
+          7.023561838395558
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.6070680130133876,
+          2.558689968062093
+        ],
+        "goal": [
+          8.057874438775285,
+          0.13690900250482713
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.8581615031337348,
+          2.0987651645127325
+        ],
+        "goal": [
+          6.821441764311334,
+          9.319145008129466
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.1883018493742545,
+          8.931158459041972
+        ],
+        "goal": [
+          7.413503014427127,
+          6.463328594238331
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          3.962661406809742,
+          0.1051697453305123
+        ],
+        "goal": [
+          3.6212442964001714,
+          6.873755601029813
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 52.22607394458609,
+    "independent_makespan": 8.104393808470425,
+    "independent_runtime": 0.5831569992005825,
+    "num_conflicting_pairs": 6,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.21428571428571427,
+    "stgcs_num_vertices": 10,
+    "stgcs_num_edges": 36
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00019-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00019",
+    "queries": [
+      {
+        "start": [
+          3.374182577209796,
+          7.227979968936735
+        ],
+        "goal": [
+          0.1100794796960488,
+          2.694197785259199
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.3416235551391847,
+          4.162388996339225
+        ],
+        "goal": [
+          9.848548536621445,
+          8.654514011566883
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.5902661642696625,
+          8.426167836501502
+        ],
+        "goal": [
+          1.0690191272976468,
+          5.979556102835379
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.723058844346763,
+          8.549333255901455
+        ],
+        "goal": [
+          1.7171232184711305,
+          3.8407236083358822
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.303197054792848,
+          4.254323275775623
+        ],
+        "goal": [
+          1.839992372530082,
+          9.650821478864776
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          0.08425240478235274,
+          1.6217181995372278
+        ],
+        "goal": [
+          7.890840705988425,
+          0.36522462789317467
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          6.621250920657323,
+          1.0408468079801032
+        ],
+        "goal": [
+          1.1166316453077842,
+          1.9485201495377085
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.464757194446876,
+          1.258994142709583
+        ],
+        "goal": [
+          5.716965678157545,
+          6.754464269726514
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 66.16668405678865,
+    "independent_makespan": 14.535274312839006,
+    "independent_runtime": 0.4706333738286048,
+    "num_conflicting_pairs": 7,
+    "num_conflicting_agents": 7,
+    "conflict_largest_component": 7,
+    "conflict_density": 0.25,
+    "stgcs_num_vertices": 10,
+    "stgcs_num_edges": 36
+  },
+  {
+    "instance_id": "mrmp-base-iris-2d-m10-seed00000-8-robot-intersection",
+    "base_instance_id": "base-iris-2d-m10-seed00000",
+    "queries": [
+      {
+        "start": [
+          8.593019705597703,
+          8.207211171123912
+        ],
+        "goal": [
+          8.051348689250725,
+          1.5852739190902778
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          8.52283412345888,
+          3.1795193581043586
+        ],
+        "goal": [
+          2.9649315301920187,
+          7.350122820727389
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          7.597005236593007,
+          2.894143373530718
+        ],
+        "goal": [
+          1.6687006309475143,
+          5.392836960597974
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.003972877210865,
+          0.0445358361698968
+        ],
+        "goal": [
+          2.94807285932306,
+          3.0325512421902756
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          2.04651043177087,
+          7.021049655729069
+        ],
+        "goal": [
+          6.188022645692354,
+          1.9425147030811374
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          5.189901191185264,
+          2.5544212676004387
+        ],
+        "goal": [
+          9.745853933801484,
+          7.735948119830904
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          9.529546772871422,
+          8.667188867476689
+        ],
+        "goal": [
+          8.916032318277573,
+          1.3558147024623162
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      },
+      {
+        "start": [
+          4.004830587146222,
+          9.418761197579657
+        ],
+        "goal": [
+          7.235526897700876,
+          0.8030119563144035
+        ],
+        "t_start": 0.0,
+        "is_stay": true,
+        "vlimit": 1.0
+      }
+    ],
+    "traffic_family": "intersection",
+    "traffic_tier": "8-robot",
+    "num_agents": 8,
+    "independent_cost_sum": 59.739109123034815,
+    "independent_makespan": 10.454677411927312,
+    "independent_runtime": 0.5707500411663204,
+    "num_conflicting_pairs": 10,
+    "num_conflicting_agents": 8,
+    "conflict_largest_component": 8,
+    "conflict_density": 0.35714285714285715,
+    "stgcs_num_vertices": 9,
+    "stgcs_num_edges": 38
+  }
+]

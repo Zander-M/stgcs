@@ -13,16 +13,32 @@ authors = [
   {name = "Jingtao Tang", email = "todd.j.tang@gmail.com"},
 ]
 dependencies = [
-  "drake==1.36.0",
+  "drake==1.40.0",
   "matplotlib==3.10.1",
   "networkx==3.4.2",
   "numpy==2.2.3",
   "plotly==5.24.1",
-  "pydrake==0.2.1",
+  "pycddlib==3.0.2",
   "scipy==1.15.2",
+  "shapely==2.1.2",
   "tqdm==4.67.1",
 ]
 
 [tool.setuptools.packages.find]
-include = ["stgcs", "stgcs.*"]
-exclude = ["baselines*", "environment*", "experiments*", "visualization*", "demos*", "data*"]
+include = [
+  "baselines",
+  "baselines.*",
+  "demos",
+  "demos.*",
+  "benchmark",
+  "benchmark.*",
+  "stgcs",
+  "stgcs.*",
+  "visualization",
+  "visualization.*",
+]
+exclude = ["experiments*", "data*"]
+
+[tool.setuptools.package-data]
+baselines = ["ompl_kcbs_native/*", "ompl_strrt_star_native/*"]
+visualization = ["viewer/*.html"]

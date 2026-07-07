@@ -14,13 +14,13 @@ import numpy as np
 from matplotlib.lines import Line2D
 from matplotlib.ticker import FixedLocator, FuncFormatter, NullFormatter, NullLocator
 
-from experiments.base.heuristic_ablation_run_search import STHeuristicAblationRunner
-from experiments.base.performance_comparison_run_search import STPerformanceComparisonRunner
+from experiments.st_runners.heuristic_ablation_run_search import STHeuristicAblationRunner
+from experiments.st_runners.performance_comparison_run_search import STPerformanceComparisonRunner
 from experiments.plot.plot_results_common import BoxplotStyle, PlotPalette, _save_figure, dedupe_result_rows, plt
 
 
 class STPerformanceComparisonReport:
-    DEFAULT_RESULTS_ROOT = Path("data/st_planning/performance_comparison/results")
+    DEFAULT_RESULTS_ROOT = Path("data/results/st_planning/performance_comparison")
     DEFAULT_OUTPUT_PREFIX = Path("latex/figs/st_performance_comparison")
     DEFAULT_BUDGET = 600.0
     IPC_PLANNER = STPerformanceComparisonRunner.IPC_PLANNER

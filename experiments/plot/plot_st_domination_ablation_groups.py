@@ -20,14 +20,14 @@ from matplotlib.ticker import (
     PercentFormatter,
 )
 
-from experiments.base.heuristic_ablation_st_manifest import STHeuristicAblationManifestBuilder
+from experiments.st_runners.heuristic_ablation_st_manifest import STHeuristicAblationManifestBuilder
 from experiments.plot.plot_results_common import BoxplotStyle, PlotPalette, _save_figure, plt
 from experiments.plot.plot_st_heuristic_ablation_groups import STHeuristicAblationGroupReport
 
 
 class STDominationAblationGroupReport(STHeuristicAblationGroupReport):
-    DEFAULT_MANIFEST = Path("data/st_planning/manifest.json")
-    DEFAULT_RESULTS_ROOT = Path("data/st_planning/domination_ablation/results")
+    DEFAULT_MANIFEST = Path("data/instances/st_planning/manifest.json")
+    DEFAULT_RESULTS_ROOT = Path("data/results/st_planning/domination_ablation")
     DEFAULT_OUTPUT_PREFIX = Path("latex/figs/dc_ablation")
 
     PLANNERS = (

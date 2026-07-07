@@ -10,8 +10,8 @@ import numpy as np
 from pydrake.all import HPolyhedron
 
 from baselines.common import ShortestPathSolution
-from environment.env import Env
-from environment.obstacle import StaticPolygon, StaticSphere
+from benchmark.environment.env import Env
+from benchmark.environment.obstacle import StaticPolygon, StaticSphere
 from stgcs.interval import Interval
 from stgcs.st_planner import MPQuery
 

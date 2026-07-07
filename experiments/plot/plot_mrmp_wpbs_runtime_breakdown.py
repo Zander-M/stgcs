@@ -16,9 +16,9 @@ configure_matplotlib_for_latex(backend="Agg")
 
 from matplotlib.ticker import FixedFormatter, FixedLocator, NullFormatter, PercentFormatter
 
-from experiments.base.manifest import BaseBenchmarkRecord, load_manifest as load_base_manifest
-from experiments.mrmp.manifest import MRMPBenchmarkRecord, load_manifest
-from experiments.mrmp.planner_defs import MRMPPerformanceComparison
+from benchmark.manifests.base import BaseBenchmarkRecord, load_manifest as load_base_manifest
+from benchmark.manifests.mrmp import MRMPBenchmarkRecord, load_manifest
+from benchmark.planners.mrmp import MRMPPerformanceComparison
 from experiments.plot.plot_mrmp_performance_comparison import MRMPPerformanceComparisonReport
 from experiments.plot.plot_results_common import PlotPalette, _save_figure, plt
 

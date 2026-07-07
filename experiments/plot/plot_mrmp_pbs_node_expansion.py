@@ -11,8 +11,8 @@ configure_matplotlib_for_latex(backend="Agg")
 
 from matplotlib.ticker import FixedLocator, FuncFormatter, MaxNLocator
 
-from experiments.mrmp.common import MRMPExperiment
-from experiments.mrmp.planner_defs import PBSExpansionAblation, PBSExpansionRuleSpec
+from experiments.mrmp_runners.common import MRMPExperiment
+from benchmark.planners.mrmp import PBSExpansionAblation, PBSExpansionRuleSpec
 from experiments.plot.plot_results_common import BoxplotStyle, PlotPalette, _save_figure, _set_square_cells, dedupe_result_rows, plt
 
 

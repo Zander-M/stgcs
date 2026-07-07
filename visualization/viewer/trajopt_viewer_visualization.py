@@ -6,11 +6,11 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
 
-from experiments.mrmp.manifest import MRMPBenchmarkRecord
+from benchmark.manifests.mrmp import MRMPBenchmarkRecord
 from visualization.viewer.build_viewer_manifest import ViewerManifestBuilder
 from visualization.viewer.solution_visualization import SolutionVisualizationService
 from stgcs.trajectory import STTrajectory
-from stgcs.trajopt_postprocessing import GlobalTrajOptConfig, GlobalTrajOptResult
+from demos.trajopt.optimization import GlobalTrajOptConfig, GlobalTrajOptResult
 
 
 class TrajOptViewerVisualization:

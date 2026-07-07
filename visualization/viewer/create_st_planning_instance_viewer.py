@@ -3,7 +3,6 @@ from __future__ import annotations
 import argparse
 from copy import deepcopy
 import json
-import sys
 from dataclasses import dataclass
 from http import HTTPStatus
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
@@ -13,18 +12,17 @@ from urllib.parse import parse_qs, urlencode, urlparse
 
 import numpy as np
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-
-from experiments.base.common import BaseInstanceFactory
-from experiments.base.heuristic_ablation_st_manifest import (
-    STHeuristicAblationManifestBuilder,
+from benchmark.base import BaseInstanceFactory
+from benchmark.manifests.base import BaseBenchmarkRecord, load_manifest as load_base_manifest
+from benchmark.instance import Instance
+from benchmark.manifests.st_planning import (
     STHeuristicAblationRecord,
+    STPlanningManifestStore,
     STQuerySpec,
 )
-from experiments.base.manifest import BaseBenchmarkRecord, load_manifest as load_base_manifest
-from experiments.instance import Instance
 from visualization.viewer.build_viewer_manifest import ViewerManifestBuilder
 from visualization.viewer.solution_visualization import SolutionVisualizationService
+from visualization.viewer.static_assets import ViewerStaticAssets
 
 
 @dataclass(frozen=True)
@@ -36,7 +34,7 @@ class DraftBuildResult:
 class STPlanningInstanceCreator:
     DEFAULT_TMAX = 1000.0
     DEFAULT_VLIMIT = 1.0
-    DEFAULT_OUTPUT = Path("data/st_planning/custom/manifest.json")
+    DEFAULT_OUTPUT = Path("data/instances/st_planning/custom/manifest.json")
     DEFAULT_QUERY_SAMPLE_ATTEMPTS = 64
 
     PAGE_HTML = r"""<!doctype html>
@@ -930,7 +928,7 @@ class STPlanningInstanceCreator:
         record = self.record_from_draft(draft)
         viewer_manifest = ViewerManifestBuilder.build_manifest(
             [record],
-            source_manifest_path=Path("data/st_planning/custom/manifest.json"),
+            source_manifest_path=Path("data/instances/st_planning/custom/manifest.json"),
             instance_ids=[],
             limit=None,
             base_root=self.base_root,
@@ -955,7 +953,7 @@ class STPlanningInstanceCreator:
         target = STPlanningInstanceCreator.resolve_manifest_path(path)
         if not target.exists():
             return []
-        return STHeuristicAblationManifestBuilder.load_manifest(target)
+        return STPlanningManifestStore.load_manifest(target)
 
     @staticmethod
     def existing_record_to_selector_json(record: STHeuristicAblationRecord) -> Dict[str, Any]:
@@ -989,9 +987,9 @@ class STPlanningInstanceCreator:
         if self.current_record is None:
             raise ValueError("No current instance has been previewed.")
         target = self.resolve_manifest_path(output_path)
-        records = STHeuristicAblationManifestBuilder.load_manifest(target) if target.exists() else []
-        records = STHeuristicAblationManifestBuilder.merge_records_by_instance_id(records, [self.current_record])
-        STHeuristicAblationManifestBuilder.save_manifest(target, records)
+        records = STPlanningManifestStore.load_manifest(target) if target.exists() else []
+        records = STPlanningManifestStore.merge_records_by_instance_id(records, [self.current_record])
+        STPlanningManifestStore.save_manifest(target, records)
         return target
 
     @staticmethod
@@ -1026,9 +1024,6 @@ class STPlanningInstanceCreator:
         app = self
 
         class Handler(SimpleHTTPRequestHandler):
-            def __init__(self, *handler_args, **handler_kwargs):
-                super().__init__(*handler_args, directory=str(REPO_ROOT), **handler_kwargs)
-
             def end_headers(self) -> None:
                 self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
                 super().end_headers()
@@ -1036,6 +1031,9 @@ class STPlanningInstanceCreator:
             def do_GET(self) -> None:
                 parsed = urlparse(self.path)
                 try:
+                    if ViewerStaticAssets.is_viewer_path(parsed.path):
+                        ViewerStaticAssets.write_html_response(self)
+                        return
                     if parsed.path == "/":
                         app.html_response(self, app.PAGE_HTML)
                         return
@@ -1056,7 +1054,7 @@ class STPlanningInstanceCreator:
                     if parsed.path == "/api/solution-planners":
                         app.json_response(self, HTTPStatus.OK, app.solution_service.planner_payload())
                         return
-                    super().do_GET()
+                    app.error_response(self, HTTPStatus.NOT_FOUND, FileNotFoundError(parsed.path))
                 except Exception as exc:
                     app.error_response(self, HTTPStatus.BAD_REQUEST, exc)
 

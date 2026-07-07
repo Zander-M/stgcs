@@ -9,7 +9,7 @@ from typing import Callable, Dict, List, Optional, Sequence
 import numpy as np
 
 from baselines.common import ShortestPathSolution
-from environment.obstacle import ConcatDynamicSphere, DynamicSphere
+from benchmark.environment.obstacle import ConcatDynamicSphere, DynamicSphere
 from stgcs.interval import Interval
 from stgcs.trajectory import STTrajectory
 

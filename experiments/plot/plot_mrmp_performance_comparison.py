@@ -12,8 +12,8 @@ configure_matplotlib_for_latex(backend="Agg")
 
 from matplotlib.ticker import FixedLocator, NullFormatter, NullLocator
 
-from experiments.mrmp.common import MRMPExperiment
-from experiments.mrmp.planner_defs import MRMPPerformanceComparison
+from experiments.mrmp_runners.common import MRMPExperiment
+from benchmark.planners.mrmp import MRMPPerformanceComparison
 from experiments.plot.plot_results_common import PlotPalette, _save_figure, dedupe_result_rows, plt
 
 

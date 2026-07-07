@@ -24,7 +24,7 @@ comparison rows explicitly with:
 ```bash
 MPLCONFIGDIR=/private/tmp/mpl XDG_CACHE_HOME=/private/tmp \
   /Users/jingtao/miniconda3/envs/gcs/bin/python \
-  -m exp.base.performance_comparison_run_search \
+  -m experiments.st_runners.performance_comparison_run_search \
   data/st_planning/manifest.json \
   --planner ompl_strrt_star \
   --budget 600 \
