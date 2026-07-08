@@ -274,7 +274,7 @@ class MRMPRunCLI:
                         base_manifest_path,
                         base_record,
                         PBSExpansionAblation.required_heuristics(),
-                        online_td_timeout_secs=max(budget for budget, _ in pending_runs),
+                        online_h_tab_timeout_secs=max(budget for budget, _ in pending_runs),
                     )
                 for budget, rule in pending_runs:
                     cls.update_progress_status(progress, state, record, budget, rule.label, "running")

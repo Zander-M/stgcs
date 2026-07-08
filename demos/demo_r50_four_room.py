@@ -54,9 +54,9 @@ CHILD_EXPANSION_LABELS = {
     "num_conflicts": "NumConflicts",
 }
 
-LOW_LEVEL_HEURISTIC = "Max"
-LOW_LEVEL_DOMINATION = ("GUB", "IPC")
-PLANNER_KEY_PREFIX = "wc-wpbs-max-gub-ipc"
+LOW_LEVEL_HEURISTIC = "h_max"
+LOW_LEVEL_DOMINANCE_CHECKS = ("GUB", "delta_pos")
+PLANNER_KEY_PREFIX = "wc-wpbs-h-max-gub-delta-pos"
 TRAJOPT_PLANNER_SUFFIX = "global-trajopt"
 
 TRAJOPT_SAMPLE_DT_FACTOR = 1.0
@@ -165,7 +165,7 @@ if __name__ == "__main__":
     child_expansion_rule = str(args.child_expansion_rule)
     low_level_spec = SearchPlannerSpec(
         LOW_LEVEL_HEURISTIC,
-        LOW_LEVEL_DOMINATION,
+        LOW_LEVEL_DOMINANCE_CHECKS,
         epsilon=epsilon,
     )
     selected_planner_key = f"{PLANNER_KEY_PREFIX}-{child_expansion_rule}"

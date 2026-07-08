@@ -1,8 +1,8 @@
 {
   "ok": true,
   "instance_id": "mrmp-base-empty-square2d-seed00000-100-robot-random-local",
-  "planner_key": "wc-wpbs-max-gub-ipc-num_conflicts",
-  "planner_name": "WC(alpha=5) + wPBS-NumConflicts + Search(Max+GUB+IPC,eps=1000)",
+  "planner_key": "wc-wpbs-h-max-gub-delta-pos-num_conflicts",
+  "planner_name": "WC(alpha=5) + wPBS-NumConflicts + Search(h_max+GUB+delta_pos,eps=1000)",
   "budget": 300.0,
   "status": "SUCCESS",
   "is_success": true,
@@ -17,8 +17,8 @@
   "has_partial_solution": false,
   "path_alpha": 0.98,
   "body_alpha": 0.82,
-  "pwl_planner_key": "wc-wpbs-max-gub-ipc-num_conflicts",
-  "pwl_planner_name": "WC(alpha=5) + wPBS-NumConflicts + Search(Max+GUB+IPC,eps=1000)",
+  "pwl_planner_key": "wc-wpbs-h-max-gub-delta-pos-num_conflicts",
+  "pwl_planner_name": "WC(alpha=5) + wPBS-NumConflicts + Search(h_max+GUB+delta_pos,eps=1000)",
   "pwl_runtime": 95.86283416626975,
   "pwl_cost": 1125.0,
   "pwl_makespan": 11.25,
@@ -72027,10 +72027,10 @@
   "execution_horizon_factor": 1.0,
   "dynamic_window_adjustment": true,
   "epsilon": 1000.0,
-  "low_level_heuristic": "Max",
-  "domination_checks": [
+  "low_level_heuristic": "h_max",
+  "dominance_checks": [
     "GUB",
-    "IPC"
+    "delta_pos"
   ],
   "coordination": "windowed-pbs",
   "child_expansion_rule": "num_conflicts",

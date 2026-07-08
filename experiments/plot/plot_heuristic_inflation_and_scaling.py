@@ -32,15 +32,15 @@ class HeuristicInflationAndScalingPlot:
     BASELINE_EPSILON = 1.0
     EPSILONS = (1.25, 2.5, 5.0, 10.0)
     COST_BOXPLOT_EPSILONS = EPSILONS
-    DOMINATION_STACK = STHeuristicInflationRunCLI.DOMINATION_STACK
+    DOMINANCE_CHECK_STACK = STHeuristicInflationRunCLI.DOMINANCE_CHECK_STACK
     RUNTIME_REDUCTION_Y_TICKS = (0.0, 30.0, 60.0, 90.0)
     RUNTIME_REDUCTION_Y_LOWER_LIMIT = -4.0
     RUNTIME_REDUCTION_Y_UPPER_LIMIT = 104.0
     COST_BOXPLOT_MIN_INCREASE_PERCENT_BY_HEURISTIC = {
-        "SC": 0.01,
-        "LBG": 0.01,
-        "TD": 0.01,
-        "Max": 0.01,
+        "h_mot": 0.01,
+        "h_tri": 0.01,
+        "h_tab": 0.01,
+        "h_max": 0.01,
     }
     COST_BOXPLOT_WHIS = (5, 95)
     COST_BOXPLOT_WIDTH_FRACTION = 0.09
@@ -51,50 +51,50 @@ class HeuristicInflationAndScalingPlot:
     COST_BOXPLOT_SCATTER_SIZE = 9
     COST_BOXPLOT_SCATTER_ALPHA = 0.58
     SCALING_HEURISTICS = (
-        BaseOfflineHeuristicStore.TD_NAME,
-        BaseOfflineHeuristicStore.LBG_NAME,
+        BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME,
+        BaseOfflineHeuristicStore.TRIPLET_RELAXATION_NAME,
     )
     SCALING_INLINE_LABEL_TARGET_X = {
-        BaseOfflineHeuristicStore.TD_NAME: 125.0,
-        BaseOfflineHeuristicStore.LBG_NAME: 130.0,
+        BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME: 125.0,
+        BaseOfflineHeuristicStore.TRIPLET_RELAXATION_NAME: 130.0,
     }
     SCALING_INLINE_LABEL_Y_FACTOR = {
-        BaseOfflineHeuristicStore.TD_NAME: 3.0,
-        BaseOfflineHeuristicStore.LBG_NAME: 0.45,
+        BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME: 3.0,
+        BaseOfflineHeuristicStore.TRIPLET_RELAXATION_NAME: 0.45,
     }
     SCALING_X_LOWER_LIMIT = -10
     SCALING_SIZE_UPPER_LIMIT = 210
     SCALING_X_TICKS = (0, 100, 200)
     HEURISTIC_STYLES = {
-        "SC": {
+        "h_mot": {
             "label": r"$h_\text{mot}$",
-            "color": PlotPalette.heuristic_color("SC"),
+            "color": PlotPalette.heuristic_color("h_mot"),
             "marker": "o",
         },
-        "LBG": {
+        "h_tri": {
             "label": r"$h_\text{tri}$",
-            "color": PlotPalette.heuristic_color("LBG"),
+            "color": PlotPalette.heuristic_color("h_tri"),
             "marker": "^",
         },
-        "TD": {
+        "h_tab": {
             "label": r"$h_\text{tab}$",
-            "color": PlotPalette.heuristic_color("TD"),
+            "color": PlotPalette.heuristic_color("h_tab"),
             "marker": "s",
         },
-        "Max": {
+        "h_max": {
             "label": r"$h_\text{max}$",
-            "color": PlotPalette.heuristic_color("Max"),
+            "color": PlotPalette.heuristic_color("h_max"),
             "marker": "D",
         },
     }
     SCALING_HEURISTIC_STYLES = {
-        BaseOfflineHeuristicStore.TD_NAME: HEURISTIC_STYLES["TD"],
-        BaseOfflineHeuristicStore.LBG_NAME: HEURISTIC_STYLES["LBG"],
+        BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME: HEURISTIC_STYLES["h_tab"],
+        BaseOfflineHeuristicStore.TRIPLET_RELAXATION_NAME: HEURISTIC_STYLES["h_tri"],
     }
 
     @classmethod
     def planner_spec(cls, heuristic: str, epsilon: float) -> SearchPlannerSpec:
-        return SearchPlannerSpec(str(heuristic), cls.DOMINATION_STACK, epsilon=float(epsilon))
+        return SearchPlannerSpec(str(heuristic), cls.DOMINANCE_CHECK_STACK, epsilon=float(epsilon))
 
     @classmethod
     def planner_name(cls, heuristic: str, epsilon: float) -> str:
@@ -278,8 +278,13 @@ class HeuristicInflationAndScalingPlot:
         manifest_path: Path,
         heuristic: str,
     ) -> list[tuple[int, float, str]]:
-        del manifest_path, heuristic
-        return []
+        points: list[tuple[int, float, str]] = []
+        for record in load_manifest(manifest_path):
+            runtime = cls.finite_positive(record.heuristic_computation_times.get(str(heuristic), 0.0))
+            if runtime is None:
+                continue
+            points.append((cls.graph_size(record), runtime, record.instance_id))
+        return points
 
     @staticmethod
     def median_curve(points: Sequence[tuple[int, float, str]]) -> tuple[list[int], list[float]]:
@@ -630,10 +635,10 @@ class HeuristicInflationAndScalingPlot:
     @staticmethod
     def boxplot_offset_by_heuristic() -> dict[str, float]:
         return {
-            "SC": 0.79,
-            "LBG": 0.93,
-            "TD": 1.07,
-            "Max": 1.21,
+            "h_mot": 0.79,
+            "h_tri": 0.93,
+            "h_tab": 1.07,
+            "h_max": 1.21,
         }
 
     @classmethod
@@ -812,7 +817,7 @@ class HeuristicInflationAndScalingPlot:
                 f"and {inflation_results_root}."
             )
         if not scaling_plotted:
-            raise ValueError(f"No TD/LBG timing records found for {scaling_manifest_path}.")
+            raise ValueError(f"No h_tab/h_tri timing records found for {scaling_manifest_path}.")
 
         handles, labels = runtime_ax.get_legend_handles_labels()
         fig.legend(
@@ -834,7 +839,7 @@ class HeuristicInflationAndScalingPlotCLI:
     def parse_args(cls) -> argparse.Namespace:
         parser = argparse.ArgumentParser(
             description=(
-                "Plot BFS heuristic-inflation effects under GUB-only domination and offline TD/LBG "
+                "Plot BFS heuristic-inflation effects under GUB-only dominance and offline h_tab/h_tri "
                 "heuristic computation time."
             )
         )

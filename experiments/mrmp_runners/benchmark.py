@@ -1549,14 +1549,14 @@ class PBSExpansionMRMPManifestBuilder(GridMRMPManifestBuilder):
     def _prepare_low_level_heuristics(cls, instance, base_record: BaseBenchmarkRecord) -> None:
         if base_record.manifest_path is None:
             raise ValueError(
-                f"Base record {base_record.instance_id!r} needs a manifest path to load Max heuristic caches."
+                f"Base record {base_record.instance_id!r} needs a manifest path to load h_max heuristic caches."
             )
         BaseOfflineHeuristicStore.prepare_instance_for_search(
             instance,
             base_record.manifest_path,
             base_record,
             PBSExpansionAblation.required_heuristics(),
-            online_td_timeout_secs=cls.independent_reference_budget(base_record.domain_key),
+            online_h_tab_timeout_secs=cls.independent_reference_budget(base_record.domain_key),
         )
 
     @classmethod

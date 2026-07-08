@@ -24,27 +24,27 @@ class STHeuristicAblationGroupReport:
 
     FIGURE_PLANNERS = (
         "Search(GUB)",
-        "Search(SC+GUB)",
-        "Search(LBG+GUB)",
-        "Search(TD+GUB)",
-        "Search(Max+GUB)",
+        "Search(h_mot+GUB)",
+        "Search(h_tri+GUB)",
+        "Search(h_tab+GUB)",
+        "Search(h_max+GUB)",
     )
     TABLE_PLANNERS = (
-        "Search(SC+GUB)",
-        "Search(LBG+GUB)",
-        "Search(TD+GUB)",
+        "Search(h_mot+GUB)",
+        "Search(h_tri+GUB)",
+        "Search(h_tab+GUB)",
     )
     PLANNER_SHORT_LABELS = {
         "Search(GUB)": r"$h_\text{zero}$",
-        "Search(SC+GUB)": r"$h_\text{mot}$",
-        "Search(LBG+GUB)": r"$h_\text{tri}$",
-        "Search(TD+GUB)": r"$h_\text{tab}$",
-        "Search(Max+GUB)": r"$h_\text{max}$",
+        "Search(h_mot+GUB)": r"$h_\text{mot}$",
+        "Search(h_tri+GUB)": r"$h_\text{tri}$",
+        "Search(h_tab+GUB)": r"$h_\text{tab}$",
+        "Search(h_max+GUB)": r"$h_\text{max}$",
     }
     TABLE_PAIRS = (
-        ("Search(SC+GUB)", "Search(LBG+GUB)"),
-        ("Search(SC+GUB)", "Search(TD+GUB)"),
-        ("Search(LBG+GUB)", "Search(TD+GUB)"),
+        ("Search(h_mot+GUB)", "Search(h_tri+GUB)"),
+        ("Search(h_mot+GUB)", "Search(h_tab+GUB)"),
+        ("Search(h_tri+GUB)", "Search(h_tab+GUB)"),
     )
     GROUP_ORDER = ("maze", "grid2d", "iris2d")
     GROUP_LABELS = {
@@ -75,11 +75,11 @@ class STHeuristicAblationGroupReport:
     FIGURE_X_LABELS = METRIC_LABELS
     FIGURE_METRIC_ORDER = ("runtime", "expanded")
     FIGURE_HEURISTIC_COLORS = {
-        "Search(GUB)": PlotPalette.heuristic_color("Zero"),
-        "Search(SC+GUB)": PlotPalette.heuristic_color("SC"),
-        "Search(LBG+GUB)": PlotPalette.heuristic_color("LBG"),
-        "Search(TD+GUB)": PlotPalette.heuristic_color("TD"),
-        "Search(Max+GUB)": PlotPalette.heuristic_color("Max"),
+        "Search(GUB)": PlotPalette.heuristic_color("h_zero"),
+        "Search(h_mot+GUB)": PlotPalette.heuristic_color("h_mot"),
+        "Search(h_tri+GUB)": PlotPalette.heuristic_color("h_tri"),
+        "Search(h_tab+GUB)": PlotPalette.heuristic_color("h_tab"),
+        "Search(h_max+GUB)": PlotPalette.heuristic_color("h_max"),
     }
     FIGURE_Y_TICKS = {
         "runtime": {
@@ -801,7 +801,7 @@ class STHeuristicAblationGroupReport:
                 "\\multicolumn{3}{c}{Median ratio} \\\\"
             ),
             "\\cmidrule(lr){3-5}\\cmidrule(lr){7-9}\\cmidrule(lr){10-12}",
-            "Group & Inst. & SC & LBG & TD & All & SC & LBG & TD & SC/LBG & SC/TD & LBG/TD \\\\",
+            "Group & Inst. & h_mot & h_tri & h_tab & All & h_mot & h_tri & h_tab & h_mot/h_tri & h_mot/h_tab & h_tri/h_tab \\\\",
             "\\midrule",
         ]
         for group in cls.GROUP_ORDER:

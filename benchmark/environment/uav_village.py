@@ -10,7 +10,7 @@ from typing import Any
 import numpy as np
 
 from benchmark.environment.env import Env
-from stgcs.bfs.heuristics import HeurLowerBoundGraph, HeurShortCut
+from stgcs.bfs.heuristics import TripletRelaxationHeuristic, MotionOnlyHeuristic
 from stgcs.st_planner import MPQuery
 
 
@@ -21,9 +21,9 @@ class VillagePlanningInstance(SimpleNamespace):
         gcs_instance = self.stgcs.get_gcs_instance()
         if gcs_instance is None:
             raise RuntimeError("Failed to build the base GCS instance for the 3D UAV village.")
-        self.sc_heur = HeurShortCut(self.stgcs)
-        self.lbg = HeurLowerBoundGraph(self.stgcs, gcs_instance.gcs, use_update=True)
-        self.td_heur = None
+        self.motion_only_heuristic = MotionOnlyHeuristic(self.stgcs)
+        self.triplet_relaxation_heuristic = TripletRelaxationHeuristic(self.stgcs, gcs_instance.gcs, use_update=True)
+        self.interface_to_set_cost_table_heuristic = None
 
 
 class VillageEnv:
@@ -890,19 +890,19 @@ class VillageEnv:
         stgcs = env.build_STGCS(t0=0.0, tmax=float(tmax), vlimit=float(vlimit))
         stgcs.make_leaves_roots()
         record["stgcs_num_edges"] = int(stgcs.G.number_of_edges())
-        sc_heur = None
-        lbg = None
+        motion_only_heuristic = None
+        triplet_relaxation_heuristic = None
         if build_heuristics:
             gcs_instance = stgcs.get_gcs_instance()
             if gcs_instance is None:
                 raise RuntimeError("Failed to build the base GCS instance for the 3D UAV village.")
-            sc_heur = HeurShortCut(stgcs)
-            lbg = HeurLowerBoundGraph(stgcs, gcs_instance.gcs, use_update=True)
+            motion_only_heuristic = MotionOnlyHeuristic(stgcs)
+            triplet_relaxation_heuristic = TripletRelaxationHeuristic(stgcs, gcs_instance.gcs, use_update=True)
         return VillagePlanningInstance(
             name=record["instance_id"],
             env=env,
             stgcs=stgcs,
-            sc_heur=sc_heur,
-            lbg=lbg,
-            td_heur=None,
+            motion_only_heuristic=motion_only_heuristic,
+            triplet_relaxation_heuristic=triplet_relaxation_heuristic,
+            interface_to_set_cost_table_heuristic=None,
         )

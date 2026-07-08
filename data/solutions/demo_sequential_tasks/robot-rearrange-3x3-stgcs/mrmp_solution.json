@@ -6,7 +6,7 @@
   "task_name": "robot_rearrange_3x3_stgcs",
   "phase": "mrmp",
   "planner_key": "sequential-mrmp-wpbs",
-  "planner_name": "wPBS-NumConflicts + Search(SC+GUB+IPC)",
+  "planner_name": "wPBS-NumConflicts + Search(h_mot+GUB+delta_pos)",
   "status": "SUCCESS",
   "is_success": true,
   "task_type": "rearrangement",
@@ -47,10 +47,10 @@
     "coordination": "windowed-pbs",
     "child_expansion_rule": "num_conflicts",
     "child_expansion_mode": "NUM_CONFLICTS",
-    "low_level_heuristic": "SC",
-    "domination_checks": [
+    "low_level_heuristic": "h_mot",
+    "dominance_checks": [
       "GUB",
-      "IPC"
+      "delta_pos"
     ],
     "epsilon": 1.0,
     "vlimit": 0.25,

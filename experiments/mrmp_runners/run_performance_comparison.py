@@ -275,7 +275,7 @@ class MRMPPerformanceComparisonRunCLI:
                     base_manifest_path,
                     base_record,
                     cls.BENCHMARK.required_heuristics(),
-                    online_td_timeout_secs=budget,
+                    online_h_tab_timeout_secs=budget,
                 )
             if planner_key == cls.BENCHMARK.PBS_KEY:
                 entry = MRMPExperiment.run_full_horizon_pbs_spec(

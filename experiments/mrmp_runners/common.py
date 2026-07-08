@@ -14,18 +14,19 @@ from baselines.pbs_zeta_sipp import ZetaSIPPPriorityBasedSearch
 from baselines.sp_strrtstar import FixedPrioritySTRRTStarPlanner, FixedPrioritySTRRTStarSnapshot
 from benchmark.manifests.base import BaseBenchmarkRecord
 from benchmark.base import BaseInstanceFactory
+from benchmark.offline_heuristics import BaseOfflineHeuristicStore
 from experiments.common import MPResultEntry
 from benchmark.manifests.mrmp import MRMPBenchmarkRecord
 from benchmark.planners.mrmp import SearchPlannerSpec
 from stgcs.bfs.best_first_search import SearchAlgorithm
-from stgcs.bfs.domination_check import (
-    AStar_DC,
-    ExactSetContainment_DC,
-    GlobalUpperBound_DC,
-    InexactSetContainment_DC,
-    Sampling_DC,
+from stgcs.bfs.dominance_check import (
+    AStarDominanceCheck,
+    SetContainmentDominanceCheck,
+    GlobalUpperBoundDominanceCheck,
+    ArrivalStateContainmentDominanceCheck,
+    PositionBasedDominanceCheck,
 )
-from stgcs.bfs.heuristics import HeurLowerBoundGraph, HeurShortCut, HeurZero, MaxHeuristic
+from stgcs.bfs.heuristics import TripletRelaxationHeuristic, MotionOnlyHeuristic, ZeroHeuristic, MaxHeuristic
 from stgcs.pbs import ChildExpansionMode, PriorityBasedSearch
 from stgcs.mrmp_planner import MRMPQuery, pp, windowed_pbs, windowed_pp
 from stgcs.st_planner import SearchPlanner
@@ -57,10 +58,10 @@ class MRMPResultEntry:
     mp_search_runtime: float = 0.0
     mp_convex_restriction_calls: int = 0
     mp_convex_restriction_runtime: float = 0.0
-    mp_domination_check_calls: int = 0
-    mp_domination_check_runtime: float = 0.0
-    mp_domination_convex_restriction_calls: int = 0
-    mp_domination_convex_restriction_runtime: float = 0.0
+    mp_dominance_check_calls: int = 0
+    mp_dominance_check_runtime: float = 0.0
+    mp_dominance_convex_restriction_calls: int = 0
+    mp_dominance_convex_restriction_runtime: float = 0.0
 
 
 class MRMPExperiment:
@@ -75,19 +76,23 @@ class MRMPExperiment:
 
     @staticmethod
     def exact_reference_solve(instance, query, budget: float = float("inf")) -> Tuple[object | None, MPResultEntry]:
-        if instance.lbg is None:
+        if instance.triplet_relaxation_heuristic is None:
             gcs = instance.stgcs.get_gcs_instance().gcs
-            if instance.sc_heur is None:
-                instance.sc_heur = HeurShortCut(instance.stgcs)
-            instance.lbg = HeurLowerBoundGraph(instance.stgcs, gcs, use_update=True)
+            if instance.motion_only_heuristic is None:
+                instance.motion_only_heuristic = MotionOnlyHeuristic(instance.stgcs)
+            instance.triplet_relaxation_heuristic = TripletRelaxationHeuristic(
+                instance.stgcs,
+                gcs,
+                use_update=True,
+            )
 
         gcs_instance = instance.stgcs.get_gcs_instance(query)
         if gcs_instance is None:
             return None, MPResultEntry(False, 0.0, math.inf)
 
         astar = SearchAlgorithm(
-            heuristics=instance.lbg,
-            domination_checker=[AStar_DC()],
+            heuristics=instance.triplet_relaxation_heuristic,
+            dominance_checks=[AStarDominanceCheck()],
         )
         sol = astar.run(instance.stgcs, gcs_instance.gcs, timeout_seconds=budget)
         if sol is None:
@@ -96,26 +101,26 @@ class MRMPExperiment:
 
     @staticmethod
     def _heuristic_by_name(instance, name: str):
-        if name == "Zero":
-            return HeurZero(instance.stgcs)
-        if name == "SC":
-            if instance.sc_heur is None:
-                instance.sc_heur = HeurShortCut(instance.stgcs)
-            return instance.sc_heur
-        if name == "LBG":
-            if instance.lbg is None:
-                raise ValueError("Offline LBG heuristic is not loaded.")
-            return instance.lbg
-        if name == "TD":
-            if instance.td_heur is None:
-                raise ValueError("Offline TD heuristic is not loaded.")
-            return instance.td_heur
-        if name == "Max":
+        if name == BaseOfflineHeuristicStore.ZERO_NAME:
+            return ZeroHeuristic(instance.stgcs)
+        if name == BaseOfflineHeuristicStore.MOTION_ONLY_NAME:
+            if instance.motion_only_heuristic is None:
+                instance.motion_only_heuristic = MotionOnlyHeuristic(instance.stgcs)
+            return instance.motion_only_heuristic
+        if name == BaseOfflineHeuristicStore.TRIPLET_RELAXATION_NAME:
+            if instance.triplet_relaxation_heuristic is None:
+                raise ValueError("Offline h_tri heuristic is not loaded.")
+            return instance.triplet_relaxation_heuristic
+        if name == BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME:
+            if instance.interface_to_set_cost_table_heuristic is None:
+                raise ValueError("Offline h_tab heuristic is not loaded.")
+            return instance.interface_to_set_cost_table_heuristic
+        if name == BaseOfflineHeuristicStore.MAX_NAME:
             return MaxHeuristic.from_instance(instance)
         raise ValueError(f"Unknown heuristic {name!r}")
 
     @staticmethod
-    def _domination_by_names(
+    def _dominance_checks_by_names(
         instance,
         names: Iterable[str],
         ub_cost: float,
@@ -127,22 +132,22 @@ class MRMPExperiment:
         checkers = []
         for name in names:
             if name == "GUB":
-                checkers.append(GlobalUpperBound_DC(ub_cost, ub_runtime, epsilon))
-            elif name == "IPC":
-                checkers.append(Sampling_DC())
-            elif name == "ISC":
-                checkers.append(InexactSetContainment_DC(vmin, vmax))
-            elif name == "ESC":
+                checkers.append(GlobalUpperBoundDominanceCheck(ub_cost, ub_runtime, epsilon))
+            elif name == "delta_pos":
+                checkers.append(PositionBasedDominanceCheck())
+            elif name == "delta_state":
+                checkers.append(ArrivalStateContainmentDominanceCheck(vmin, vmax))
+            elif name == "delta_set":
                 checkers.append(
-                    ExactSetContainment_DC(
+                    SetContainmentDominanceCheck(
                         vmin,
                         vmax,
                         instance.stgcs.tmax,
-                        option=ExactSetContainment_DC.Option.VERTEX_ONLY,
+                        option=SetContainmentDominanceCheck.Option.VERTEX_ONLY,
                     )
                 )
             else:
-                raise ValueError(f"Unknown domination checker {name!r}")
+                raise ValueError(f"Unknown dominance check {name!r}")
         return checkers
 
     @classmethod
@@ -155,9 +160,9 @@ class MRMPExperiment:
         if spec.exact_astar:
             raise ValueError("MRMP runner only supports low-level SearchPlanner specs.")
         heuristic = cls._heuristic_by_name(instance, spec.heuristic)
-        domination = cls._domination_by_names(instance, spec.domination, math.inf, 0.0, spec.epsilon)
+        dominance = cls._dominance_checks_by_names(instance, spec.dominance_checks, math.inf, 0.0, spec.epsilon)
         return SearchPlanner(
-            dc_list=domination,
+            dc_list=dominance,
             heur=heuristic,
             eps=spec.epsilon,
             runtime_limit_secs=runtime_limit_secs,
@@ -210,8 +215,8 @@ class MRMPExperiment:
         mp_gub_stats: np.ndarray | None = None,
         mp_search_stats: np.ndarray | None = None,
         mp_convex_restriction_stats: np.ndarray | None = None,
-        mp_domination_check_stats: np.ndarray | None = None,
-        mp_domination_convex_restriction_stats: np.ndarray | None = None,
+        mp_dominance_check_stats: np.ndarray | None = None,
+        mp_dominance_convex_restriction_stats: np.ndarray | None = None,
     ) -> MRMPResultEntry:
         mp_gcs_stats = cls._zero_profile_stats() if mp_gcs_stats is None else np.asarray(mp_gcs_stats, dtype=float)
         mp_gub_stats = cls._zero_profile_stats() if mp_gub_stats is None else np.asarray(mp_gub_stats, dtype=float)
@@ -223,15 +228,15 @@ class MRMPExperiment:
             if mp_convex_restriction_stats is None
             else np.asarray(mp_convex_restriction_stats, dtype=float)
         )
-        mp_domination_check_stats = (
+        mp_dominance_check_stats = (
             cls._zero_profile_stats()
-            if mp_domination_check_stats is None
-            else np.asarray(mp_domination_check_stats, dtype=float)
+            if mp_dominance_check_stats is None
+            else np.asarray(mp_dominance_check_stats, dtype=float)
         )
-        mp_domination_convex_restriction_stats = (
+        mp_dominance_convex_restriction_stats = (
             cls._zero_profile_stats()
-            if mp_domination_convex_restriction_stats is None
-            else np.asarray(mp_domination_convex_restriction_stats, dtype=float)
+            if mp_dominance_convex_restriction_stats is None
+            else np.asarray(mp_dominance_convex_restriction_stats, dtype=float)
         )
         if is_success:
             if solutions is None:
@@ -267,10 +272,10 @@ class MRMPExperiment:
             mp_search_runtime=float(mp_search_stats[1]),
             mp_convex_restriction_calls=int(mp_convex_restriction_stats[0]),
             mp_convex_restriction_runtime=float(mp_convex_restriction_stats[1]),
-            mp_domination_check_calls=int(mp_domination_check_stats[0]),
-            mp_domination_check_runtime=float(mp_domination_check_stats[1]),
-            mp_domination_convex_restriction_calls=int(mp_domination_convex_restriction_stats[0]),
-            mp_domination_convex_restriction_runtime=float(mp_domination_convex_restriction_stats[1]),
+            mp_dominance_check_calls=int(mp_dominance_check_stats[0]),
+            mp_dominance_check_runtime=float(mp_dominance_check_stats[1]),
+            mp_dominance_convex_restriction_calls=int(mp_dominance_convex_restriction_stats[0]),
+            mp_dominance_convex_restriction_runtime=float(mp_dominance_convex_restriction_stats[1]),
         )
 
     @classmethod
@@ -306,8 +311,8 @@ class MRMPExperiment:
             mp_gub_stats=cls._profile_stats(pbs._profiler, "gub"),
             mp_search_stats=cls._profile_stats(pbs._profiler, "search"),
             mp_convex_restriction_stats=cls._profile_stats(pbs._profiler, "cr"),
-            mp_domination_check_stats=cls._profile_stats(pbs._profiler, "dc"),
-            mp_domination_convex_restriction_stats=cls._profile_stats(pbs._profiler, "dc_cr"),
+            mp_dominance_check_stats=cls._profile_stats(pbs._profiler, "dc"),
+            mp_dominance_convex_restriction_stats=cls._profile_stats(pbs._profiler, "dc_cr"),
         )
         return solutions, entry
 
@@ -397,8 +402,8 @@ class MRMPExperiment:
             mp_gub_stats=result.gub,
             mp_search_stats=result.search,
             mp_convex_restriction_stats=result.cr,
-            mp_domination_check_stats=result.dc,
-            mp_domination_convex_restriction_stats=result.dc_cr,
+            mp_dominance_check_stats=result.dc,
+            mp_dominance_convex_restriction_stats=result.dc_cr,
         )
         return solutions, entry
 
@@ -495,8 +500,8 @@ class MRMPExperiment:
             mp_gub_stats=result.gub,
             mp_search_stats=result.search,
             mp_convex_restriction_stats=result.cr,
-            mp_domination_check_stats=result.dc,
-            mp_domination_convex_restriction_stats=result.dc_cr,
+            mp_dominance_check_stats=result.dc,
+            mp_dominance_convex_restriction_stats=result.dc_cr,
         )
         return solutions, entry
 
@@ -611,8 +616,8 @@ class MRMPExperiment:
             mp_gub_stats=result.gub,
             mp_search_stats=result.search,
             mp_convex_restriction_stats=result.cr,
-            mp_domination_check_stats=result.dc,
-            mp_domination_convex_restriction_stats=result.dc_cr,
+            mp_dominance_check_stats=result.dc,
+            mp_dominance_convex_restriction_stats=result.dc_cr,
         )
         return solutions, entry
 
@@ -772,8 +777,8 @@ class MRMPExperiment:
             mp_gub_stats=cls._profile_stats(planner._profiler, "gub"),
             mp_search_stats=cls._profile_stats(planner._profiler, "search"),
             mp_convex_restriction_stats=cls._profile_stats(planner._profiler, "cr"),
-            mp_domination_check_stats=cls._profile_stats(planner._profiler, "dc"),
-            mp_domination_convex_restriction_stats=cls._profile_stats(planner._profiler, "dc_cr"),
+            mp_dominance_check_stats=cls._profile_stats(planner._profiler, "dc"),
+            mp_dominance_convex_restriction_stats=cls._profile_stats(planner._profiler, "dc_cr"),
         )
         return solutions, entry
 
@@ -1030,10 +1035,10 @@ class MRMPExperiment:
                     entry.mp_search_runtime,
                     entry.mp_convex_restriction_calls,
                     entry.mp_convex_restriction_runtime,
-                    entry.mp_domination_check_calls,
-                    entry.mp_domination_check_runtime,
-                    entry.mp_domination_convex_restriction_calls,
-                    entry.mp_domination_convex_restriction_runtime,
+                    entry.mp_dominance_check_calls,
+                    entry.mp_dominance_check_runtime,
+                    entry.mp_dominance_convex_restriction_calls,
+                    entry.mp_dominance_convex_restriction_runtime,
                 ]
             )
 
@@ -1081,12 +1086,12 @@ class MRMPExperiment:
                         "mp_convex_restriction_runtime": (
                             float(row[31]) if len(row) > 31 and row[31] != "inf" else 0.0
                         ),
-                        "mp_domination_check_calls": int(float(row[32])) if len(row) > 32 else 0,
-                        "mp_domination_check_runtime": (
+                        "mp_dominance_check_calls": int(float(row[32])) if len(row) > 32 else 0,
+                        "mp_dominance_check_runtime": (
                             float(row[33]) if len(row) > 33 and row[33] != "inf" else 0.0
                         ),
-                        "mp_domination_convex_restriction_calls": int(float(row[34])) if len(row) > 34 else 0,
-                        "mp_domination_convex_restriction_runtime": (
+                        "mp_dominance_convex_restriction_calls": int(float(row[34])) if len(row) > 34 else 0,
+                        "mp_dominance_convex_restriction_runtime": (
                             float(row[35]) if len(row) > 35 and row[35] != "inf" else 0.0
                         ),
                         "has_detailed_profile": len(row) > 33,

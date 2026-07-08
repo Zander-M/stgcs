@@ -27,11 +27,11 @@ class TieBreak(Enum):
     LIFO = 2
 
 
-class DominationChecker(ABC):
+class DominanceCheck(ABC):
 
     @abstractmethod
     def reset(self) -> None:
-        """ Reset the internal state of the domination checker. """
+        """ Reset the internal state of the dominance check. """
         raise NotImplementedError("reset method not implemented.")
 
     @abstractmethod
@@ -42,12 +42,12 @@ class DominationChecker(ABC):
     
     @property
     def name(self) -> str:
-        """ Returns the name of the domination checker. """
+        """ Returns the name of the dominance check. """
         raise NotImplementedError("name property not implemented.")
 
     @property
     def precomputation_time(self) -> float:
-        """ Returns the computation time of the domination checker. """
+        """ Returns the computation time of the dominance check. """
         raise NotImplementedError("precomputation_time property not implemented.")
 
     def is_stale(self, n: SearchNode) -> bool:
@@ -380,22 +380,23 @@ class SearchAlgorithm:
     """ Search algorithm for Spatiotemporal Planning on ST-GCS 
     
     - Example Usage:
-        - For GCS*-like (1-sampling + Shortcut heuristic):
+        - For GCS*-like (1-sampling + h_mot):
             gcs_star = SearchAlgorithm(
-                        heuristics=HeurShortCut(),
-                        domination_checker=Sampling_DC()
+                        heuristics=MotionOnlyHeuristic(),
+                        dominance_checks=[PositionBasedDominanceCheck()]
                     )
         - For IxG-like:
             gcs = stgcs.get_gcs_instance().gcs
             ixg = SearchAlgorithm(
-                    heuristics=HeurLowerBoundGraph(stgcs, gcs),
-                    domination_checker=AStar_DC()
+                    heuristics=TripletRelaxationHeuristic(stgcs, gcs),
+                    dominance_checks=[AStarDominanceCheck()]
                 )
 
             ixg_star = SearchAlgorithm(
-                heuristics = lbg_no_update,
-                domination_checker = GlobalUpperBound_DC(
+                heuristics = h_tri_no_update,
+                dominance_checks = [GlobalUpperBoundDominanceCheck(
                     ub=cost, ub_comp_time=astar.runtime, epsilon=eps)
+                ]
             )
     """
 
@@ -403,20 +404,20 @@ class SearchAlgorithm:
         self,
         heuristics: Heuristic,
         heuristic_inflation_factor: float = 1.0,
-        domination_checker: Optional[List[DominationChecker]] = None,
+        dominance_checks: Optional[List[DominanceCheck]] = None,
         tiebreak: TieBreak = TieBreak.FIFO,
         record_trace: bool = False,
         convex_restriction_cache: Optional[ConvexRestrictionCache] = None,
     ):
         self._ts = time.perf_counter()
-        self._domination_check_time = 0.0
+        self._dominance_check_time = 0.0
         self._convex_restriction_time = 0.0
         self._convex_restriction_calls = 0
         self._timeout_seconds = float('inf')
         self._OPEN = []
         self._heur: Heuristic = heuristics
         self._epsilon = heuristic_inflation_factor
-        self._dc: List[DominationChecker] = [] if domination_checker is None else domination_checker
+        self._dc: List[DominanceCheck] = [] if dominance_checks is None else dominance_checks
         self._convex_restriction_cache: ConvexRestrictionCache = (
             {} if convex_restriction_cache is None else convex_restriction_cache
         )
@@ -434,9 +435,9 @@ class SearchAlgorithm:
     def set_convex_restriction_cache(self, cache: ConvexRestrictionCache) -> None:
         self._convex_restriction_cache = cache
 
-    def reset_domination_checkers(self) -> None:
-        for checker in self._dc:
-            checker.reset()
+    def reset_dominance_checks(self) -> None:
+        for check in self._dc:
+            check.reset()
 
     @staticmethod
     def _convex_restriction_cache_key(vertex_path: Sequence[str]) -> Tuple[str, ...]:
@@ -482,7 +483,7 @@ class SearchAlgorithm:
         self._planning_time = time.perf_counter() - self._ts
         self.n_expanded = 0
         self.n_generated = 0
-        self._domination_check_time = 0.0
+        self._dominance_check_time = 0.0
         self._convex_restriction_time = 0.0
         self._convex_restriction_calls = 0
         self._edge_cache = {}
@@ -590,7 +591,7 @@ class SearchAlgorithm:
                 n_next.g = n_next.sol.duration
                 n_next.h = h(n_next.vertex_name, n_next.sol.xT, stgcs, n_next)
                 n_next.f = n_next.g + self._epsilon * n_next.h
-                is_dominated = self.domination_check(n_next, stgcs, gcs)
+                is_dominated = self.dominance_check(n_next, stgcs, gcs)
                 if not is_dominated or "target" in successor:
                     self._push_open(n_next)
                     self.n_generated += 1
@@ -601,7 +602,7 @@ class SearchAlgorithm:
         
         self.n_expanded += 1
 
-    def domination_check(self, n:SearchNode, stgcs:STGCS, gcs:GCS) -> bool:
+    def dominance_check(self, n:SearchNode, stgcs:STGCS, gcs:GCS) -> bool:
         ts = time.perf_counter()
         ret = False
         for checker in self._dc:
@@ -610,7 +611,7 @@ class SearchAlgorithm:
                 ret = True
                 break
 
-        self._domination_check_time += time.perf_counter() - ts
+        self._dominance_check_time += time.perf_counter() - ts
         return ret
 
     @property
@@ -619,7 +620,7 @@ class SearchAlgorithm:
 
     @property
     def dc_time(self) -> float:
-        return self._domination_check_time
+        return self._dominance_check_time
 
     @property
     def convex_restriction_time(self) -> float:
@@ -630,9 +631,9 @@ class SearchAlgorithm:
         return self._convex_restriction_calls
 
     @property
-    def domination_convex_restriction_time(self) -> float:
+    def dominance_convex_restriction_time(self) -> float:
         return float(sum(checker.convex_restriction_time for checker in self._dc))
 
     @property
-    def domination_convex_restriction_calls(self) -> int:
+    def dominance_convex_restriction_calls(self) -> int:
         return int(sum(checker.convex_restriction_calls for checker in self._dc))

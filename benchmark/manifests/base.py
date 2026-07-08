@@ -16,6 +16,7 @@ class BaseBenchmarkRecord:
     supports_sampling: bool
     stgcs_num_vertices: int = 0
     stgcs_num_edges: int = 0
+    heuristic_computation_times: Dict[str, float] = field(default_factory=dict)
     manifest_path: Path | None = field(default=None, compare=False, repr=False)
 
     @property
@@ -35,7 +36,7 @@ class BaseBenchmarkRecord:
         return f"grid{self.space_dim}d"
 
     def to_dict(self) -> Dict[str, Any]:
-        return {
+        payload: Dict[str, Any] = {
             "instance_id": self.instance_id,
             "domain": self.domain,
             "space_dim": self.space_dim,
@@ -45,6 +46,12 @@ class BaseBenchmarkRecord:
             "stgcs_num_vertices": self.stgcs_num_vertices,
             "stgcs_num_edges": self.stgcs_num_edges,
         }
+        if self.heuristic_computation_times:
+            payload["heuristic_computation_times"] = {
+                str(key): float(value)
+                for key, value in self.heuristic_computation_times.items()
+            }
+        return payload
 
     @property
     def instance_cache_path(self) -> Path | None:
@@ -54,6 +61,12 @@ class BaseBenchmarkRecord:
 
     def with_manifest_path(self, path: str | Path) -> "BaseBenchmarkRecord":
         return replace(self, manifest_path=Path(path).resolve())
+
+    def with_heuristic_computation_times(self, times: Dict[str, float]) -> "BaseBenchmarkRecord":
+        return replace(
+            self,
+            heuristic_computation_times={str(key): float(value) for key, value in times.items()},
+        )
 
     @staticmethod
     def from_dict(data: Dict[str, Any]) -> "BaseBenchmarkRecord":
@@ -66,6 +79,10 @@ class BaseBenchmarkRecord:
             supports_sampling=bool(data["supports_sampling"]),
             stgcs_num_vertices=int(data.get("stgcs_num_vertices", 0)),
             stgcs_num_edges=int(data.get("stgcs_num_edges", 0)),
+            heuristic_computation_times={
+                str(key): float(value)
+                for key, value in dict(data.get("heuristic_computation_times", {})).items()
+            },
         )
 
 

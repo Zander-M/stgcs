@@ -94,7 +94,7 @@ def run_mrmp(
             base_manifest_path,
             base_record,
             required_heuristics={low_level_spec.heuristic},
-            online_td_timeout_secs=float(budget),
+            online_h_tab_timeout_secs=float(budget),
         )
         solutions, entry = MRMPExperiment.run_windowed_pbs_spec_with_solutions(
             instance,

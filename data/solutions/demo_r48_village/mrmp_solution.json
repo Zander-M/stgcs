@@ -7,9 +7,9 @@
   "child_expansion_mode": "LAZY",
   "coordination": "windowed-pbs",
   "cost": 528.0,
-  "domination_checks": [
+  "dominance_checks": [
     "GUB",
-    "IPC"
+    "delta_pos"
   ],
   "dynamic_window_adjustment": true,
   "ecd_calls": 168,
@@ -19,7 +19,7 @@
   "global_trajopt": null,
   "instance_id": "mrmp-fastpathplanning-village3d-random-s8-d0p35-bm0p001-bc1-csmerge2-seed01000-48-uav",
   "is_success": true,
-  "low_level_heuristic": "Max",
+  "low_level_heuristic": "h_max",
   "makespan": 11.0,
   "mp_calls": 688,
   "mp_runtime": 181.3798052095808,
@@ -28,7 +28,7 @@
   "mrmp_cost": 528.0,
   "mrmp_makespan": 11.0,
   "mrmp_planner_key": "fastpathplanning-village-wpbs",
-  "mrmp_planner_name": "wPBS + Max + GUB + IPC",
+  "mrmp_planner_name": "wPBS + h_max + GUB + delta_pos",
   "mrmp_runtime": 224.9551980001852,
   "mrmp_trajectories": [
     {
@@ -37934,7 +37934,7 @@
   "pbs_runtime": 224.83095371117815,
   "pbs_update_calls": 145,
   "planner_key": "fastpathplanning-village-wpbs",
-  "planner_name": "wPBS + Max + GUB + IPC",
+  "planner_name": "wPBS + h_max + GUB + delta_pos",
   "runtime": 224.9551980001852,
   "status": "SUCCESS",
   "trajectories": [

@@ -589,7 +589,7 @@ class WindowedCoordinationReturn:
                 f"\tGUB: # calls={self.gub[0]:.0f}, cum-time={self.gub[1]:.4f} secs\n" + \
                 f"\tSearch: # calls={self.search[0]:.0f}, cum-time={self.search[1]:.4f} secs\n" + \
                 f"\tConvex restriction: # calls={self.cr[0]:.0f}, cum-time={self.cr[1]:.4f} secs\n" + \
-                f"\tDomination check: # calls={self.dc[0]:.0f}, cum-time={self.dc[1]:.4f} secs\n" + \
-                f"\tDomination CR: # calls={self.dc_cr[0]:.0f}, cum-time={self.dc_cr[1]:.4f} secs\n" + \
+                f"\tDominance check: # calls={self.dc[0]:.0f}, cum-time={self.dc[1]:.4f} secs\n" + \
+                f"\tDominance CR: # calls={self.dc_cr[0]:.0f}, cum-time={self.dc_cr[1]:.4f} secs\n" + \
                 f"\tECD: # calls={self.ecd[0]:.0f}, cum-time={self.ecd[1]:.4f} secs\n" + \
                 f"\tCC: # calls={self.cc[0]:.0f}, cum-time={self.cc[1]:.4f} secs\n"

@@ -15,16 +15,16 @@ class STHeuristicInflationRunCLI:
     DEFAULT_MANIFEST = Path("data/instances/st_planning/manifest.json")
     DEFAULT_OUTPUT_ROOT = Path("data/results/st_planning/heuristic_inflation")
     DEFAULT_BUDGET = 600.0
-    DEFAULT_HEURISTICS = ("SC", "LBG", "TD", "Max")
+    DEFAULT_HEURISTICS = ("h_mot", "h_tri", "h_tab", "h_max")
     DEFAULT_EPSILONS = (1.25, 2.5, 5.0, 10.0)
-    DOMINATION_STACK = ("GUB",)
+    DOMINANCE_CHECK_STACK = ("GUB",)
 
     @classmethod
     def parse_args(cls) -> argparse.Namespace:
         parser = argparse.ArgumentParser(
             description=(
                 "Run the BFS heuristic-inflation ablation on the ST heuristic-ablation manifest. "
-                "All runs use only the GUB domination check."
+                "All runs use only the GUB dominance check."
             )
         )
         parser.add_argument("manifest", type=Path, nargs="?", default=cls.DEFAULT_MANIFEST)
@@ -53,7 +53,7 @@ class STHeuristicInflationRunCLI:
         raw_epsilons = cls.DEFAULT_EPSILONS if epsilons is None else tuple(float(value) for value in epsilons)
         selected_epsilons = tuple(epsilon for epsilon in raw_epsilons if not math.isclose(epsilon, 1.0))
         return tuple(
-            SearchPlannerSpec(heuristic, cls.DOMINATION_STACK, epsilon=epsilon)
+            SearchPlannerSpec(heuristic, cls.DOMINANCE_CHECK_STACK, epsilon=epsilon)
             for heuristic in selected_heuristics
             for epsilon in selected_epsilons
         )
@@ -115,7 +115,7 @@ class STHeuristicInflationRunCLI:
                 base_manifest_path,
                 base_record,
                 required_heuristics=required_heuristics,
-                online_td_timeout_secs=max(budget for budget, _, _ in pending_runs),
+                online_h_tab_timeout_secs=max(budget for budget, _, _ in pending_runs),
             )
             for budget, spec, planner_name in pending_runs:
                 entry = STHeuristicAblationRunner.run_search_spec(instance, query, spec, budget)

@@ -6,7 +6,7 @@
   "task_name": "formation_control_3x3_stgcs_horizontal_blocks",
   "phase": "trajopt",
   "planner_key": "sequential-mrmp-wpbs-global-trajopt",
-  "planner_name": "wPBS-NumConflicts + Search(SC+GUB+IPC) + global trajopt",
+  "planner_name": "wPBS-NumConflicts + Search(h_mot+GUB+delta_pos) + global trajopt",
   "status": "SUCCESS",
   "is_success": true,
   "task_type": "formation_control",
@@ -47,10 +47,10 @@
     "coordination": "windowed-pbs",
     "child_expansion_rule": "num_conflicts",
     "child_expansion_mode": "NUM_CONFLICTS",
-    "low_level_heuristic": "SC",
-    "domination_checks": [
+    "low_level_heuristic": "h_mot",
+    "dominance_checks": [
       "GUB",
-      "IPC"
+      "delta_pos"
     ],
     "epsilon": 5.0,
     "vlimit": 0.25,

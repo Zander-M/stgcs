@@ -44,7 +44,7 @@ class HPolyhedronSampler:
 
     @classmethod
     def sampling_subspace(cls, hpoly: HPolyhedron, tol: float = 1e-9) -> Optional[np.ndarray]:
-        # Avoid Drake's AffineSubspace here: some degenerate HPolyhedra in MRMP IPC
+        # Avoid Drake's AffineSubspace here: some degenerate HPolyhedra in MRMP delta_pos
         # sampling trip its internal rank check and abort the process.
         vertices = hpoly_to_vrep(hpoly)
         if vertices is None:

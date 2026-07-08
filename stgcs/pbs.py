@@ -341,10 +341,10 @@ class PriorityBasedSearch:
             float(profile.get("convex_restriction_calls", 0.0)),
             float(profile.get("convex_restriction_time", 0.0)),
         ])
-        self._profiler["dc"] += np.array([1, float(profile.get("domination_check_time", 0.0))])
+        self._profiler["dc"] += np.array([1, float(profile.get("dominance_check_time", 0.0))])
         self._profiler["dc_cr"] += np.array([
-            float(profile.get("domination_convex_restriction_calls", 0.0)),
-            float(profile.get("domination_convex_restriction_time", 0.0)),
+            float(profile.get("dominance_convex_restriction_calls", 0.0)),
+            float(profile.get("dominance_convex_restriction_time", 0.0)),
         ])
 
     def partial_orders(self, i:int, j:int) -> List[Tuple[int, int]]:

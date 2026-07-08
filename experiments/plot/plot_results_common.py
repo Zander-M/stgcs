@@ -25,9 +25,9 @@ class PlotPalette:
     BLUE = "blue"
 
     HEURISTIC_ZERO = NEUTRAL_LIGHT
-    HEURISTIC_SC = "#4f8f5f"
-    HEURISTIC_LBG = "#3f6fb5"
-    HEURISTIC_TD = "#c45a45"
+    HEURISTIC_MOTION_ONLY = "#4f8f5f"
+    HEURISTIC_TRIPLET_RELAXATION = "#3f6fb5"
+    HEURISTIC_INTERFACE_TO_SET_TABLE = "#c45a45"
     HEURISTIC_MAX = BLACK
 
     DOMAIN_RANDOM = "#b6462a"
@@ -35,17 +35,17 @@ class PlotPalette:
     DOMAIN_IRIS = "#1d5e8a"
 
     HEURISTIC_COLORS: Dict[str, str] = {
-        "Zero": HEURISTIC_ZERO,
-        "SC": HEURISTIC_SC,
-        "LBG": HEURISTIC_LBG,
-        "TD": HEURISTIC_TD,
-        "Max": HEURISTIC_MAX,
+        "h_zero": HEURISTIC_ZERO,
+        "h_mot": HEURISTIC_MOTION_ONLY,
+        "h_tri": HEURISTIC_TRIPLET_RELAXATION,
+        "h_tab": HEURISTIC_INTERFACE_TO_SET_TABLE,
+        "h_max": HEURISTIC_MAX,
     }
-    DOMINATION_COLORS: Dict[str, str] = {
+    DOMINANCE_COLORS: Dict[str, str] = {
         "GUB": HEURISTIC_ZERO,
-        "ESC": HEURISTIC_SC,
-        "IPC": HEURISTIC_LBG,
-        "ISC": HEURISTIC_TD,
+        "delta_set": HEURISTIC_MOTION_ONLY,
+        "delta_pos": HEURISTIC_TRIPLET_RELAXATION,
+        "delta_state": HEURISTIC_INTERFACE_TO_SET_TABLE,
     }
     DOMAIN_COLORS: Dict[str, str] = {
         "grid2d": DOMAIN_RANDOM,
@@ -56,9 +56,9 @@ class PlotPalette:
         "iris": DOMAIN_IRIS,
     }
     ST_METHOD_COLORS: Dict[str, str] = {
-        "ipc": INK,
-        "esc": NEUTRAL_DARK,
-        "esc_eps1": "#0072b2",
+        "delta-pos": INK,
+        "delta-set": NEUTRAL_DARK,
+        "delta-set-eps1": "#0072b2",
         "micp": "#d55e00",
         "micp_rounding": "#e69f00",
         "st_rrt_first": "#009e73",
@@ -67,16 +67,16 @@ class PlotPalette:
         "zeta_sipp_2r": "#9b5f8f",
     }
     MRMP_RULE_COLORS: Dict[str, str] = {
-        "lazy": HEURISTIC_SC,
-        "soc": HEURISTIC_LBG,
-        "makespan": HEURISTIC_TD,
+        "lazy": HEURISTIC_MOTION_ONLY,
+        "soc": HEURISTIC_TRIPLET_RELAXATION,
+        "makespan": HEURISTIC_INTERFACE_TO_SET_TABLE,
         "num_conflicts": HEURISTIC_MAX,
     }
     MRMP_WINDOW_COLORS: Dict[str, str] = {
         "pbs_nc": BLACK,
-        "fixed": HEURISTIC_TD,
-        "dynamic": HEURISTIC_SC,
-        "dynamic_beta": HEURISTIC_LBG,
+        "fixed": HEURISTIC_INTERFACE_TO_SET_TABLE,
+        "dynamic": HEURISTIC_MOTION_ONLY,
+        "dynamic_beta": HEURISTIC_TRIPLET_RELAXATION,
     }
 
     @classmethod
@@ -84,8 +84,8 @@ class PlotPalette:
         return cls.HEURISTIC_COLORS[name]
 
     @classmethod
-    def domination_color(cls, name: str) -> str:
-        return cls.DOMINATION_COLORS[name]
+    def dominance_color(cls, name: str) -> str:
+        return cls.DOMINANCE_COLORS[name]
 
     @classmethod
     def domain_color(cls, name: str) -> str:

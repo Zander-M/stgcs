@@ -47,9 +47,9 @@ class ViewerMRMPSolutionRun:
 class SolutionVisualizationService:
     DEFAULT_BUDGET = 10.0
     ST_PLANNER_OPTIONS = (
-        ("ipc", STPerformanceComparisonRunner.IPC_PLANNER, (2, 3)),
-        ("esc", STPerformanceComparisonRunner.ESC_PLANNER, (2, 3)),
-        ("esc1", STPerformanceComparisonRunner.ESC_EPS1_PLANNER, (2, 3)),
+        ("delta-pos", STPerformanceComparisonRunner.DELTA_POS_PLANNER, (2, 3)),
+        ("delta-set", STPerformanceComparisonRunner.DELTA_SET_PLANNER, (2, 3)),
+        ("delta-set-eps1", STPerformanceComparisonRunner.DELTA_SET_EPS1_PLANNER, (2, 3)),
         ("micp", STPerformanceComparisonRunner.MICP_PLANNER, (2, 3)),
         ("micpg", STPerformanceComparisonRunner.MICP_ROUNDING_PLANNER, (2, 3)),
         ("strrt-first", STPerformanceComparisonRunner.ST_RRT_FIRST_PLANNER, (2, 3)),
@@ -406,7 +406,7 @@ class SolutionVisualizationService:
                 base_manifest_path,
                 base_record,
                 required_heuristics={search_spec.heuristic},
-                online_td_timeout_secs=budget_value,
+                online_h_tab_timeout_secs=budget_value,
             )
             solution, entry, status = self._run_search_solution(instance, query, planner_name, budget_value)
         elif planner_name == STPerformanceComparisonRunner.MICP_PLANNER:
@@ -470,7 +470,7 @@ class SolutionVisualizationService:
         base = MRMPPerformanceComparison.LOW_LEVEL_SPEC
         return SearchPlannerSpec(
             heuristic=base.heuristic,
-            domination=base.domination,
+            dominance_checks=base.dominance_checks,
             epsilon=float(epsilon),
             exact_astar=base.exact_astar,
         )
@@ -528,7 +528,7 @@ class SolutionVisualizationService:
                 base_manifest_path,
                 base_record,
                 required_heuristics={low_level_spec.heuristic},
-                online_td_timeout_secs=budget_value,
+                online_h_tab_timeout_secs=budget_value,
             )
 
         if planner_key == MRMPPerformanceComparison.PBS_KEY:

@@ -11,7 +11,7 @@ from stgcs.pbs import DEFAULT_CHILD_EXPANSION_MODE, ChildExpansionMode
 @dataclass(frozen=True)
 class SearchPlannerSpec:
     heuristic: str
-    domination: Tuple[str, ...]
+    dominance_checks: Tuple[str, ...]
     epsilon: float = 1.0
     exact_astar: bool = False
 
@@ -25,11 +25,11 @@ class SearchPlannerSpec:
     @property
     def name(self) -> str:
         if self.exact_astar:
-            return "Search(LBG+Astar)"
+            return "Search(h_tri+Astar)"
         epsilon_label = self.epsilon_label(self.epsilon)
-        if self.heuristic == "Zero":
-            return f"Search({'+'.join(self.domination)}{epsilon_label})"
-        return f"Search({self.heuristic}+{'+'.join(self.domination)}{epsilon_label})"
+        if self.heuristic == "h_zero":
+            return f"Search({'+'.join(self.dominance_checks)}{epsilon_label})"
+        return f"Search({self.heuristic}+{'+'.join(self.dominance_checks)}{epsilon_label})"
 
 
 @dataclass(frozen=True)
@@ -43,7 +43,7 @@ class PBSExpansionRuleSpec:
 
 
 class PBSExpansionAblation:
-    LOW_LEVEL_SPEC = SearchPlannerSpec("Max", ("GUB", "IPC"), epsilon=1.0)
+    LOW_LEVEL_SPEC = SearchPlannerSpec("h_max", ("GUB", "delta_pos"), epsilon=1.0)
     DEFAULT_RULE_KEY = "num_conflicts"
     RULES: Tuple[PBSExpansionRuleSpec, ...] = (
         PBSExpansionRuleSpec("lazy", "Lazy", ChildExpansionMode.LAZY),
@@ -114,7 +114,7 @@ class WindowedCoordinationSpec:
 
 
 class WindowedCoordinationAblation:
-    LOW_LEVEL_SPEC = SearchPlannerSpec("Max", ("GUB", "IPC"), epsilon=10.0)
+    LOW_LEVEL_SPEC = SearchPlannerSpec("h_max", ("GUB", "delta_pos"), epsilon=10.0)
     DEFAULT_OUTPUT_ROOT = "data/results/mrmp/windowed_coordination"
     DEFAULT_MANIFEST_ROOT = "data/instances/mrmp/windowed_coordination"
     DEFAULT_REFERENCE_OUTPUT_ROOT = DEFAULT_OUTPUT_ROOT
@@ -178,7 +178,7 @@ class WindowedCoordinationAblation:
 
 
 class MRMPPerformanceComparison:
-    LOW_LEVEL_SPEC = SearchPlannerSpec("Max", ("GUB", "IPC"), epsilon=10.0)
+    LOW_LEVEL_SPEC = SearchPlannerSpec("h_max", ("GUB", "delta_pos"), epsilon=10.0)
     DEFAULT_OUTPUT_ROOT = "data/results/mrmp/performance_comparison"
     DEFAULT_MANIFEST_ROOT = "data/instances/mrmp/performance_comparison"
     DOMAINS: Tuple[str, ...] = ("grid2d", "maze", "iris-2d")
@@ -327,11 +327,11 @@ class MRMPPerformanceComparison:
 
 
 HEURISTIC_SPECS: Tuple[SearchPlannerSpec, ...] = (
-    SearchPlannerSpec("Zero", ("GUB",)),
-    SearchPlannerSpec("SC", ("GUB",)),
-    SearchPlannerSpec("LBG", ("GUB",)),
-    SearchPlannerSpec("TD", ("GUB",)),
-    SearchPlannerSpec("Max", ("GUB",)),
+    SearchPlannerSpec("h_zero", ("GUB",)),
+    SearchPlannerSpec("h_mot", ("GUB",)),
+    SearchPlannerSpec("h_tri", ("GUB",)),
+    SearchPlannerSpec("h_tab", ("GUB",)),
+    SearchPlannerSpec("h_max", ("GUB",)),
 )
 
 SEARCH_GROUPS = {

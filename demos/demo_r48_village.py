@@ -20,7 +20,7 @@ import numpy as np
 
 from benchmark.environment.uav_village import VillageEnv
 from demos.trajopt.optimization import GlobalTrajOptConfig, GlobalTrajOptResult, GlobalTrajectoryOptimizer
-from stgcs.bfs.domination_check import GlobalUpperBound_DC, Sampling_DC
+from stgcs.bfs.dominance_check import GlobalUpperBoundDominanceCheck, PositionBasedDominanceCheck
 from stgcs.bfs.heuristics import MaxHeuristic
 from stgcs.mrmp_planner import windowed_pbs
 from stgcs.pbs import ChildExpansionMode, PriorityBasedSearch
@@ -66,7 +66,7 @@ class DemoR48Village(VillageEnv, Village3DVisualizationMixin):
     EXPECTED_STGCS_NUM_EDGES = 728
 
     MRMP_PLANNER_KEY = "fastpathplanning-village-wpbs"
-    MRMP_PLANNER_NAME = "wPBS + Max + GUB + IPC"
+    MRMP_PLANNER_NAME = "wPBS + h_max + GUB + delta_pos"
     PLANNER_KEY = f"{MRMP_PLANNER_KEY}-global-trajopt"
     PLANNER_NAME = f"{MRMP_PLANNER_NAME} + global trajopt"
 
@@ -256,7 +256,7 @@ class DemoR48Village(VillageEnv, Village3DVisualizationMixin):
         epsilon: float,
     ) -> SearchPlanner:
         return SearchPlanner(
-            dc_list=[GlobalUpperBound_DC(float("inf"), 0.0, float(epsilon)), Sampling_DC()],
+            dc_list=[GlobalUpperBoundDominanceCheck(float("inf"), 0.0, float(epsilon)), PositionBasedDominanceCheck()],
             heur=MaxHeuristic.from_instance(instance),
             eps=float(epsilon),
             runtime_limit_secs=float(budget),

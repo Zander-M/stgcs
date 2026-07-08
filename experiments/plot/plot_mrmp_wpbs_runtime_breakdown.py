@@ -46,7 +46,7 @@ class MRMPWPBSRuntimeBreakdownReport:
     COMPONENT_COLORS = {
         "ecd": "#fac20a",
         "convex_restriction": PlotPalette.BLUE,
-        "search_procedure": PlotPalette.HEURISTIC_TD,
+        "search_procedure": PlotPalette.HEURISTIC_INTERFACE_TO_SET_TABLE,
         "others": PlotPalette.BLACK,
     }
     COMPONENT_OVERFLOW_REL_TOL = 1e-6
@@ -283,9 +283,9 @@ class MRMPWPBSRuntimeBreakdownReport:
         convex_restriction = cls._finite_nonnegative(row["mp_convex_restriction_runtime"])
         collision_checking = cls._finite_nonnegative(row["cc_runtime"])
         gcs_construction = cls._finite_nonnegative(row["mp_gcs_runtime"])
-        domination_check = max(
-            cls._finite_nonnegative(row["mp_domination_check_runtime"])
-            - cls._finite_nonnegative(row["mp_domination_convex_restriction_runtime"]),
+        dominance_check = max(
+            cls._finite_nonnegative(row["mp_dominance_check_runtime"])
+            - cls._finite_nonnegative(row["mp_dominance_convex_restriction_runtime"]),
             0.0,
         )
         low_level_gub = cls._finite_nonnegative(row["mp_gub_runtime"])
@@ -294,7 +294,7 @@ class MRMPWPBSRuntimeBreakdownReport:
         bfs_overhead = max(
             low_level_search_total
             - convex_restriction
-            - domination_check,
+            - dominance_check,
             0.0,
         )
         pbs_overhead = max(

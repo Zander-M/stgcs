@@ -23,10 +23,10 @@ class STPerformanceComparisonReport:
     DEFAULT_RESULTS_ROOT = Path("data/results/st_planning/performance_comparison")
     DEFAULT_OUTPUT_PREFIX = Path("latex/figs/st_performance_comparison")
     DEFAULT_BUDGET = 600.0
-    IPC_PLANNER = STPerformanceComparisonRunner.IPC_PLANNER
-    ESC_PLANNER = STPerformanceComparisonRunner.ESC_PLANNER
-    ESC_EPS1_PLANNER = STPerformanceComparisonRunner.ESC_EPS1_PLANNER
-    SEARCH_PLANNERS = (IPC_PLANNER, ESC_PLANNER, ESC_EPS1_PLANNER)
+    DELTA_POS_PLANNER = STPerformanceComparisonRunner.DELTA_POS_PLANNER
+    DELTA_SET_PLANNER = STPerformanceComparisonRunner.DELTA_SET_PLANNER
+    DELTA_SET_EPS1_PLANNER = STPerformanceComparisonRunner.DELTA_SET_EPS1_PLANNER
+    SEARCH_PLANNERS = (DELTA_POS_PLANNER, DELTA_SET_PLANNER, DELTA_SET_EPS1_PLANNER)
     BASELINE_PLANNERS = STPerformanceComparisonRunner.BASELINE_PLANNERS
     PLANNERS = (*SEARCH_PLANNERS, *STPerformanceComparisonRunner.BASELINE_PLANNERS)
     LEGEND_PLANNERS = (*SEARCH_PLANNERS, *STPerformanceComparisonRunner.BASELINE_PLANNERS)
@@ -37,8 +37,8 @@ class STPerformanceComparisonReport:
     ST_RRT_LEGEND_ABBREV = "S"
     ST_RRT_LEGEND_LABEL = "ST-RRT*"
     ST_GCS_COST_PLANNERS = (
-        IPC_PLANNER,
-        ESC_PLANNER,
+        DELTA_POS_PLANNER,
+        DELTA_SET_PLANNER,
         STPerformanceComparisonRunner.MICP_ROUNDING_PLANNER,
     )
     COMMON_SUCCESS_MIN_SUCCESS_RATE = 0.25
@@ -112,24 +112,24 @@ class STPerformanceComparisonReport:
     ROW_H_PAD = 0.4
     Y_TICK_LABEL_PAD = 2
     METHOD_STYLES = {
-        IPC_PLANNER: {
+        DELTA_POS_PLANNER: {
             "label": r"BFS ($\delta_\text{pos}+h_\text{max}$, $\varepsilon$=10)",
             "abbrev": "B1",
-            "color": PlotPalette.ST_METHOD_COLORS["ipc"],
+            "color": PlotPalette.ST_METHOD_COLORS["delta-pos"],
             "linestyle": "-",
             "marker": "o",
         },
-        ESC_PLANNER: {
+        DELTA_SET_PLANNER: {
             "label": r"BFS ($\delta_\text{set}+h_\text{max}$, $\varepsilon$=10)",
             "abbrev": "B2",
-            "color": PlotPalette.ST_METHOD_COLORS["esc"],
+            "color": PlotPalette.ST_METHOD_COLORS["delta-set"],
             "linestyle": "-",
             "marker": "X",
         },
-        ESC_EPS1_PLANNER: {
+        DELTA_SET_EPS1_PLANNER: {
             "label": r"BFS ($\delta_\text{set}+h_\text{max}$, $\varepsilon$=1)",
             "abbrev": "B3",
-            "color": PlotPalette.ST_METHOD_COLORS["esc_eps1"],
+            "color": PlotPalette.ST_METHOD_COLORS["delta-set-eps1"],
             "linestyle": "-",
             "marker": "*",
         },

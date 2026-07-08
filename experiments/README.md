@@ -48,7 +48,7 @@ python -m experiments.build_base_manifest iris-2d \
   --count-total 500
 ```
 
-Precompute LBG caches for a base manifest:
+Precompute h_tri caches for a base manifest:
 
 ```bash
 python -m experiments.compute_heuristics \
@@ -56,13 +56,13 @@ python -m experiments.compute_heuristics \
   --workers 4
 ```
 
-Precompute LBG and TD caches:
+Precompute h_tri and h_tab caches:
 
 ```bash
 python -m experiments.compute_heuristics \
   data/stgcs_base/grid2d/manifest.json \
   --workers 4 \
-  --td-timeout-secs 60
+  --h-tab-timeout-secs 60
 ```
 
 The same command can consume an ST manifest; it resolves the referenced base
@@ -73,7 +73,7 @@ python -m experiments.compute_heuristics \
   data/instances/st_planning/manifest.json \
   --base-root data/stgcs_base \
   --workers 4 \
-  --td-timeout-secs 60
+  --h-tab-timeout-secs 60
 ```
 
 Use `--force` only when the existing cache files should be recomputed.
@@ -117,7 +117,7 @@ python -m experiments.st_runners.performance_comparison_run_search \
   data/instances/st_planning/manifest.json \
   --base-root data/stgcs_base \
   --output-root data/results/st_planning/performance_comparison \
-  --planner ipc \
+  --planner delta-pos \
   --budget 600 \
   --limit 1
 ```
@@ -137,7 +137,7 @@ Build the heuristic-computation scaling manifest and caches:
 ```bash
 python -m experiments.st_runners.heur_computation_time_scaling \
   --output-root data/stgcs_base/heur_computation_time_scaling \
-  --td-timeout-secs 10000
+  --h-tab-timeout-secs 10000
 ```
 
 ## MRMP Runners
@@ -200,7 +200,7 @@ Plot scripts read CSVs from `data/results/...` and write figures or tables to
 ```bash
 python -m experiments.plot.plot_st_performance_comparison
 python -m experiments.plot.plot_st_heuristic_ablation_groups
-python -m experiments.plot.plot_st_domination_ablation_groups
+python -m experiments.plot.plot_st_dominance_ablation_groups
 python -m experiments.plot.plot_heuristic_inflation_and_scaling
 
 python -m experiments.plot.plot_mrmp_pbs_node_expansion

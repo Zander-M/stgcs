@@ -16,8 +16,8 @@
   "pbs_popped_nodes": 465,
   "pbs_runtime": 90.44963029422797,
   "pbs_update_calls": 451,
-  "planner_key": "wc-wpbs-max-gub-ipc-lazy",
-  "planner_name": "WC(alpha=5,beta=1) + wPBS-Lazy + Search(Max+GUB+IPC,eps=1000)",
+  "planner_key": "wc-wpbs-h-max-gub-delta-pos-lazy",
+  "planner_name": "WC(alpha=5,beta=1) + wPBS-Lazy + Search(h_max+GUB+delta_pos,eps=1000)",
   "runtime": 90.56150491605513,
   "status": "SUCCESS",
   "trajectories": [

@@ -20,8 +20,8 @@ os.environ.setdefault("MPLCONFIGDIR", "/private/tmp/stgcs-mpl-cache")
 os.environ.setdefault("XDG_CACHE_HOME", "/private/tmp/stgcs-xdg-cache")
 
 from benchmark.environment.env import Env
-from stgcs.bfs.domination_check import GlobalUpperBound_DC, Sampling_DC
-from stgcs.bfs.heuristics import HeurShortCut
+from stgcs.bfs.dominance_check import GlobalUpperBoundDominanceCheck, PositionBasedDominanceCheck
+from stgcs.bfs.heuristics import MotionOnlyHeuristic
 from stgcs.pbs import ChildExpansionMode, PriorityBasedSearch
 from stgcs.st_planner import MPQuery, SearchPlanner
 from stgcs.trajectory import STTrajectory
@@ -101,7 +101,7 @@ class SequentialMRMPDemo:
     }
 
     MRMP_PLANNER_KEY = "sequential-mrmp-wpbs"
-    MRMP_PLANNER_NAME = "wPBS-NumConflicts + Search(SC+GUB+IPC)"
+    MRMP_PLANNER_NAME = "wPBS-NumConflicts + Search(h_mot+GUB+delta_pos)"
     TRAJOPT_PLANNER_KEY = f"{MRMP_PLANNER_KEY}-global-trajopt"
     TRAJOPT_PLANNER_NAME = f"{MRMP_PLANNER_NAME} + global trajopt"
     ASSIGNMENT_STRATEGY = "fixed-query-order"
@@ -434,9 +434,9 @@ class SequentialMRMPDemo:
     @classmethod
     def mrmp_planner_name(cls, task: SequentialMRMPTask) -> str:
         if task.planner_coordination == cls.PBS_COORDINATION:
-            return "PBS + Search(SC+GUB+IPC)"
+            return "PBS + Search(h_mot+GUB+delta_pos)"
         rule_label = cls.child_expansion_rule_label(task.child_expansion_rule)
-        return f"wPBS-{rule_label} + Search(SC+GUB+IPC)"
+        return f"wPBS-{rule_label} + Search(h_mot+GUB+delta_pos)"
 
     @classmethod
     def trajopt_planner_key(cls, task: SequentialMRMPTask) -> str:
@@ -468,8 +468,8 @@ class SequentialMRMPDemo:
             "coordination": task.planner_coordination,
             "child_expansion_rule": task.child_expansion_rule,
             "child_expansion_mode": task.child_expansion_mode.name,
-            "low_level_heuristic": "SC",
-            "domination_checks": ["GUB", "IPC"],
+            "low_level_heuristic": "h_mot",
+            "dominance_checks": ["GUB", "delta_pos"],
             "epsilon": float(task.search_eps),
             "vlimit": float(task.vlimit),
             "tmax": float(task.tmax),
@@ -490,10 +490,10 @@ class SequentialMRMPDemo:
     @classmethod
     def low_level_planner_for_stgcs(cls, task: SequentialMRMPTask, stgcs: Any) -> SearchPlanner:
         return SearchPlanner(
-            heur=HeurShortCut(stgcs),
+            heur=MotionOnlyHeuristic(stgcs),
             dc_list=[
-                GlobalUpperBound_DC(float("inf"), 0.0, float(task.search_eps)),
-                Sampling_DC(),
+                GlobalUpperBoundDominanceCheck(float("inf"), 0.0, float(task.search_eps)),
+                PositionBasedDominanceCheck(),
             ],
             eps=float(task.search_eps),
             runtime_limit_secs=float(task.stage_timeout_secs),

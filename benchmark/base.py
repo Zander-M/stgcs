@@ -116,9 +116,9 @@ class BaseInstanceFactory:
             spatial_seed,
             env,
             stgcs,
-            sc_heur=None,
-            lbg=None,
-            td_heur=None,
+            motion_only_heuristic=None,
+            triplet_relaxation_heuristic=None,
+            interface_to_set_cost_table_heuristic=None,
         )
         instance.env_params = dict(env_params)
         if compute_heuristics:
@@ -254,7 +254,7 @@ class BaseInstanceFactory:
 
     @staticmethod
     def _ensure_requested_heuristics(instance, compute_heuristics: bool):
-        if compute_heuristics and getattr(instance, "sc_heur", None) is None:
+        if compute_heuristics and getattr(instance, "motion_only_heuristic", None) is None:
             instance.compute_heuristics()
         return instance
 

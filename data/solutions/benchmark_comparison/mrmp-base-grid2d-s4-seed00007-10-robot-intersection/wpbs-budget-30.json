@@ -14,7 +14,7 @@
   "pbs_runtime": 3.75936937698134,
   "pbs_update_calls": 6,
   "planner_key": "wpbs",
-  "planner_name": "Windowed PBS(alpha=5,beta=1,rule=NC) + Search(Max+GUB+IPC,eps=10)",
+  "planner_name": "Windowed PBS(alpha=5,beta=1,rule=NC) + Search(h_max+GUB+delta_pos,eps=10)",
   "runtime": 3.7681892910040915,
   "status": "SUCCESS",
   "trajectories": [

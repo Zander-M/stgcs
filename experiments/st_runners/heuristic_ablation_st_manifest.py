@@ -161,9 +161,9 @@ class STHeuristicAblationManifestBuilder:
     TMAX = STPlanningManifestStore.TMAX
     VLIMIT = STPlanningManifestStore.VLIMIT
     MAX_ATTEMPTS = 32
-    SC_SCREEN_SPEC = SearchPlannerSpec("SC", ("GUB",))
-    LBG_SCREEN_SPEC = SearchPlannerSpec("LBG", ("GUB",))
-    TD_SCREEN_SPEC = SearchPlannerSpec("TD", ("GUB",))
+    MOTION_ONLY_SCREEN_SPEC = SearchPlannerSpec("h_mot", ("GUB",))
+    TRIPLET_RELAXATION_SCREEN_SPEC = SearchPlannerSpec("h_tri", ("GUB",))
+    INTERFACE_TO_SET_TABLE_SCREEN_SPEC = SearchPlannerSpec("h_tab", ("GUB",))
     DEFAULT_SCREEN_BUDGET = 600.0
     OBSTACLE_COUNTS = {
         HeuristicAblationSelector.GENERAL_OPEN: 1,
@@ -376,7 +376,7 @@ class STHeuristicAblationManifestBuilder:
         return STPlanningManifestStore.reconstruct_instance(record, base_root)
 
     @classmethod
-    def run_td_screen(
+    def run_h_tab_screen(
         cls,
         record: STHeuristicAblationRecord,
         base_root: str | Path,
@@ -386,7 +386,7 @@ class STHeuristicAblationManifestBuilder:
             record,
             base_root=base_root,
             budget=budget,
-            spec=cls.TD_SCREEN_SPEC,
+            spec=cls.INTERFACE_TO_SET_TABLE_SCREEN_SPEC,
         )
 
     @classmethod
@@ -403,7 +403,7 @@ class STHeuristicAblationManifestBuilder:
             base_manifest_path,
             base_record,
             required_heuristics={spec.heuristic},
-            online_td_timeout_secs=budget,
+            online_h_tab_timeout_secs=budget,
         )
         planner = MRMPExperiment._build_low_level_planner(
             instance,
@@ -434,7 +434,7 @@ class STHeuristicAblationManifestBuilder:
         }
 
     @classmethod
-    def screen_records_with_td(
+    def screen_records_with_h_tab(
         cls,
         entries: Sequence[HeuristicAblationSelectionEntry],
         target_group_counts: Dict[str, int],
@@ -449,24 +449,24 @@ class STHeuristicAblationManifestBuilder:
                 continue
             try:
                 record = cls.build_record(entry)
-                result = cls.run_td_screen(record, base_root=base_root, budget=float(budget))
-                results_by_planner = {cls.TD_SCREEN_SPEC.name: result}
+                result = cls.run_h_tab_screen(record, base_root=base_root, budget=float(budget))
+                results_by_planner = {cls.INTERFACE_TO_SET_TABLE_SCREEN_SPEC.name: result}
                 passed = result.is_success
             except Exception as exc:
                 print(f"{entry.record.instance_id} | group={entry.group} | screen=False | error={exc}")
                 continue
-            td_result = results_by_planner[cls.TD_SCREEN_SPEC.name]
+            h_tab_result = results_by_planner[cls.INTERFACE_TO_SET_TABLE_SCREEN_SPEC.name]
             if not passed:
                 print(
                     f"{record.instance_id} | group={record.group} | screen=False "
-                    f"| runtime={td_result.runtime:.3f}"
+                    f"| runtime={h_tab_result.runtime:.3f}"
                 )
                 continue
             kept.append((record, results_by_planner))
             kept_counts[record.group] = kept_counts.get(record.group, 0) + 1
             print(
                 f"{record.instance_id} | group={record.group} | screen=True "
-                f"| kept={kept_counts[record.group]}/{target} | runtime={td_result.runtime:.3f}"
+                f"| kept={kept_counts[record.group]}/{target} | runtime={h_tab_result.runtime:.3f}"
             )
             if all(kept_counts.get(group, 0) >= int(count) for group, count in target_group_counts.items()):
                 break
@@ -476,7 +476,7 @@ class STHeuristicAblationManifestBuilder:
             if kept_counts.get(group, 0) < int(count)
         }
         if missing:
-            raise RuntimeError(f"TD screening did not find enough successful records: missing {missing}.")
+            raise RuntimeError(f"h_tab screening did not find enough successful records: missing {missing}.")
         return kept
 
 
@@ -493,7 +493,7 @@ class STHeuristicAblationManifestCLI:
         parser.add_argument("--group-count", type=int, default=HeuristicAblationSelector.DEFAULT_GROUP_COUNT)
         parser.add_argument("--total-count", type=int, default=None)
         parser.add_argument("--output", type=Path, default=cls.DEFAULT_OUTPUT)
-        parser.add_argument("--screen-with-td", action="store_true")
+        parser.add_argument("--screen-with-h-tab", action="store_true")
         parser.add_argument(
             "--screen-budget",
             type=float,
@@ -510,9 +510,9 @@ class STHeuristicAblationManifestCLI:
             raise ValueError(f"--total-count must be positive, got {args.total_count}")
         if int(args.group_count) <= 0:
             raise ValueError(f"--group-count must be positive, got {args.group_count}")
-        if args.screen_with_td and (not math.isfinite(float(args.screen_budget)) or float(args.screen_budget) <= 0.0):
+        if args.screen_with_h_tab and (not math.isfinite(float(args.screen_budget)) or float(args.screen_budget) <= 0.0):
             raise ValueError(f"--screen-budget must be positive, got {args.screen_budget}")
-        if args.screen_with_td and int(args.candidate_multiplier) <= 0:
+        if args.screen_with_h_tab and int(args.candidate_multiplier) <= 0:
             raise ValueError(f"--candidate-multiplier must be positive, got {args.candidate_multiplier}")
 
         records_by_domain = HeuristicAblationSelector.load_records_by_domain(Path(args.base_root).resolve())
@@ -520,7 +520,7 @@ class STHeuristicAblationManifestCLI:
             group_count=int(args.group_count),
             total_count=None if args.total_count is None else int(args.total_count),
         )
-        if args.screen_with_td:
+        if args.screen_with_h_tab:
             candidate_counts = {
                 group: count * int(args.candidate_multiplier)
                 for group, count in target_counts.items()
@@ -529,7 +529,7 @@ class STHeuristicAblationManifestCLI:
                 records_by_domain,
                 candidate_counts,
             )
-            screened_rows = STHeuristicAblationManifestBuilder.screen_records_with_td(
+            screened_rows = STHeuristicAblationManifestBuilder.screen_records_with_h_tab(
                 entries,
                 target_counts,
                 base_root=Path(args.base_root).resolve(),

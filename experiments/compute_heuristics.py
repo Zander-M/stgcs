@@ -9,7 +9,7 @@ from typing import Dict, Sequence
 from benchmark.base import BaseInstanceFactory, BaseManifestStore
 from benchmark.offline_heuristics import BaseOfflineHeuristicStore
 from benchmark.manifests.base import BaseBenchmarkRecord, load_manifest
-from stgcs.bfs.heuristics import HeurTrueDistance
+from stgcs.bfs.heuristics import InterfaceToSetCostTableHeuristic
 
 
 class BaseOfflineHeuristicCLI:
@@ -26,10 +26,13 @@ class BaseOfflineHeuristicCLI:
     _ST_HEURISTIC_ABLATION_KEYS = frozenset({"source_domain", "base_instance_id"})
 
     @staticmethod
-    def _requested_heuristics(td_timeout_secs: float | None) -> set[str]:
-        requested = {BaseOfflineHeuristicStore.SC_NAME, BaseOfflineHeuristicStore.LBG_NAME}
-        if td_timeout_secs is not None:
-            requested.add(BaseOfflineHeuristicStore.TD_NAME)
+    def _requested_heuristics(h_tab_timeout_secs: float | None) -> set[str]:
+        requested = {
+            BaseOfflineHeuristicStore.MOTION_ONLY_NAME,
+            BaseOfflineHeuristicStore.TRIPLET_RELAXATION_NAME,
+        }
+        if h_tab_timeout_secs is not None:
+            requested.add(BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME)
         return requested
 
     @classmethod
@@ -107,13 +110,13 @@ class BaseOfflineHeuristicCLI:
     def _work_items_to_update(
         cls,
         work_items: Sequence[tuple[Path, BaseBenchmarkRecord]],
-        td_timeout_secs: float | None,
+        h_tab_timeout_secs: float | None,
         force: bool,
     ) -> list[tuple[Path, BaseBenchmarkRecord]]:
         if force:
             return list(work_items)
 
-        required_heuristics = cls._requested_heuristics(td_timeout_secs)
+        required_heuristics = cls._requested_heuristics(h_tab_timeout_secs)
         pending: list[tuple[Path, BaseBenchmarkRecord]] = []
         for manifest_path, record in work_items:
             manifest_path = Path(manifest_path).resolve()
@@ -130,20 +133,20 @@ class BaseOfflineHeuristicCLI:
         cls,
         manifest_path: Path,
         records: Sequence[BaseBenchmarkRecord],
-        td_timeout_secs: float | None,
+        h_tab_timeout_secs: float | None,
         force: bool,
     ) -> list[BaseBenchmarkRecord]:
         if force:
             return list(records)
 
         work_items = [(Path(manifest_path).resolve(), record) for record in records]
-        return [record for _, record in cls._work_items_to_update(work_items, td_timeout_secs, force=False)]
+        return [record for _, record in cls._work_items_to_update(work_items, h_tab_timeout_secs, force=False)]
 
     @staticmethod
     def _build_record_caches(
         manifest_path: str,
         record_payload: Dict[str, object],
-        td_timeout_secs: float | None,
+        h_tab_timeout_secs: float | None,
         force: bool,
     ) -> tuple[str, Dict[str, float]]:
         manifest_file = Path(manifest_path).resolve()
@@ -151,49 +154,55 @@ class BaseOfflineHeuristicCLI:
         instance = BaseInstanceFactory.from_record(record, compute_heuristics=False)
         times: Dict[str, float] = {}
 
-        times[BaseOfflineHeuristicStore.SC_NAME] = float(BaseOfflineHeuristicStore.ensure_sc(instance).computation_time)
+        times[BaseOfflineHeuristicStore.MOTION_ONLY_NAME] = float(
+            BaseOfflineHeuristicStore.ensure_motion_only(instance).computation_time
+        )
 
-        lbg_path = BaseOfflineHeuristicStore.lbg_backbone_path(manifest_file, record)
+        h_tri_path = BaseOfflineHeuristicStore.triplet_relaxation_backbone_path(manifest_file, record)
         if force:
-            lbg_path.unlink(missing_ok=True)
-        if lbg_path.exists():
-            BaseOfflineHeuristicStore.load_cached_lbg(instance, manifest_file, record)
+            h_tri_path.unlink(missing_ok=True)
+        if h_tri_path.exists():
+            BaseOfflineHeuristicStore.load_cached_triplet_relaxation(instance, manifest_file, record)
         else:
-            BaseOfflineHeuristicStore.ensure_lbg(instance)
-            lbg_path.parent.mkdir(parents=True, exist_ok=True)
-            instance.lbg.save_backbone(str(lbg_path))
-        times[BaseOfflineHeuristicStore.LBG_NAME] = float(instance.lbg.backbone_computation_time)
+            BaseOfflineHeuristicStore.ensure_triplet_relaxation(instance)
+            h_tri_path.parent.mkdir(parents=True, exist_ok=True)
+            instance.triplet_relaxation_heuristic.save_backbone(str(h_tri_path))
+        times[BaseOfflineHeuristicStore.TRIPLET_RELAXATION_NAME] = float(
+            instance.triplet_relaxation_heuristic.backbone_computation_time
+        )
 
-        if td_timeout_secs is not None:
-            td_path = BaseOfflineHeuristicStore.td_cache_path(manifest_file, record)
+        if h_tab_timeout_secs is not None:
+            h_tab_path = BaseOfflineHeuristicStore.interface_to_set_table_cache_path(manifest_file, record)
             if force:
-                td_path.unlink(missing_ok=True)
-            if td_path.exists():
-                instance.td_heur = HeurTrueDistance.load(str(td_path))
+                h_tab_path.unlink(missing_ok=True)
+            if h_tab_path.exists():
+                instance.interface_to_set_cost_table_heuristic = InterfaceToSetCostTableHeuristic.load(str(h_tab_path))
             else:
                 base_gcs = instance.stgcs.get_gcs_instance().gcs
-                td_heur = HeurTrueDistance(
+                h_tab_heuristic = InterfaceToSetCostTableHeuristic(
                     instance.stgcs,
                     base_gcs,
                     instance.stgcs.vlimit,
-                    instance.lbg,
-                    timeout_secs=float(td_timeout_secs),
+                    instance.triplet_relaxation_heuristic,
+                    timeout_secs=float(h_tab_timeout_secs),
                 )
-                if not td_heur._successful:
+                if not h_tab_heuristic._successful:
                     raise RuntimeError(
-                        f"TD precomputation timed out for base {record.instance_id} at {float(td_timeout_secs):.1f}s."
+                        f"h_tab precomputation timed out for base {record.instance_id} at {float(h_tab_timeout_secs):.1f}s."
                     )
-                td_path.parent.mkdir(parents=True, exist_ok=True)
-                td_heur.save(str(td_path))
-                instance.td_heur = td_heur
-            times[BaseOfflineHeuristicStore.TD_NAME] = float(instance.td_heur.computation_time)
+                h_tab_path.parent.mkdir(parents=True, exist_ok=True)
+                h_tab_heuristic.save(str(h_tab_path))
+                instance.interface_to_set_cost_table_heuristic = h_tab_heuristic
+            times[BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME] = float(
+                instance.interface_to_set_cost_table_heuristic.computation_time
+            )
 
         return record.instance_id, times
 
     @classmethod
     def parse_args(cls) -> argparse.Namespace:
         parser = argparse.ArgumentParser(
-            description="Build shared base LBG/TD heuristic caches."
+            description="Build shared base h_tri/h_tab heuristic caches."
         )
         parser.add_argument("manifest", type=Path)
         parser.add_argument(
@@ -203,7 +212,7 @@ class BaseOfflineHeuristicCLI:
             help="Base manifest root used when the input is an ST heuristic-ablation manifest.",
         )
         parser.add_argument("--workers", type=int, default=1)
-        parser.add_argument("--td-timeout-secs", type=float, default=None)
+        parser.add_argument("--h-tab-timeout-secs", type=float, default=None)
         parser.add_argument("--force", action="store_true")
         return parser.parse_args()
 
@@ -211,24 +220,24 @@ class BaseOfflineHeuristicCLI:
     def main(cls) -> None:
         args = cls.parse_args()
         manifest_path = Path(args.manifest).resolve()
-        if args.td_timeout_secs is not None and float(args.td_timeout_secs) <= 0.0:
-            raise ValueError(f"--td-timeout-secs must be > 0, got {args.td_timeout_secs}")
+        if args.h_tab_timeout_secs is not None and float(args.h_tab_timeout_secs) <= 0.0:
+            raise ValueError(f"--h-tab-timeout-secs must be > 0, got {args.h_tab_timeout_secs}")
         work_items = cls._load_work_items(manifest_path, args.base_root)
         if not work_items:
             print(f"No base records found in {manifest_path}")
             return
 
-        td_timeout_secs = None if args.td_timeout_secs is None else float(args.td_timeout_secs)
+        h_tab_timeout_secs = None if args.h_tab_timeout_secs is None else float(args.h_tab_timeout_secs)
         work_items_to_update = cls._work_items_to_update(
             work_items,
-            td_timeout_secs,
+            h_tab_timeout_secs,
             bool(args.force),
         )
         skipped_count = len(work_items) - len(work_items_to_update)
         if skipped_count:
             print(f"skipped {skipped_count} already complete base instances")
         if not work_items_to_update:
-            requested = ", ".join(sorted(cls._requested_heuristics(td_timeout_secs)))
+            requested = ", ".join(sorted(cls._requested_heuristics(h_tab_timeout_secs)))
             print(f"{manifest_path}: all {len(work_items)} base instances already have {requested} caches")
             return
 
@@ -242,7 +251,7 @@ class BaseOfflineHeuristicCLI:
                     instance_id, times = cls._build_record_caches(
                         str(item_manifest_path),
                         record.to_dict(),
-                        td_timeout_secs,
+                        h_tab_timeout_secs,
                         bool(args.force),
                     )
                     completed[instance_id] = times
@@ -260,7 +269,7 @@ class BaseOfflineHeuristicCLI:
                         cls._build_record_caches,
                         str(item_manifest_path),
                         record.to_dict(),
-                        td_timeout_secs,
+                        h_tab_timeout_secs,
                         bool(args.force),
                     ): record.instance_id
                     for item_manifest_path, record in work_items_to_update

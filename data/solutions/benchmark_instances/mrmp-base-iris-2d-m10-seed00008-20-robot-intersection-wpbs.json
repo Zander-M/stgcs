@@ -2,7 +2,7 @@
   "ok": true,
   "instance_id": "mrmp-base-iris-2d-m10-seed00008-20-robot-intersection",
   "planner_key": "wpbs",
-  "planner_name": "Windowed PBS(alpha=5,beta=1,rule=NC) + Search(Max+GUB+IPC,eps=10)",
+  "planner_name": "Windowed PBS(alpha=5,beta=1,rule=NC) + Search(h_max+GUB+delta_pos,eps=10)",
   "budget": 180.0,
   "status": "SUCCESS",
   "is_success": true,

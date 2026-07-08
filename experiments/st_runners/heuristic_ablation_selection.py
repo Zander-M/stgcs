@@ -39,7 +39,7 @@ class HeuristicAblationSelector:
     DOMAIN_KEYS = ("grid2d", "iris-2d")
 
     GROUP_DESCRIPTIONS: Dict[str, str] = {
-        GENERAL_OPEN: "Random-grid cases where SC, LBG, and TD should be close.",
+        GENERAL_OPEN: "Random-grid cases where h_mot, h_tri, and h_tab should be close.",
         IRIS2D: "IRIS-grown cluttered free-space cases.",
     }
 

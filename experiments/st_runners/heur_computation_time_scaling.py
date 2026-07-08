@@ -19,7 +19,7 @@ class HeuristicComputationTimeScalingBuilder(BaseManifestBuilder):
     DEFAULT_SAMPLES_PER_SHAPE = 1
     DEFAULT_CANDIDATE_MULTIPLIER = 3
     DEFAULT_STOP_AFTER_FAILED_SHAPES = 3
-    DEFAULT_TD_TIMEOUT_SECS = 10_000.0
+    DEFAULT_H_TAB_TIMEOUT_SECS = 10_000.0
 
     @staticmethod
     def instance_id(n: int, m: int, seed: int) -> str:
@@ -73,20 +73,20 @@ class HeuristicComputationTimeScalingBuilder(BaseManifestBuilder):
         shutil.rmtree(BaseOfflineHeuristicStore.base_dir(manifest_path, record), ignore_errors=True)
 
     @classmethod
-    def compute_td_timing(
+    def compute_h_tab_timing(
         cls,
         manifest_path: Path,
         record: BaseBenchmarkRecord,
-        td_timeout_secs: float,
+        h_tab_timeout_secs: float,
     ) -> dict[str, float]:
         _, times = BaseOfflineHeuristicCLI._build_record_caches(
             str(manifest_path),
             record.to_dict(),
-            float(td_timeout_secs),
+            float(h_tab_timeout_secs),
             False,
         )
-        if BaseOfflineHeuristicStore.TD_NAME not in times:
-            raise RuntimeError(f"TD timing was not recorded for {record.instance_id}.")
+        if BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME not in times:
+            raise RuntimeError(f"h_tab timing was not recorded for {record.instance_id}.")
         return times
 
     @classmethod
@@ -99,7 +99,7 @@ class HeuristicComputationTimeScalingBuilder(BaseManifestBuilder):
         seed_start: int,
         candidate_multiplier: int,
         stop_after_failed_shapes: int,
-        td_timeout_secs: float,
+        h_tab_timeout_secs: float,
     ) -> list[BaseBenchmarkRecord]:
         output_dir = Path(output_root)
         manifest_path = output_dir / "manifest.json"
@@ -112,8 +112,8 @@ class HeuristicComputationTimeScalingBuilder(BaseManifestBuilder):
             raise ValueError(f"candidate_multiplier must be positive, got {candidate_multiplier}.")
         if stop_after_failed_shapes < 0:
             raise ValueError(f"stop_after_failed_shapes must be non-negative, got {stop_after_failed_shapes}.")
-        if td_timeout_secs <= 0.0:
-            raise ValueError(f"td_timeout_secs must be positive, got {td_timeout_secs}.")
+        if h_tab_timeout_secs <= 0.0:
+            raise ValueError(f"h_tab_timeout_secs must be positive, got {h_tab_timeout_secs}.")
 
         with ManifestLock(lock_path):
             records = load_manifest(manifest_path) if manifest_path.exists() else []
@@ -142,19 +142,20 @@ class HeuristicComputationTimeScalingBuilder(BaseManifestBuilder):
                         record = cls.build_grid2d_record(n=n, m=m, seed=seed)
                         print(
                             f"{record.instance_id}: graph=({record.stgcs_num_vertices}V,"
-                            f" {record.stgcs_num_edges}E), running TD"
+                            f" {record.stgcs_num_edges}E), running h_tab"
                         )
-                        times = cls.compute_td_timing(
+                        times = cls.compute_h_tab_timing(
                             manifest_path=manifest_path,
                             record=record,
-                            td_timeout_secs=float(td_timeout_secs),
+                            h_tab_timeout_secs=float(h_tab_timeout_secs),
                         )
+                        record = record.with_heuristic_computation_times(times)
                     except Exception as exc:
                         if record is None:
                             print(f"{instance_id}: skip, failed to build base ({exc})")
                         else:
                             cls.cleanup_failed_candidate(manifest_path, record)
-                            print(f"{record.instance_id}: skip, TD failed ({exc})")
+                            print(f"{record.instance_id}: skip, h_tab failed ({exc})")
                         continue
 
                     records.append(record)
@@ -164,7 +165,8 @@ class HeuristicComputationTimeScalingBuilder(BaseManifestBuilder):
                     save_manifest(manifest_path, records)
                     print(
                         f"{record.instance_id}: kept {len(kept)}/{samples_per_shape} "
-                        f"for shape={shape_label}, TD={times[BaseOfflineHeuristicStore.TD_NAME]:.3f}s"
+                        f"for shape={shape_label}, "
+                        f"h_tab={times[BaseOfflineHeuristicStore.INTERFACE_TO_SET_COST_TABLE_NAME]:.3f}s"
                     )
 
                 if len(kept) < int(samples_per_shape):
@@ -179,7 +181,7 @@ class HeuristicComputationTimeScalingBuilder(BaseManifestBuilder):
                     ):
                         print(
                             f"Stopping after {consecutive_failed_shapes} consecutive "
-                            f"TD-infeasible shapes."
+                            f"h_tab-infeasible shapes."
                         )
                         break
                 else:
@@ -196,7 +198,7 @@ class HeuristicComputationTimeScalingCLI:
         parser = argparse.ArgumentParser(
             description=(
                 "Incrementally build a rectangular grid2d base manifest for offline heuristic scaling. "
-                "A candidate is kept only if TD finishes within the requested timeout."
+                "A candidate is kept only if h_tab finishes within the requested timeout."
             )
         )
         parser.add_argument(
@@ -231,12 +233,12 @@ class HeuristicComputationTimeScalingCLI:
             "--stop-after-failed-shapes",
             type=int,
             default=HeuristicComputationTimeScalingBuilder.DEFAULT_STOP_AFTER_FAILED_SHAPES,
-            help="Stop after this many consecutive shapes fail to produce a TD-feasible sample; use 0 to disable.",
+            help="Stop after this many consecutive shapes fail to produce an h_tab-feasible sample; use 0 to disable.",
         )
         parser.add_argument(
-            "--td-timeout-secs",
+            "--h-tab-timeout-secs",
             type=float,
-            default=HeuristicComputationTimeScalingBuilder.DEFAULT_TD_TIMEOUT_SECS,
+            default=HeuristicComputationTimeScalingBuilder.DEFAULT_H_TAB_TIMEOUT_SECS,
         )
         return parser.parse_args()
 
@@ -251,7 +253,7 @@ class HeuristicComputationTimeScalingCLI:
             seed_start=int(args.seed_start),
             candidate_multiplier=int(args.candidate_multiplier),
             stop_after_failed_shapes=int(args.stop_after_failed_shapes),
-            td_timeout_secs=float(args.td_timeout_secs),
+            h_tab_timeout_secs=float(args.h_tab_timeout_secs),
         )
         print(f"Wrote {len(records)} records to {Path(args.output_root) / 'manifest.json'}")
 

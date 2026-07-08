@@ -108,8 +108,8 @@ class STHeuristicAblationRunner:
 
 
 class STHeuristicAblationRunCLI:
-    TD_GUB_PLANNER = "Search(TD+GUB)"
-    HEURISTIC_RUN_ORDER = ("SC", "TD", "LBG", "Max", "Zero")
+    H_TAB_GUB_PLANNER = "Search(h_tab+GUB)"
+    HEURISTIC_RUN_ORDER = ("h_mot", "h_tab", "h_tri", "h_max", "h_zero")
     DEFAULT_BUDGET = 600.0
 
     @classmethod
@@ -123,9 +123,9 @@ class STHeuristicAblationRunCLI:
         parser.add_argument("--output-root", type=Path, default=Path("data/results/st_planning/heuristic_ablation"))
         parser.add_argument("--limit", type=int, default=None)
         parser.add_argument(
-            "--td-only",
+            "--h-tab-only",
             action="store_true",
-            help="Run only Search(TD+GUB) for the requested budget values.",
+            help="Run only Search(h_tab+GUB) for the requested budget values.",
         )
         args = parser.parse_args()
         for budget in args.budget:
@@ -134,7 +134,7 @@ class STHeuristicAblationRunCLI:
         return args
 
     @classmethod
-    def search_specs(cls, td_only: bool) -> tuple[SearchPlannerSpec, ...]:
+    def search_specs(cls, h_tab_only: bool) -> tuple[SearchPlannerSpec, ...]:
         source_specs = tuple(SEARCH_GROUPS["heuristic"])
         ordered_specs: list[SearchPlannerSpec] = []
         for heuristic in cls.HEURISTIC_RUN_ORDER:
@@ -143,11 +143,11 @@ class STHeuristicAblationRunCLI:
                 raise ValueError(f"Expected exactly one heuristic spec for {heuristic!r}, got {len(matches)}.")
             ordered_specs.append(matches[0])
         specs = tuple(ordered_specs)
-        if not td_only:
+        if not h_tab_only:
             return specs
-        selected = tuple(spec for spec in specs if spec.name == cls.TD_GUB_PLANNER)
+        selected = tuple(spec for spec in specs if spec.name == cls.H_TAB_GUB_PLANNER)
         if len(selected) != 1:
-            raise ValueError(f"Expected exactly one {cls.TD_GUB_PLANNER} spec, got {len(selected)}.")
+            raise ValueError(f"Expected exactly one {cls.H_TAB_GUB_PLANNER} spec, got {len(selected)}.")
         return selected
 
     @staticmethod
@@ -168,7 +168,7 @@ class STHeuristicAblationRunCLI:
         records = STHeuristicAblationManifestBuilder.load_manifest(Path(args.manifest))
         if args.limit is not None:
             records = records[: int(args.limit)]
-        specs: Sequence[SearchPlannerSpec] = cls.search_specs(args.td_only)
+        specs: Sequence[SearchPlannerSpec] = cls.search_specs(args.h_tab_only)
         budgets = cls.budgets(args)
         output_paths = STHeuristicAblationRunner.result_paths(args.output_root, specs=specs)
         completed = {
@@ -204,7 +204,7 @@ class STHeuristicAblationRunCLI:
                 base_manifest_path,
                 base_record,
                 required_heuristics=required_heuristics,
-                online_td_timeout_secs=max(budget for budget, _, _ in pending_runs),
+                online_h_tab_timeout_secs=max(budget for budget, _, _ in pending_runs),
             )
             for budget, spec, planner_name in pending_runs:
                 entry = STHeuristicAblationRunner.run_search_spec(instance, query, spec, budget)

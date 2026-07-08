@@ -10,8 +10,8 @@ import numpy as np
 from stgcs.graph import STGCS
 from stgcs.gcs_solver import solve
 from stgcs.trajectory import STTrajectory
-from stgcs.bfs.best_first_search import SearchAlgorithm, DominationChecker, Heuristic
-from stgcs.bfs.domination_check import GlobalUpperBound_DC, AStar_DC
+from stgcs.bfs.best_first_search import SearchAlgorithm, DominanceCheck, Heuristic
+from stgcs.bfs.dominance_check import GlobalUpperBoundDominanceCheck, AStarDominanceCheck
 
 import logging
 logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ class MICPPlanner(STPlanner):
 class SearchPlanner(STPlanner):
 
     def __init__(
-        self, dc_list:List[DominationChecker], heur:Heuristic, eps:float=1.0,
+        self, dc_list:List[DominanceCheck], heur:Heuristic, eps:float=1.0,
         runtime_limit_secs:float=float('inf'),
         record_trace: bool = False,
         enable_gub_fallback: bool = False,
@@ -96,11 +96,11 @@ class SearchPlanner(STPlanner):
         self.last_search_trace = None
         self.last_profile: Dict[str, float] = {}
         for dc in self.dc_list:
-            # set up UB planner as A* if GlobalUpperBound_DC is used
-            if isinstance(dc, GlobalUpperBound_DC):
+            # set up UB planner as A* if GlobalUpperBoundDominanceCheck is used
+            if isinstance(dc, GlobalUpperBoundDominanceCheck):
                 self.gub_planner = SearchAlgorithm(
                     heuristics = self.heur,
-                    domination_checker = [AStar_DC()],
+                    dominance_checks = [AStarDominanceCheck()],
                 )
                 self.gub_dc = dc
     
@@ -111,9 +111,9 @@ class SearchPlanner(STPlanner):
             "main_search_time": 0.0,
             "convex_restriction_time": 0.0,
             "convex_restriction_calls": 0,
-            "domination_check_time": 0.0,
-            "domination_convex_restriction_time": 0.0,
-            "domination_convex_restriction_calls": 0,
+            "dominance_check_time": 0.0,
+            "dominance_convex_restriction_time": 0.0,
+            "dominance_convex_restriction_calls": 0,
         }
         self.last_profile = profile
 
@@ -129,53 +129,53 @@ class SearchPlanner(STPlanner):
             convex_restriction_cache = {}
             gub_sol: Optional[STTrajectory] = None
             if self.gub_planner:
-                self.gub_planner.reset_domination_checkers()
+                self.gub_planner.reset_dominance_checks()
                 self.gub_planner.set_convex_restriction_cache(convex_restriction_cache)
                 ts = time.perf_counter()
                 gub_sol = self.gub_planner.run(stgcs, mp_gcs_instance.gcs)
                 profile["gub_time"] = time.perf_counter() - ts
                 profile["convex_restriction_time"] += self.gub_planner.convex_restriction_time
                 profile["convex_restriction_calls"] += self.gub_planner.convex_restriction_calls
-                profile["domination_check_time"] += self.gub_planner.dc_time
-                profile["domination_convex_restriction_time"] += (
-                    float(getattr(self.gub_planner, "domination_convex_restriction_time", 0.0))
+                profile["dominance_check_time"] += self.gub_planner.dc_time
+                profile["dominance_convex_restriction_time"] += (
+                    float(getattr(self.gub_planner, "dominance_convex_restriction_time", 0.0))
                 )
-                profile["domination_convex_restriction_calls"] += (
-                    int(getattr(self.gub_planner, "domination_convex_restriction_calls", 0))
+                profile["dominance_convex_restriction_calls"] += (
+                    int(getattr(self.gub_planner, "dominance_convex_restriction_calls", 0))
                 )
                 if gub_sol is not None:
                     self.gub_dc.reset(gub_sol.duration, profile["gub_time"], self.eps)
                 else:
                     self.gub_dc.reset(float('inf'), profile["gub_time"], self.eps)
 
-            # reset domination checkers
+            # reset dominance checkers
             for dc in self.dc_list:
-                if not isinstance(dc, GlobalUpperBound_DC):
+                if not isinstance(dc, GlobalUpperBoundDominanceCheck):
                     dc.reset()
 
             alg = SearchAlgorithm(
                 heuristics = self.heur,
                 heuristic_inflation_factor = self.eps,
-                domination_checker = self.dc_list,
+                dominance_checks = self.dc_list,
                 record_trace = self.record_trace,
                 convex_restriction_cache = convex_restriction_cache,
             )
             ts = time.perf_counter()
             sol = alg.run(stgcs, mp_gcs_instance.gcs, timeout_seconds=self.runtime_limit_secs)
             profile["main_search_time"] = time.perf_counter() - ts
-            domination_cr_time = float(getattr(alg, "domination_convex_restriction_time", 0.0))
-            domination_cr_calls = int(getattr(alg, "domination_convex_restriction_calls", 0))
+            dominance_cr_time = float(getattr(alg, "dominance_convex_restriction_time", 0.0))
+            dominance_cr_calls = int(getattr(alg, "dominance_convex_restriction_calls", 0))
             profile["convex_restriction_time"] += (
                 alg.convex_restriction_time
-                + domination_cr_time
+                + dominance_cr_time
             )
             profile["convex_restriction_calls"] += (
                 alg.convex_restriction_calls
-                + domination_cr_calls
+                + dominance_cr_calls
             )
-            profile["domination_check_time"] += alg.dc_time
-            profile["domination_convex_restriction_time"] += domination_cr_time
-            profile["domination_convex_restriction_calls"] += domination_cr_calls
+            profile["dominance_check_time"] += alg.dc_time
+            profile["dominance_convex_restriction_time"] += dominance_cr_time
+            profile["dominance_convex_restriction_calls"] += dominance_cr_calls
             self.last_search_algorithm = alg
             self.last_search_trace = alg.trace
             status = STPlanStatus.from_solution(sol)

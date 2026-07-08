@@ -41,10 +41,10 @@
   "pbs_popped_nodes": 465,
   "pbs_runtime": 90.44963029422797,
   "pbs_update_calls": 451,
-  "planner_key": "wc-wpbs-max-gub-ipc-lazy-global-trajopt",
-  "planner_name": "WC(alpha=5,beta=1) + wPBS-Lazy + Search(Max+GUB+IPC,eps=1000) + global trajopt",
+  "planner_key": "wc-wpbs-h-max-gub-delta-pos-lazy-global-trajopt",
+  "planner_name": "WC(alpha=5,beta=1) + wPBS-Lazy + Search(h_max+GUB+delta_pos,eps=1000) + global trajopt",
   "runtime": 158.87943020812236,
-  "source_planner_key": "wc-wpbs-max-gub-ipc-lazy",
+  "source_planner_key": "wc-wpbs-h-max-gub-delta-pos-lazy",
   "source_runtime": 90.56150491605513,
   "status": "SUCCESS",
   "trajectories": [

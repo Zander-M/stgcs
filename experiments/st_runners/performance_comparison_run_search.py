@@ -17,21 +17,21 @@ from experiments.st_runners.heuristic_ablation_st_manifest import (
     STHeuristicAblationResultEntry,
     STHeuristicAblationResultStore,
 )
-from experiments.st_runners.domination_stress_manifest import STDominationStressManifestBuilder
+from experiments.st_runners.dominance_stress_manifest import STDominanceStressManifestBuilder
 from benchmark.offline_heuristics import BaseOfflineHeuristicStore
 from benchmark.planners.mrmp import SearchPlannerSpec
 from stgcs.st_planner import MICPPlanner, STPlanStatus
 
 
 class STPerformanceComparisonRunner:
-    IPC_SPEC = SearchPlannerSpec("Max", ("GUB", "IPC"), epsilon=10.0)
-    ESC_SPEC = SearchPlannerSpec("Max", ("GUB", "ESC"), epsilon=10.0)
-    ESC_EPS1_SPEC = SearchPlannerSpec("Max", ("GUB", "ESC"), epsilon=1.0)
-    SEARCH_SPECS = (IPC_SPEC, ESC_SPEC, ESC_EPS1_SPEC)
+    DELTA_POS_SPEC = SearchPlannerSpec("h_max", ("GUB", "delta_pos"), epsilon=10.0)
+    DELTA_SET_SPEC = SearchPlannerSpec("h_max", ("GUB", "delta_set"), epsilon=10.0)
+    DELTA_SET_EPS1_SPEC = SearchPlannerSpec("h_max", ("GUB", "delta_set"), epsilon=1.0)
+    SEARCH_SPECS = (DELTA_POS_SPEC, DELTA_SET_SPEC, DELTA_SET_EPS1_SPEC)
     SEARCH_SPEC_BY_PLANNER = {spec.name: spec for spec in SEARCH_SPECS}
-    IPC_PLANNER = IPC_SPEC.name
-    ESC_PLANNER = ESC_SPEC.name
-    ESC_EPS1_PLANNER = ESC_EPS1_SPEC.name
+    DELTA_POS_PLANNER = DELTA_POS_SPEC.name
+    DELTA_SET_PLANNER = DELTA_SET_SPEC.name
+    DELTA_SET_EPS1_PLANNER = DELTA_SET_EPS1_SPEC.name
     MICP_PLANNER = "MICP"
     MICP_ROUNDING_PLANNER = "MICP(g)"
     ST_RRT_PLANNER = "OMPL ST-RRT*-C"
@@ -51,14 +51,13 @@ class STPerformanceComparisonRunner:
         *ST_RRT_OUTPUT_PLANNERS,
         *ZETA_SIPP_PLANNERS,
     )
-    PLANNERS = (IPC_PLANNER, ESC_PLANNER, ESC_EPS1_PLANNER, *BASELINE_PLANNERS)
+    PLANNERS = (DELTA_POS_PLANNER, DELTA_SET_PLANNER, DELTA_SET_EPS1_PLANNER, *BASELINE_PLANNERS)
     PLANNER_KEY_TO_NAME = {
         "all": "all",
-        "ipc": IPC_PLANNER,
-        "esc": ESC_PLANNER,
-        "esc1": ESC_EPS1_PLANNER,
-        "esc-eps1": ESC_EPS1_PLANNER,
-        "esc-epsilon1": ESC_EPS1_PLANNER,
+        "delta-pos": DELTA_POS_PLANNER,
+        "delta-set": DELTA_SET_PLANNER,
+        "delta-set-eps1": DELTA_SET_EPS1_PLANNER,
+        "delta-set-epsilon1": DELTA_SET_EPS1_PLANNER,
         "micp": MICP_PLANNER,
         "micpg": MICP_ROUNDING_PLANNER,
         "micp-g": MICP_ROUNDING_PLANNER,
@@ -140,9 +139,9 @@ class STPerformanceComparisonRunner:
     @classmethod
     def planner_cli_help(cls) -> str:
         pairs = [
-            f"ipc={cls.IPC_PLANNER}",
-            f"esc={cls.ESC_PLANNER}",
-            f"esc1={cls.ESC_EPS1_PLANNER}",
+            f"delta-pos={cls.DELTA_POS_PLANNER}",
+            f"delta-set={cls.DELTA_SET_PLANNER}",
+            f"delta-set-eps1={cls.DELTA_SET_EPS1_PLANNER}",
             f"micp={cls.MICP_PLANNER}",
             f"micpg={cls.MICP_ROUNDING_PLANNER}",
             f"strrt/ompl-strrt={cls.ST_RRT_FIRST_PLANNER}+{cls.ST_RRT_FINAL_PLANNER}",
@@ -348,7 +347,7 @@ class STPerformanceComparisonRunner:
 
 
 class STPerformanceComparisonRunCLI:
-    DEFAULT_MANIFEST = STDominationStressManifestBuilder.DEFAULT_OUTPUT
+    DEFAULT_MANIFEST = STDominanceStressManifestBuilder.DEFAULT_OUTPUT
     DEFAULT_OUTPUT_ROOT = Path("data/results/st_planning/performance_comparison")
     DEFAULT_BUDGET = 600.0
 
@@ -357,9 +356,9 @@ class STPerformanceComparisonRunCLI:
         parser = argparse.ArgumentParser(
             description=(
                 "Run the ST-planning performance comparison: "
-                f"{STPerformanceComparisonRunner.IPC_PLANNER}, "
-                f"{STPerformanceComparisonRunner.ESC_PLANNER}, "
-                f"{STPerformanceComparisonRunner.ESC_EPS1_PLANNER}, MICP, MICP(g), "
+                f"{STPerformanceComparisonRunner.DELTA_POS_PLANNER}, "
+                f"{STPerformanceComparisonRunner.DELTA_SET_PLANNER}, "
+                f"{STPerformanceComparisonRunner.DELTA_SET_EPS1_PLANNER}, MICP, MICP(g), "
                 "OMPL ST-RRT*-C, and Zeta*-SIPP variants on a shared ST manifest."
             )
         )
@@ -446,7 +445,7 @@ class STPerformanceComparisonRunCLI:
                     base_manifest_path,
                     base_record,
                     required_heuristics=required_heuristics,
-                    online_td_timeout_secs=max(budget for budget, _ in pending_runs),
+                    online_h_tab_timeout_secs=max(budget for budget, _ in pending_runs),
                 )
 
             handled_runs: set[tuple[float, str]] = set()

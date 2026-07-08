@@ -49,7 +49,7 @@ def run_wpbs(record):
             base_manifest_path,
             base_record,
             MRMPPerformanceComparison.required_heuristics(),
-            online_td_timeout_secs=float(BUDGET),
+            online_h_tab_timeout_secs=float(BUDGET),
         )
         solutions, entry = MRMPExperiment.run_windowed_pbs_spec_with_solutions(
             instance,

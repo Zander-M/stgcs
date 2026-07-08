@@ -242,7 +242,7 @@ class MRMPWindowedCoordinationRunCLI:
                 base_manifest_path,
                 base_record,
                 cls.ABLATION.required_heuristics(),
-                online_td_timeout_secs=budget,
+                online_h_tab_timeout_secs=budget,
             )
             entry = MRMPExperiment.run_windowed_pbs_spec(
                 instance,

@@ -47,10 +47,10 @@
   "pbs_popped_nodes": 207,
   "pbs_runtime": 68.28964279405773,
   "pbs_update_calls": 326,
-  "planner_key": "wc-wpbs-max-gub-ipc-num_conflicts-global-trajopt",
-  "planner_name": "WC(alpha=2.5,beta=1) + wPBS-NumConflicts + Search(Max+GUB+IPC,eps=100) + global trajopt",
+  "planner_key": "wc-wpbs-h-max-gub-delta-pos-num_conflicts-global-trajopt",
+  "planner_name": "WC(alpha=2.5,beta=1) + wPBS-NumConflicts + Search(h_max+GUB+delta_pos,eps=100) + global trajopt",
   "runtime": 120.08878837386146,
-  "source_planner_key": "wc-wpbs-max-gub-ipc-num_conflicts",
+  "source_planner_key": "wc-wpbs-h-max-gub-delta-pos-num_conflicts",
   "source_runtime": 68.44575529079884,
   "status": "SUCCESS",
   "trajectories": [

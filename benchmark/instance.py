@@ -13,8 +13,8 @@ from benchmark.environment.obstacle import ConcatDynamicSphere, DynamicObstacle,
 
 from stgcs.graph import STGCS
 from stgcs.st_planner import MPQuery
-from stgcs.bfs.heuristics import HeurShortCut, HeurLowerBoundGraph, HeurTrueDistance
-from stgcs.bfs.domination_check import AStar_DC
+from stgcs.bfs.heuristics import MotionOnlyHeuristic, TripletRelaxationHeuristic, InterfaceToSetCostTableHeuristic
+from stgcs.bfs.dominance_check import AStarDominanceCheck
 from stgcs.bfs.best_first_search import SearchAlgorithm
 from stgcs.interval import Interval
 
@@ -26,15 +26,17 @@ class Instance:
     
     def __init__(
         self, name:str, seed:int, env:Env, stgcs:STGCS, 
-        sc_heur: HeurShortCut, lbg: HeurLowerBoundGraph, td_heur: HeurTrueDistance
+        motion_only_heuristic: MotionOnlyHeuristic,
+        triplet_relaxation_heuristic: TripletRelaxationHeuristic,
+        interface_to_set_cost_table_heuristic: InterfaceToSetCostTableHeuristic,
     ) -> None:
         self.name = name
         self.seed = seed
         self.env = env
         self.stgcs = stgcs
-        self.lbg = lbg
-        self.sc_heur = sc_heur
-        self.td_heur = td_heur
+        self.motion_only_heuristic = motion_only_heuristic
+        self.triplet_relaxation_heuristic = triplet_relaxation_heuristic
+        self.interface_to_set_cost_table_heuristic = interface_to_set_cost_table_heuristic
         self.sampled_pts = []
         self.np_rng = np.random.RandomState(self.seed+100)
         self.drake_rng = RandomGenerator(self.seed+100)
@@ -162,7 +164,7 @@ class Instance:
         np_rng, drake_rng = np.random.RandomState(seed), RandomGenerator(seed)
         sampled_pts = []
         stgcs = Instance.build_stgcs_from_env(env, tmax=1000.0, vlimit=vlimit)
-        sc_heur = HeurShortCut(stgcs)
+        motion_only_heuristic = MotionOnlyHeuristic(stgcs)
         for i in range(num_obs):
             print(f"Adding dynamic obstacle {i+1}/{num_obs}")
             start, goal = env.sample_CSpace(np_rng, drake_rng, size=2)
@@ -170,8 +172,8 @@ class Instance:
             mp_query = MPQuery(start, goal, 0.0, False, vlimit)
             gcs = stgcs.get_gcs_instance(mp_query).gcs
             sol = SearchAlgorithm(
-                heuristics = sc_heur,
-                domination_checker = [AStar_DC()]
+                heuristics = motion_only_heuristic,
+                dominance_checks = [AStarDominanceCheck()]
             ).run(stgcs, gcs)
             obs = ConcatDynamicSphere.from_solution(sol, radius=env.robot_radius)
             env.O_Dynamic.append(obs)
@@ -179,29 +181,35 @@ class Instance:
         return sampled_pts
 
     def compute_heuristics(
-        self, td_heur_fn:Optional[str]=None, true_dist_timeout_secs:float=0.0, vlimit:float=1.0
+        self, interface_to_set_table_dir:Optional[str]=None, interface_to_set_table_timeout_secs:float=0.0, vlimit:float=1.0
     ) -> None:
 
         gcs = self.stgcs.get_gcs_instance().gcs
-        self.sc_heur = HeurShortCut(self.stgcs)
-        self.lbg = HeurLowerBoundGraph(self.stgcs, gcs, use_update=True)
+        self.motion_only_heuristic = MotionOnlyHeuristic(self.stgcs)
+        self.triplet_relaxation_heuristic = TripletRelaxationHeuristic(self.stgcs, gcs, use_update=True)
         
-        td = None
-        # try loading true distance heuristic
-        if td_heur_fn is not None:
-            fn = os.path.join(f"{td_heur_fn}/{self.name}.pkl")
+        h_tab_heuristic = None
+        # try loading h_tab
+        if interface_to_set_table_dir is not None:
+            fn = os.path.join(f"{interface_to_set_table_dir}/{self.name}.pkl")
             if os.path.exists(fn):
-                td = HeurTrueDistance.load(fn)
+                h_tab_heuristic = InterfaceToSetCostTableHeuristic.load(fn)
 
-        if td is None and true_dist_timeout_secs > 0.0:
-            # try computing true distance heuristic:
-            if not os.path.exists(td_heur_fn):
-                os.makedirs(td_heur_fn)
-            td = HeurTrueDistance(self.stgcs, gcs, vlimit, self.lbg, timeout_secs=true_dist_timeout_secs)
-            if td._successful:
-                td.save(fn)
+        if h_tab_heuristic is None and interface_to_set_table_timeout_secs > 0.0:
+            # try computing h_tab:
+            if not os.path.exists(interface_to_set_table_dir):
+                os.makedirs(interface_to_set_table_dir)
+            h_tab_heuristic = InterfaceToSetCostTableHeuristic(
+                self.stgcs,
+                gcs,
+                vlimit,
+                self.triplet_relaxation_heuristic,
+                timeout_secs=interface_to_set_table_timeout_secs,
+            )
+            if h_tab_heuristic._successful:
+                h_tab_heuristic.save(fn)
 
-        self.td_heur = td
+        self.interface_to_set_cost_table_heuristic = h_tab_heuristic
     
     def sample_MP_query(self, t0:float=0.0, is_stay:bool=True, timeout_secs:float=6e2) -> Optional[MPQuery]:
         if len(self.sampled_pts) == 0:
@@ -230,7 +238,7 @@ class GridInstance(Instance):
 
     def __init__(
         self, seed:int, gridN:int, gridM:int, num_obs:int, env:Env, stgcs:STGCS, 
-        sc_heur: HeurShortCut=None, lbg: HeurLowerBoundGraph=None, td_heur: HeurTrueDistance=None,
+        motion_only_heuristic: MotionOnlyHeuristic=None, triplet_relaxation_heuristic: TripletRelaxationHeuristic=None, interface_to_set_cost_table_heuristic: InterfaceToSetCostTableHeuristic=None,
         sampled_pts:List[np.ndarray]=[],
         space_dim:int=2,
     ) -> None:
@@ -239,7 +247,7 @@ class GridInstance(Instance):
         self.grid_shape = (gridN,) + (gridM,) * (space_dim - 1)
         shape_str = "x".join(str(v) for v in self.grid_shape)
         name = f"Grid-{shape_str}-O{num_obs}-S{seed}"
-        super().__init__(name, seed, env, stgcs, sc_heur, lbg, td_heur)
+        super().__init__(name, seed, env, stgcs, motion_only_heuristic, triplet_relaxation_heuristic, interface_to_set_cost_table_heuristic)
         self.gridN = gridN
         self.gridM = gridM
         self.space_dim = space_dim
@@ -258,8 +266,8 @@ class GridInstance(Instance):
     def from_env(
         seed:int, N:int, M:int, env:Env, num_obs:int,
         tmax:float=1000.0, vlimit:float=1.0,
-        true_dist_timeout_secs:float=0.0, compute_heuristics:bool=True,
-        td_heur_fn:Optional[str]=None, sampled_pts:Optional[List[np.ndarray]]=None,
+        interface_to_set_table_timeout_secs:float=0.0, compute_heuristics:bool=True,
+        interface_to_set_table_dir:Optional[str]=None, sampled_pts:Optional[List[np.ndarray]]=None,
         space_dim:int=2,
     ) -> GridInstance:
         stgcs = Instance.build_stgcs_from_env(env, tmax=tmax, vlimit=vlimit)
@@ -274,14 +282,14 @@ class GridInstance(Instance):
             space_dim=space_dim,
         )
         if compute_heuristics:
-            istc.compute_heuristics(td_heur_fn, true_dist_timeout_secs, vlimit)
+            istc.compute_heuristics(interface_to_set_table_dir, interface_to_set_table_timeout_secs, vlimit)
         return istc
 
     @staticmethod
     def generate_base(
         seed:int, N:int, M:int, tmax:float=1000.0, vlimit:float=1.0,
-        true_dist_timeout_secs:float=0.0, compute_heuristics:bool=True,
-        td_heur_fn:Optional[str]=None, space_dim:int=2,
+        interface_to_set_table_timeout_secs:float=0.0, compute_heuristics:bool=True,
+        interface_to_set_table_dir:Optional[str]=None, space_dim:int=2,
     ) -> GridInstance:
         env = GridInstance.build_base_env(seed, N, M, space_dim=space_dim)
         return GridInstance.from_env(
@@ -292,9 +300,9 @@ class GridInstance(Instance):
             num_obs=0,
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             sampled_pts=[],
             space_dim=space_dim,
         )
@@ -302,8 +310,8 @@ class GridInstance(Instance):
     @staticmethod
     def generate_from_obstacle_specs(
         seed:int, N:int, M:int, obstacle_specs:List[Dict[str, Any]],
-        tmax:float=1000.0, vlimit:float=1.0, true_dist_timeout_secs:float=0.0,
-        compute_heuristics:bool=True, td_heur_fn:Optional[str]=None,
+        tmax:float=1000.0, vlimit:float=1.0, interface_to_set_table_timeout_secs:float=0.0,
+        compute_heuristics:bool=True, interface_to_set_table_dir:Optional[str]=None,
         space_dim:int=2,
     ) -> GridInstance:
         env = GridInstance.build_base_env(seed, N, M, space_dim=space_dim)
@@ -316,9 +324,9 @@ class GridInstance(Instance):
             num_obs=len(obstacle_specs),
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             sampled_pts=Instance.obstacle_sampled_points(env.O_Dynamic),
             space_dim=space_dim,
         )
@@ -326,8 +334,8 @@ class GridInstance(Instance):
     @staticmethod
     def generate(
         seed:int, N:int, M:int, num_obs:int, tmax:float=1000.0,
-        vlimit:float=1.0, true_dist_timeout_secs:float=0.0,
-        compute_heuristics:bool=True, td_heur_fn:Optional[str]=None,
+        vlimit:float=1.0, interface_to_set_table_timeout_secs:float=0.0,
+        compute_heuristics:bool=True, interface_to_set_table_dir:Optional[str]=None,
         space_dim:int=2,
     ) -> GridInstance:
         env = GridInstance.build_base_env(seed, N, M, space_dim=space_dim)
@@ -340,9 +348,9 @@ class GridInstance(Instance):
             num_obs=num_obs,
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             sampled_pts=sampled_pts,
             space_dim=space_dim,
         )
@@ -354,11 +362,11 @@ class Simple2DInstance(Instance):
 
     def __init__(
         self, seed:int, env:Env, stgcs:STGCS,
-        sc_heur: HeurShortCut=None, lbg: HeurLowerBoundGraph=None, td_heur: HeurTrueDistance=None,
+        motion_only_heuristic: MotionOnlyHeuristic=None, triplet_relaxation_heuristic: TripletRelaxationHeuristic=None, interface_to_set_cost_table_heuristic: InterfaceToSetCostTableHeuristic=None,
         sampled_pts:Optional[List[np.ndarray]]=None,
     ) -> None:
         name = f"SIMPLE2D-S{seed}"
-        super().__init__(name, seed, env, stgcs, sc_heur, lbg, td_heur)
+        super().__init__(name, seed, env, stgcs, motion_only_heuristic, triplet_relaxation_heuristic, interface_to_set_cost_table_heuristic)
         self.sampled_pts = [] if sampled_pts is None else sampled_pts
 
     @staticmethod
@@ -410,8 +418,8 @@ class Simple2DInstance(Instance):
     @staticmethod
     def from_env(
         seed:int, env:Env, tmax:float=1000.0, vlimit:float=1.0,
-        true_dist_timeout_secs:float=0.0, compute_heuristics:bool=True,
-        td_heur_fn:Optional[str]=None, sampled_pts:Optional[List[np.ndarray]]=None,
+        interface_to_set_table_timeout_secs:float=0.0, compute_heuristics:bool=True,
+        interface_to_set_table_dir:Optional[str]=None, sampled_pts:Optional[List[np.ndarray]]=None,
     ) -> Simple2DInstance:
         stgcs = Instance.build_stgcs_from_env(env, tmax=tmax, vlimit=vlimit)
         if Instance.should_report_progress():
@@ -421,14 +429,14 @@ class Simple2DInstance(Instance):
 
         instance = Simple2DInstance(seed, env, stgcs, sampled_pts=sampled_pts)
         if compute_heuristics:
-            instance.compute_heuristics(td_heur_fn, true_dist_timeout_secs, vlimit)
+            instance.compute_heuristics(interface_to_set_table_dir, interface_to_set_table_timeout_secs, vlimit)
         return instance
 
     @staticmethod
     def generate_base(
         seed:int, tmax:float=1000.0, vlimit:float=1.0,
-        true_dist_timeout_secs:float=0.0, compute_heuristics:bool=True,
-        td_heur_fn:Optional[str]=None, robot_radius:float | None=None,
+        interface_to_set_table_timeout_secs:float=0.0, compute_heuristics:bool=True,
+        interface_to_set_table_dir:Optional[str]=None, robot_radius:float | None=None,
     ) -> Simple2DInstance:
         env = Simple2DInstance.build_base_env(seed, robot_radius=robot_radius)
         return Simple2DInstance.from_env(
@@ -436,9 +444,9 @@ class Simple2DInstance(Instance):
             env=env,
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             sampled_pts=[],
         )
 
@@ -447,11 +455,11 @@ class MazeInstance(Instance):
 
     def __init__(
         self, seed:int, width:int, height:int, num_obs:int, env:Env, stgcs:STGCS, 
-        sc_heur: HeurShortCut=None, lbg: HeurLowerBoundGraph=None, td_heur: HeurTrueDistance=None,
+        motion_only_heuristic: MotionOnlyHeuristic=None, triplet_relaxation_heuristic: TripletRelaxationHeuristic=None, interface_to_set_cost_table_heuristic: InterfaceToSetCostTableHeuristic=None,
         sampled_pts:List[np.ndarray]=[],
     ) -> None:
         name = f"Maze-{width}x{height}-O{num_obs}-S{seed}"
-        super().__init__(name, seed, env, stgcs, sc_heur, lbg, td_heur)
+        super().__init__(name, seed, env, stgcs, motion_only_heuristic, triplet_relaxation_heuristic, interface_to_set_cost_table_heuristic)
         self.width = width
         self.height = height
         self.num_obs = num_obs
@@ -464,8 +472,8 @@ class MazeInstance(Instance):
     @staticmethod
     def from_env(
         seed:int, width:int, height:int, env:Env, num_obs:int,
-        tmax:float=1000.0, vlimit:float=1.0, true_dist_timeout_secs:float=0.0,
-        compute_heuristics:bool=True, td_heur_fn:Optional[str]=None,
+        tmax:float=1000.0, vlimit:float=1.0, interface_to_set_table_timeout_secs:float=0.0,
+        compute_heuristics:bool=True, interface_to_set_table_dir:Optional[str]=None,
         sampled_pts:Optional[List[np.ndarray]]=None,
     ) -> MazeInstance:
         stgcs = Instance.build_stgcs_from_env(env, tmax=tmax, vlimit=vlimit)
@@ -479,14 +487,14 @@ class MazeInstance(Instance):
             sampled_pts=[] if sampled_pts is None else sampled_pts,
         )
         if compute_heuristics:
-            istc.compute_heuristics(td_heur_fn, true_dist_timeout_secs, vlimit)
+            istc.compute_heuristics(interface_to_set_table_dir, interface_to_set_table_timeout_secs, vlimit)
         return istc
 
     @staticmethod
     def generate_base(
         seed:int, width:int, height:int, tmax:float=1000.0, vlimit:float=1.0,
-        true_dist_timeout_secs:float=0.0, compute_heuristics:bool=True,
-        td_heur_fn:Optional[str]=None, robot_radius:float=0.25,
+        interface_to_set_table_timeout_secs:float=0.0, compute_heuristics:bool=True,
+        interface_to_set_table_dir:Optional[str]=None, robot_radius:float=0.25,
     ) -> MazeInstance:
         env = MazeInstance.build_base_env(seed, width, height, robot_radius=robot_radius)
         return MazeInstance.from_env(
@@ -497,17 +505,17 @@ class MazeInstance(Instance):
             num_obs=0,
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             sampled_pts=[],
         )
 
     @staticmethod
     def generate_from_obstacle_specs(
         seed:int, width:int, height:int, obstacle_specs:List[Dict[str, Any]],
-        tmax:float=1000.0, vlimit:float=1.0, true_dist_timeout_secs:float=0.0,
-        compute_heuristics:bool=True, td_heur_fn:Optional[str]=None,
+        tmax:float=1000.0, vlimit:float=1.0, interface_to_set_table_timeout_secs:float=0.0,
+        compute_heuristics:bool=True, interface_to_set_table_dir:Optional[str]=None,
         robot_radius:float=0.25,
     ) -> MazeInstance:
         env = MazeInstance.build_base_env(seed, width, height, robot_radius=robot_radius)
@@ -520,17 +528,17 @@ class MazeInstance(Instance):
             num_obs=len(obstacle_specs),
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             sampled_pts=Instance.obstacle_sampled_points(env.O_Dynamic),
         )
 
     @staticmethod
     def generate(
         seed:int, width:int, height:int, num_obs:int, 
-        tmax:float=1000.0, vlimit:float=1.0, true_dist_timeout_secs:float=0.0,
-        compute_heuristics:bool=True, td_heur_fn:Optional[str]=None,
+        tmax:float=1000.0, vlimit:float=1.0, interface_to_set_table_timeout_secs:float=0.0,
+        compute_heuristics:bool=True, interface_to_set_table_dir:Optional[str]=None,
         robot_radius:float=0.25,
     ) -> MazeInstance:
         env = MazeInstance.build_base_env(seed, width, height, robot_radius=robot_radius)
@@ -543,9 +551,9 @@ class MazeInstance(Instance):
             num_obs=num_obs,
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             sampled_pts=sampled_pts,
         )
 
@@ -555,13 +563,13 @@ class Iris2DInstance(Instance):
     def __init__(
         self, seed:int, num_seed_points:int, num_static_obstacles:int, num_obs:int,
         env:Env, stgcs:STGCS,
-        sc_heur: HeurShortCut=None, lbg: HeurLowerBoundGraph=None, td_heur: HeurTrueDistance=None,
+        motion_only_heuristic: MotionOnlyHeuristic=None, triplet_relaxation_heuristic: TripletRelaxationHeuristic=None, interface_to_set_cost_table_heuristic: InterfaceToSetCostTableHeuristic=None,
         env_params:Optional[Dict[str, Any]]=None,
         sampled_pts:List[np.ndarray]=[],
     ) -> None:
         resolved_env_params = Iris2DEnvBuilder.normalize_env_params(env_params)
         name = f"Iris2D-m{num_static_obstacles}-O{num_obs}-S{seed}"
-        super().__init__(name, seed, env, stgcs, sc_heur, lbg, td_heur)
+        super().__init__(name, seed, env, stgcs, motion_only_heuristic, triplet_relaxation_heuristic, interface_to_set_cost_table_heuristic)
         self.num_seed_points = num_seed_points
         self.num_static_obstacles = num_static_obstacles
         self.num_obs = num_obs
@@ -575,8 +583,8 @@ class Iris2DInstance(Instance):
     @staticmethod
     def from_env(
         seed:int, env:Env, num_obs:int,
-        tmax:float=1000.0, vlimit:float=1.0, true_dist_timeout_secs:float=0.0,
-        compute_heuristics:bool=True, td_heur_fn:Optional[str]=None,
+        tmax:float=1000.0, vlimit:float=1.0, interface_to_set_table_timeout_secs:float=0.0,
+        compute_heuristics:bool=True, interface_to_set_table_dir:Optional[str]=None,
         env_params:Optional[Dict[str, Any]]=None,
         sampled_pts:Optional[List[np.ndarray]]=None,
     ) -> Iris2DInstance:
@@ -602,14 +610,14 @@ class Iris2DInstance(Instance):
             sampled_pts=seed_points if sampled_pts is None else sampled_pts,
         )
         if compute_heuristics:
-            istc.compute_heuristics(td_heur_fn, true_dist_timeout_secs, vlimit)
+            istc.compute_heuristics(interface_to_set_table_dir, interface_to_set_table_timeout_secs, vlimit)
         return istc
 
     @staticmethod
     def generate_base(
         seed:int, tmax:float=1000.0, vlimit:float=1.0,
-        true_dist_timeout_secs:float=0.0, compute_heuristics:bool=True,
-        td_heur_fn:Optional[str]=None,
+        interface_to_set_table_timeout_secs:float=0.0, compute_heuristics:bool=True,
+        interface_to_set_table_dir:Optional[str]=None,
         env_params:Optional[Dict[str, Any]]=None,
     ) -> Iris2DInstance:
         resolved_env_params = Iris2DEnvBuilder.normalize_env_params(env_params)
@@ -620,17 +628,17 @@ class Iris2DInstance(Instance):
             num_obs=0,
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             env_params=resolved_env_params,
         )
 
     @staticmethod
     def generate_from_obstacle_specs(
         seed:int, obstacle_specs:List[Dict[str, Any]],
-        tmax:float=1000.0, vlimit:float=1.0, true_dist_timeout_secs:float=0.0,
-        compute_heuristics:bool=True, td_heur_fn:Optional[str]=None,
+        tmax:float=1000.0, vlimit:float=1.0, interface_to_set_table_timeout_secs:float=0.0,
+        compute_heuristics:bool=True, interface_to_set_table_dir:Optional[str]=None,
         env_params:Optional[Dict[str, Any]]=None,
     ) -> Iris2DInstance:
         resolved_env_params = Iris2DEnvBuilder.normalize_env_params(env_params)
@@ -647,9 +655,9 @@ class Iris2DInstance(Instance):
             num_obs=len(obstacle_specs),
             tmax=tmax,
             vlimit=vlimit,
-            true_dist_timeout_secs=true_dist_timeout_secs,
+            interface_to_set_table_timeout_secs=interface_to_set_table_timeout_secs,
             compute_heuristics=compute_heuristics,
-            td_heur_fn=td_heur_fn,
+            interface_to_set_table_dir=interface_to_set_table_dir,
             env_params=resolved_env_params,
             sampled_pts=sampled_pts,
         )

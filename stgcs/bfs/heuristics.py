@@ -14,7 +14,7 @@ from stgcs.gcs_solver import (
 )
 from stgcs.gcs_solver import solve_convex_restriction
 from stgcs.bfs.best_first_search import Heuristic, SearchNode
-from stgcs.bfs.domination_check import ExactSetContainment_DC
+from stgcs.bfs.dominance_check import SetContainmentDominanceCheck
 from stgcs.trajectory import STTrajectory
 
 from pydrake.all import Binding, Constraint, Cost, HPolyhedron, VPolytope, Point as DrakePoint
@@ -23,7 +23,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class HeurShortCut(Heuristic):
+class MotionOnlyHeuristic(Heuristic):
 
     """ Minimum travel-time lower bound from an arrival set to the target point """
 
@@ -69,18 +69,18 @@ class HeurShortCut(Heuristic):
         return intersection
 
     @classmethod
-    def shortcut_domain(
+    def motion_only_domain(
         cls,
         v_name: str,
         stgcs: STGCS,
         node: Optional[SearchNode],
         x: Optional[np.ndarray] = None,
     ) -> HPolyhedron | DrakePoint:
-        domain, _ = cls.shortcut_domain_with_cache_policy(v_name, stgcs, node, x)
+        domain, _ = cls.motion_only_domain_with_cache_policy(v_name, stgcs, node, x)
         return domain
 
     @classmethod
-    def shortcut_domain_with_cache_policy(
+    def motion_only_domain_with_cache_policy(
         cls,
         v_name: str,
         stgcs: STGCS,
@@ -93,7 +93,7 @@ class HeurShortCut(Heuristic):
 
         if node.vertex_name != v_name:
             raise ValueError(
-                f"Shortcut heuristic node/vertex mismatch: node is at {node.vertex_name!r}, "
+                f"Motion-only heuristic node/vertex mismatch: node is at {node.vertex_name!r}, "
                 f"but the heuristic was queried for {v_name!r}."
             )
 
@@ -105,7 +105,7 @@ class HeurShortCut(Heuristic):
 
         if x is None:
             raise ValueError(
-                f"Shortcut heuristic expected a non-empty arrival interface for edge "
+                f"Motion-only heuristic expected a non-empty arrival interface for edge "
                 f"({predecessor_name!r}, {v_name!r})."
             )
 
@@ -113,7 +113,7 @@ class HeurShortCut(Heuristic):
         expected_dim = stgcs.dimension + 1
         if state.shape != (expected_dim,):
             raise ValueError(
-                f"Shortcut heuristic fallback state has shape {state.shape}, "
+                f"Motion-only heuristic fallback state has shape {state.shape}, "
                 f"expected ({expected_dim},) for edge ({predecessor_name!r}, {v_name!r})."
             )
         return DrakePoint(state), False
@@ -122,7 +122,7 @@ class HeurShortCut(Heuristic):
         target_vertex = stgcs.get_vertex(target)
         goal_spatial_point = np.array([itvl.start for itvl in target_vertex.space_itvls], dtype=float)
         if not np.allclose(goal_spatial_point, [itvl.end for itvl in target_vertex.space_itvls]):
-            raise ValueError("Shortcut heuristic expects the query target to be spatially fixed.")
+            raise ValueError("Motion-only heuristic expects the query target to be spatially fixed.")
         cache: Dict[Tuple[Optional[str], str], float] = {}
         
         def _h_func(v_name:str, x:np.ndarray, stgcs:STGCS, node:Optional[SearchNode]=None) -> float:
@@ -134,7 +134,7 @@ class HeurShortCut(Heuristic):
             if cache_key in cache:
                 return cache[cache_key]
 
-            domain, cacheable = self.shortcut_domain_with_cache_policy(v_name, stgcs, node, x)
+            domain, cacheable = self.motion_only_domain_with_cache_policy(v_name, stgcs, node, x)
             min_time, _ = find_min_travel_time_state_to_spatial_point(
                 domain,
                 goal_spatial_point,
@@ -148,14 +148,14 @@ class HeurShortCut(Heuristic):
 
     @property
     def name(self) -> str:
-        return "SC"
+        return "h_mot"
 
     @property
     def computation_time(self) -> float:
         return self._precomputation_time
 
 
-class HeurZero(Heuristic):
+class ZeroHeuristic(Heuristic):
 
     def __init__(self, stgcs: Optional[STGCS] = None) -> None:
         del stgcs
@@ -173,7 +173,7 @@ class HeurZero(Heuristic):
 
     @property
     def name(self) -> str:
-        return "Zero"
+        return "h_zero"
 
     @property
     def computation_time(self) -> float:
@@ -181,7 +181,11 @@ class HeurZero(Heuristic):
 
 
 class MaxHeuristic(Heuristic):
-    _INSTANCE_HEURISTIC_ATTRS = ("sc_heur", "lbg", "td_heur")
+    _INSTANCE_HEURISTIC_ATTRS = (
+        "motion_only_heuristic",
+        "triplet_relaxation_heuristic",
+        "interface_to_set_cost_table_heuristic",
+    )
 
     def __init__(self, heuristics: Sequence[Heuristic]) -> None:
         self._heuristics = tuple(heur for heur in heuristics if heur is not None)
@@ -218,14 +222,14 @@ class MaxHeuristic(Heuristic):
 
     @property
     def name(self) -> str:
-        return "Max"
+        return "h_max"
 
     @property
     def computation_time(self) -> float:
         return self._precomputation_time
 
 
-class HeurLowerBoundGraph(Heuristic):
+class TripletRelaxationHeuristic(Heuristic):
 
     @staticmethod
     def _update_root_set2set_dist(
@@ -283,7 +287,7 @@ class HeurLowerBoundGraph(Heuristic):
         backbone: Dict[str, object],
         use_update: bool = False,
         show_progress: bool = True,
-    ) -> HeurLowerBoundGraph:
+    ) -> TripletRelaxationHeuristic:
         heur = cls.__new__(cls)
         heur._initialize_from_backbone(stgcs, backbone, use_update=use_update, show_progress=show_progress)
         return heur
@@ -294,7 +298,7 @@ class HeurLowerBoundGraph(Heuristic):
         stgcs: STGCS,
         gcs: GCS,
         show_progress: bool = True,
-    ) -> Tuple[HeurLowerBoundGraph, HeurLowerBoundGraph]:
+    ) -> Tuple[TripletRelaxationHeuristic, TripletRelaxationHeuristic]:
         backbone = cls.build_backbone(stgcs, gcs)
         return (
             cls.from_backbone(stgcs, backbone, use_update=False, show_progress=show_progress),
@@ -322,7 +326,7 @@ class HeurLowerBoundGraph(Heuristic):
             if not self._root_set2set_dist:
                 for target in tqdm(
                     stgcs.G.nodes,
-                    desc="Computing set-to-set distances over LBG",
+                    desc="Computing set-to-set distances over h_tri",
                     disable=not show_progress,
                 ):
                     g = self._backward_search(target, stgcs)
@@ -399,7 +403,7 @@ class HeurLowerBoundGraph(Heuristic):
                 if g[pred] > tentative_g:
                     g[pred] = tentative_g
                     heapq.heappush(Q, (g[pred], pred, curr))
-                    # print(f"Updated LBG backward search: g[{pred}] = {g[pred]} via ({pred}, {curr}, {parent}) with cost {cost}")
+                    # print(f"Updated h_tri backward search: g[{pred}] = {g[pred]} via ({pred}, {curr}, {parent}) with cost {cost}")
         
         return g
 
@@ -455,10 +459,10 @@ class HeurLowerBoundGraph(Heuristic):
             pickle.dump(self.backbone_payload(), f)
 
     @staticmethod
-    def load(filename:str) -> HeurLowerBoundGraph:
+    def load(filename:str) -> TripletRelaxationHeuristic:
         with open(filename, 'rb') as f:
-            lbg:HeurLowerBoundGraph = pickle.load(f)
-        return lbg
+            heuristic: TripletRelaxationHeuristic = pickle.load(f)
+        return heuristic
 
     @staticmethod
     def load_backbone(filename:str) -> Dict[str, object]:
@@ -481,12 +485,11 @@ class HeurLowerBoundGraph(Heuristic):
     
     @property
     def name(self) -> str:
-        return "LBG" if self.use_update else "LBG(static)"
+        return "h_tri" if self.use_update else "h_tri(static)"
 
 
-class HeurTrueDistance(Heuristic):
-    """ use Search w/ exact set-based checks to compute optimal costs 
-        between sets as the true distance heuristic """
+class InterfaceToSetCostTableHeuristic(Heuristic):
+    """Compute the interface-to-set cost table using set-containment dominance checks."""
 
     def __init__(
         self, stgcs:STGCS, gcs:GCS, vlimit:float, 
@@ -502,10 +505,10 @@ class HeurTrueDistance(Heuristic):
         self._incoming_dist: Dict[Tuple[str, str, str], float] = {}
         self._pair_target_predecessor: Dict[Tuple[str, str], Optional[str]] = {}
         
-        for source_name in tqdm(stgcs.G.nodes, desc="Computing true distances"):
+        for source_name in tqdm(stgcs.G.nodes, desc="Computing h_tab"):
             g, predecessors = self._backward_search_dijkstra(source_name, stgcs, gcs)
             if time.perf_counter() - self._ts >= self._timeout_secs:
-                logger.warning("Terminating true distance heuristic precomputation due to timeout.")
+                logger.warning("Terminating h_tab precomputation due to timeout.")
                 self._successful = False
                 break
             else:
@@ -532,7 +535,7 @@ class HeurTrueDistance(Heuristic):
                             stgcs,
                         )
                     if time.perf_counter() - self._ts >= self._timeout_secs:
-                        logger.warning("Terminating true distance heuristic precomputation due to timeout.")
+                        logger.warning("Terminating h_tab precomputation due to timeout.")
                         self._successful = False
                         break
                 if not self._successful:
@@ -571,7 +574,7 @@ class HeurTrueDistance(Heuristic):
         source_name: str,
         stgcs: STGCS,
     ) -> HPolyhedron | DrakePoint | None:
-        return HeurShortCut.intersect_arrival_sets(
+        return MotionOnlyHeuristic.intersect_arrival_sets(
             stgcs.get_vertex(predecessor_name).st_hpoly,
             stgcs.get_vertex(source_name).st_hpoly,
         )
@@ -599,7 +602,7 @@ class HeurTrueDistance(Heuristic):
     ) -> Optional[STTrajectory]:
         if len(vertex_path) == 0 or vertex_path[0] != source_name:
             raise ValueError(
-                f"Interface-constrained TD path must start at {source_name!r}; "
+                f"Interface-constrained h_tab path must start at {source_name!r}; "
                 f"received {vertex_path!r}."
             )
 
@@ -611,7 +614,7 @@ class HeurTrueDistance(Heuristic):
         if len(restricted_path) <= 1:
             return None
 
-        temp_source_name = f"td-interface-source:{predecessor_name}->{source_name}"
+        temp_source_name = f"h_tab-interface-source:{predecessor_name}->{source_name}"
         temp_source_vertex = gcs.AddVertex(
             make_Cartesian_power_hpoly(interface, 2),
             temp_source_name,
@@ -645,17 +648,13 @@ class HeurTrueDistance(Heuristic):
         stgcs: STGCS,
         gcs: GCS,
     ) -> Tuple[Dict[str, float], Dict[str, Optional[str]]]:
-        """Legacy name: performs forward one-to-all uniform-cost search from ``source``.
-
-        The search keeps history-indexed paths so later, more expensive nodes at the same
-        vertex may still be expanded. We only record the first settled cost per vertex.
-        """
+        """Perform forward one-to-all uniform-cost search from ``source``."""
 
         OPEN = [SearchNode.from_source(source)]
         V = set(stgcs.G.nodes)
         g: Dict[str, float] = {}
         predecessors: Dict[str, Optional[str]] = {}
-        dc = ExactSetContainment_DC(
+        dc = SetContainmentDominanceCheck(
             -self.vlimit*np.ones(stgcs.dimension),
              self.vlimit*np.ones(stgcs.dimension),
              tmax=stgcs.tmax,
@@ -675,7 +674,7 @@ class HeurTrueDistance(Heuristic):
                     continue
 
                 if time.perf_counter() - self._ts >= self._timeout_secs:
-                    logger.warning("Timeout in HeurTrueDistance backward search.")
+                    logger.warning("Timeout in InterfaceToSetCostTableHeuristic backward search.")
                     return g, predecessors
 
                 n_next = SearchNode.from_parent(child_vertex_name=successor, parent=n)
@@ -697,7 +696,7 @@ class HeurTrueDistance(Heuristic):
         stgcs: STGCS,
         gcs: GCS,
     ) -> Dict[str, float]:
-        """One-to-all TD search starting from the actual ``predecessor -> source`` interface."""
+        """One-to-all h_tab search starting from the actual ``predecessor -> source`` interface."""
 
         if self._incoming_interface(predecessor, source, stgcs) is None:
             return {}
@@ -705,7 +704,7 @@ class HeurTrueDistance(Heuristic):
         OPEN = [SearchNode.from_source(source)]
         V = set(stgcs.G.nodes)
         g: Dict[str, float] = {}
-        dc = ExactSetContainment_DC(
+        dc = SetContainmentDominanceCheck(
             -self.vlimit*np.ones(stgcs.dimension),
              self.vlimit*np.ones(stgcs.dimension),
              tmax=stgcs.tmax,
@@ -724,7 +723,7 @@ class HeurTrueDistance(Heuristic):
                     continue
 
                 if time.perf_counter() - self._ts >= self._timeout_secs:
-                    logger.warning("Timeout in HeurTrueDistance interface backward search.")
+                    logger.warning("Timeout in InterfaceToSetCostTableHeuristic interface backward search.")
                     return g
 
                 n_next = SearchNode.from_parent(child_vertex_name=successor, parent=n)
@@ -749,7 +748,7 @@ class HeurTrueDistance(Heuristic):
     def _fixed_goal_spatial_point(target_vertex: object) -> np.ndarray:
         goal_spatial_point = np.array([itvl.start for itvl in target_vertex.space_itvls], dtype=float)
         if not np.allclose(goal_spatial_point, [itvl.end for itvl in target_vertex.space_itvls]):
-            raise ValueError("True distance heuristic expects the query target to be spatially fixed.")
+            raise ValueError("h_tab expects the query target to be spatially fixed.")
         return goal_spatial_point
 
     def _goal_correction_by_root(
@@ -794,7 +793,7 @@ class HeurTrueDistance(Heuristic):
                 if predecessor_hpoly is None:
                     continue
 
-                intersection = HeurShortCut.intersect_arrival_sets(goal_parent_hpoly, predecessor_hpoly)
+                intersection = MotionOnlyHeuristic.intersect_arrival_sets(goal_parent_hpoly, predecessor_hpoly)
                 if intersection is None:
                     continue
                 correction, _ = find_min_travel_time_state_to_spatial_point(
@@ -823,7 +822,7 @@ class HeurTrueDistance(Heuristic):
             space_dim = goal_spatial_point.shape[0]
             if state.shape[0] < space_dim:
                 return None
-            return HeurShortCut.travel_time_lower_bound(
+            return MotionOnlyHeuristic.travel_time_lower_bound(
                 state[:space_dim],
                 goal_spatial_point,
                 self.vlimit,
@@ -873,7 +872,7 @@ class HeurTrueDistance(Heuristic):
                 return 0.0
             if node is not None and node.vertex_name != v_name:
                 raise ValueError(
-                    f"True-distance heuristic node/vertex mismatch: node is at {node.vertex_name!r}, "
+                    f"h_tab node/vertex mismatch: node is at {node.vertex_name!r}, "
                     f"but the heuristic was queried for {v_name!r}."
                 )
             v_root_names = stgcs.get_vertex(v_name).root_name
@@ -898,7 +897,7 @@ class HeurTrueDistance(Heuristic):
 
     @property
     def name(self) -> str:
-        return "TD"
+        return "h_tab"
     
     @property
     def computation_time(self) -> float:
@@ -916,7 +915,7 @@ class HeurTrueDistance(Heuristic):
             self._incoming_dist = {}
     
     @staticmethod
-    def load(filename:str) -> HeurTrueDistance:
+    def load(filename:str) -> InterfaceToSetCostTableHeuristic:
         with open(filename, 'rb') as f:
-            td:HeurTrueDistance = pickle.load(f)
-        return td
+            heuristic: InterfaceToSetCostTableHeuristic = pickle.load(f)
+        return heuristic
