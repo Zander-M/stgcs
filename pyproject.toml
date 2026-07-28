@@ -13,7 +13,7 @@ authors = [
   {name = "Jingtao Tang", email = "todd.j.tang@gmail.com"},
 ]
 dependencies = [
-  "drake==1.40.0",
+  "drake==1.36.0",
   "matplotlib==3.10.1",
   "networkx==3.4.2",
   "numpy==2.2.3",
@@ -32,12 +32,14 @@ include = [
   "demos.*",
   "benchmark",
   "benchmark.*",
+  "experiments",
+  "experiments.*",
   "stgcs",
   "stgcs.*",
   "visualization",
   "visualization.*",
 ]
-exclude = ["experiments*", "data*"]
+exclude = ["data*"]
 
 [tool.setuptools.package-data]
 baselines = ["ompl_kcbs_native/*", "ompl_strrt_star_native/*"]

@@ -15,6 +15,7 @@ pkg-config = "*"
 jupyterlab = ">=4.6.1,<5"
 
 [pypi-dependencies]
+stgcs = { path = ".", editable = true }
 drake = "==1.36.0"
 matplotlib = "==3.10.1"
 networkx = "==3.4.2"
