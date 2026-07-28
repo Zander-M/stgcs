@@ -20,6 +20,23 @@ tags:
 > locations in *this* repo (`stgcs-devel`) it should be ported from. Wherever the target repo's
 > actual structure differs from the assumed shape, adapt the mapping, not the underlying theory —
 > F1-F8 and the constraint math in §3 do not change based on solve strategy.
+>
+> **Update — grounded against the actual target repo.** The target repo has since been confirmed
+> to match §1's assumed shape almost exactly (`stgcs/graph.py`, `stgcs/gcs_solver.py`,
+> `stgcs/bfs/best_first_search.py`, `stgcs/bfs/dominance_check.py`, `stgcs/bfs/heuristics.py`); see
+> `search-based-bezier-implementation-plan.md` for the file/line-grounded version of this plan and
+> several this-repo-specific issues that couldn't be seen without the code (a class-level GCS cache
+> that doesn't key on `order`, raw `STTrajectory` array indexing that silently breaks under
+> `STSplineTrajectory`, `MICPPlanner` sharing `STGCS.get_gcs_instance` with the search planner).
+> Two scope decisions have also been made explicitly and are folded in below: (1) **keep the
+> implementation inside the existing `stgcs/` package** — extend `graph.py`/`gcs_solver.py`/
+> `ecd.py`/`trajectory.py` in place rather than standing up a parallel `src/bezier`, `src/hulls`,
+> `src/gcs`, `src/planner` tree as §4's suggested layout implies; only genuinely new types
+> (`bezier.py`, `hulls.py`, `spline_trajectory.py`) get new files, and those live under `stgcs/`,
+> not a new top-level tree; (2) the velocity constraint (§3) is resolved to the L2/SOC form F8
+> specifies, not this repo's existing `order=2` L∞-box convention — see §3's amended "Velocity"
+> bullet; and (3) dominance-check re-derivation (§5) is descoped for this pass — see §5's amended
+> intro.
 
 ---
 
@@ -118,6 +135,17 @@ of this containment constraint" is.
   (`stgcs.py:425-433`) with `order-1` second-order-cone constraints, one per consecutive
   control-point pair: `‖P_{i+1}-P_i‖ <= vlimit·(T_{i+1}-T_i)`. This is the numerically real change —
   a box constraint becomes a Lorentz cone constraint per span.
+  **Resolved: use this L2/SOC form, not an L∞ box carried over from `order=2`.** F8's derivation
+  (`‖x′(s)‖ <= v_max·t′(s)` via scaled consecutive control-point differences) is inherently an
+  isotropic norm bound — it is the correct velocity certificate *for a Bézier segment specifically*,
+  not an arbitrary choice between two equally-valid encodings of "the same" velocity limit. An L∞
+  box per axis would under-certify the curve's true worst-case speed between the sampled directions
+  it checks (the hull/derivative-control argument F8 relies on doesn't hold per-axis). This is a
+  deliberate divergence from the target repo's existing `order=2` convention, not an oversight to
+  reconcile — `order=2` keeps its box constraint unchanged (straight segments have no interior
+  control points to certify between), and `order>2` gets the SOC constraint F8 actually proves.
+  The target repo's solver is already Mosek-backed (`MPGCSInstance.default_solver_options`), which
+  handles `LorentzConeConstraint` natively, so this adds no new solver-capability requirement.
 - **Cost:** total segment duration only, `T_{order-1} - T_0` — interior time allocation between
   control points stays a free (uncosted) decision variable; this is unchanged in *kind* from
   `order=2`, only the endpoint indices move.
@@ -176,6 +204,22 @@ here too: don't hard-cutover the target's existing linear reservation in place).
 ---
 
 ## 5. Tier 3 — do NOT mechanically port: search/dominance/heuristic pruning
+
+**Resolved for this pass: dominance-check re-derivation is descoped entirely.** Run the search with
+only a plain arrival-cost dominance check (this target repo's `AStarDominanceCheck` analog — dedupe
+on "cheaper `g` to the same vertex already seen," nothing shape- or cone-based). That check depends
+only on each candidate path's total duration and never inspects a segment's control points or
+reachable set, so it needs zero changes to work correctly under Bézier segments — no rederivation,
+no conservative-fallback decision to make. Any dominance check that *does* reason about reachable
+sets from an endpoint (cone-shaped or hull-aware) is deferred along with the rest of this section
+until a later pass; do not port, weaken, or otherwise touch them now. This also sidesteps needing to
+fix those checks' any raw/representation-specific access into a trajectory's control points for this
+phase, since they simply aren't exercised — see the companion doc's note on this for the one place
+it *does* still matter (`AStarDominanceCheck`-only search still calls a couple of trajectory
+accessors that must resolve correctly for `order>2`, just not the cone-based ones).
+
+The rest of this section is retained for when dominance-check work is picked back up later — read
+it then, not now:
 
 If the target's search algorithm has anything shaped like this repo's (hypothetical, not present
 here, but the concern is general) domination check — "does the reachable set from region-state `q`
@@ -244,8 +288,8 @@ independent of solve strategy — worth carrying forward rather than rediscoveri
 3. **Tier 2 reservation pipeline** (§4): port `ecd.py`'s spline path + `hulls.py`. Verify against
    `AGENT.md` T7 (dense-sample the reserved trajectory ⊕ footprint, assert no sample lies in any
    post-subtraction free set) using the target's actual region-graph type, not a standalone harness.
-4. **Tier 5** (§5): decide conservative-fallback vs. new-research for any dominance/pruning logic,
-   explicitly, before writing code.
+4. **Tier 5** (§5): **descoped this pass** — run with a plain duration-based dominance check only
+   (no cone/hull-aware pruning); nothing to decide or write here now.
 5. **Multi-robot loop**: wire `reserve_spline` into the target's fixed-priority-order planning loop
    (plan robot, reserve permanently, next robot) — structurally identical regardless of solve
    strategy.
@@ -257,3 +301,9 @@ dynamic priority reordering, no multi-span-per-region (would reintroduce the F2 
 a vertex), no MINVO basis change, no C² continuity — all explicitly deferred, not designed away.
 Flag any of these to whoever owns the target repo before adding them; they're each a real
 re-derivation, not a mechanical extension, exactly as in the source design.
+
+Additionally, for this pass specifically: **no cone/hull-aware dominance-check porting or
+re-derivation** (§5) — search runs with duration-based dominance only; and **no new top-level
+package structure** — new code lands inside the target's existing package (e.g. `stgcs/bezier.py`,
+`stgcs/hulls.py`, `stgcs/spline_trajectory.py`), extending `graph.py`/`gcs_solver.py`/`ecd.py`/
+`trajectory.py` in place rather than mirroring §4's suggested standalone `src/` tree.

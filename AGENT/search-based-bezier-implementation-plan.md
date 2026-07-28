@@ -14,6 +14,18 @@ tags:
 > replaces that speculation with concrete file/line references from `stgcs/*.py` and
 > `stgcs/bfs/*.py`, and surfaces several non-trivial issues the speculative plan could not
 > have seen. **No code has been changed to produce this document.**
+>
+> **Resolved decisions (fold into every section below):** (1) new code stays inside the
+> existing `stgcs/` package — extend `graph.py`/`gcs_solver.py`/`ecd.py`/`trajectory.py` in
+> place; only genuinely new types (`bezier.py`, `hulls.py`, `spline_trajectory.py`) get new
+> files, under `stgcs/`, not a parallel `src/` tree. (2) §3.2's velocity-model question is
+> resolved to the **L2/SOC** form (`AGENT.md` F8) — it's the constraint that's actually
+> compatible with a Bézier segment's derivative-control certificate, not an arbitrary choice;
+> `order=2` keeps its existing L∞ box unchanged, `order>2` gets the SOC constraint. (3)
+> Dominance-check work (§3.5 of the porting doc, and the cone-based checks in this repo's
+> `dominance_check.py`) is **descoped for this pass** — run the search with a plain
+> duration-based dominance check only (this repo's `AStarDominanceCheck`, unmodified); see
+> the updated §2 Step 6 and §3.1 below for what that does and doesn't let you skip.
 
 ---
 
@@ -109,11 +121,13 @@ from `AGENT/stgcs.py:78-88, 417-502` into `stgcs/graph.py`. Concretely:
   `make_Cartesian_power_hpoly(x, self.order)`.
 - Add the `order > 2` branch to `_init_constraints_costs` (`graph.py:395-422`) —
   monotone-time, velocity, and C⁰/C¹ edge constraints per `AGENT.md` F4/F5/F8 and
-  `AGENT/stgcs.py:447-502`. **Before copying the velocity constraint verbatim, make
-  the L∞-vs-L2 decision in §4.2 below** — this repo's `order==2` velocity constraint
-  is an L∞ box (`A_vmax`/`A_vmin`, `graph.py:400-410`), not the L2/SOC ball
-  `AGENT/stgcs.py:478-486` uses for `order>2`. Pick one deliberately; don't silently
-  inherit a different velocity-set shape for `order>2` than `order==2` uses.
+  `AGENT/stgcs.py:447-502`. **Velocity is resolved (§3.2): port `AGENT/stgcs.py:478-486`'s
+  L2/SOC `LorentzConeConstraint` verbatim for `order>2`**, not this repo's `order==2` L∞
+  box (`A_vmax`/`A_vmin`, `graph.py:400-410`) — F8's certificate is inherently isotropic,
+  so the box is the wrong shape to carry over, not just a different valid encoding of the
+  same limit. `order==2` keeps its existing box unchanged; the two `order` branches
+  deliberately use different constraint shapes for the same `vlimit`, and that's correct,
+  not an inconsistency to reconcile.
 - Boundary-vs-interior edge constraint split (`AGENT/stgcs.py:317-327`,
   `edge_constraints_boundary` vs `edge_constraints`) doesn't exist in this repo's
   `graph.py` at all today (`:296-305` — every edge gets the same
@@ -153,12 +167,19 @@ robot_radius` convention (`pbs.py:284,474`, `windowed_coordination.py:169,343`,
 `mrmp_planner.py:101`) that `reserve_spline` assumes, so the reservation margin
 convention carries over with no adapter needed.
 
-### Step 6 — Audit and fix the `STTrajectory` duck-typing surface
+### Step 6 — Audit the `STTrajectory` duck-typing surface actually exercised this pass
 
-This is the load-bearing step for the search loop specifically — see §3.1. Every
-direct `.points[...]`/`.dim` access in `stgcs/bfs/best_first_search.py` and
-`stgcs/bfs/dominance_check.py` must be replaced with `.xA()`/`.xB()`/`.xT`/`.x0`
-accessor calls before `STSplineTrajectory` can be dropped into `SearchNode.sol`.
+Narrower than it would otherwise be, because dominance-check work is descoped (see
+§3.1): with the search configured to use only `AStarDominanceCheck` — which touches
+`n.sol.duration`/`n.g` only, never `.points[...]` (`dominance_check.py:31-67`) — none
+of the three raw-indexing sites in `dominance_check.py` (`:307, 462, 500`, inside
+`PositionBasedDominanceCheck`/`ArrivalStateContainmentDominanceCheck`/
+`restrict_final_position`) are on the code path at all. Confirm `best_first_search.py`'s
+own accesses (`.xT`, `.duration`, `SearchTraceNode._trajectory_points`'s
+`node.sol.points`) are accessor-based or tolerant of `STSplineTrajectory`'s shape —
+they already are, per §3.1 — and leave `dominance_check.py`'s other checks alone
+entirely (untouched, unused, not audited) until dominance-check work is picked back
+up later.
 
 ### Step 7 — Heuristic updates (`stgcs/bfs/heuristics.py`)
 
@@ -190,6 +211,15 @@ bit-for-bit unchanged on a collinear-regions case (regression guard for Step 2/4
 ## 3. Challenges without a mechanical/trivial solution
 
 ### 3.1 `STTrajectory`'s array layout is baked into caller code, not just its own methods
+
+**Descoped for this pass, but read this before assuming Step 6 is a no-op.** The three
+raw-indexing sites below live entirely inside checks that are out of scope now
+(`PositionBasedDominanceCheck`, `ArrivalStateContainmentDominanceCheck`,
+`restrict_final_position`) — running the search with `AStarDominanceCheck` only avoids
+all three. The finding is retained here so it isn't rediscovered the hard way when
+dominance-check work resumes: fix these three sites *before* enabling any dominance
+check beyond `AStarDominanceCheck` for `order>2`, not after something silently mispruned.
+
 
 `STTrajectory.points` is a list of flat `(2*(dim+1),)` vectors — `[xA, xB]`
 concatenated per vertex (`trajectory.py:10-14`, `.xA`/`.xB` at `:121-125` just slice
@@ -225,37 +255,31 @@ in-place-mutation idiom (only relevant if rolling-horizon/windowing is revisited
 out of scope now per §1), it needs to preserve that view semantics too, not just
 the same return value.
 
-### 3.2 The velocity-set shape used by `order==2` today doesn't match `AGENT.md`'s F8
+### 3.2 The velocity-set shape used by `order==2` today doesn't match `AGENT.md`'s F8 — resolved
 
 This repo's existing `order==2` velocity constraint is an **L∞ box**: independent
 per-axis bounds `-vlimit <= dP_d/dT <= vlimit` for each axis `d`
 (`graph.py:400-410`, `A_vmax`/`A_vmin`). `AGENT.md` F8 and `AGENT/stgcs.py:478-486`
 specify an **L2 ball** (isotropic `‖ΔP‖ <= vlimit·ΔT`, via `LorentzConeConstraint`)
 for `order>2`. These are different constraint sets (a box strictly contains the
-inscribed ball of the same radius) — porting F8 verbatim would mean `order>2`
-segments obey a *stricter, differently-shaped* velocity limit than `order==2`
-segments do today, for the same `vlimit` parameter. That is a real modeling decision,
-not a mechanical translation step:
+inscribed ball of the same radius), so this was a real modeling decision, not a
+mechanical translation step — **resolved: use the L2/SOC form for `order>2`.** F8's
+derivation is inherently isotropic (a Bézier segment's derivative controls are scaled
+consecutive differences of the degree-3 controls; the hull/bound argument doesn't
+decompose per-axis), so the SOC constraint is the one that's actually *compatible
+with the Bézier representation* — the L∞ box would under-certify true worst-case
+speed between the directions it happens to check. `order==2` keeps its box
+unchanged (a straight segment has no interior control points to certify between);
+`order>2` gets `LorentzConeConstraint`s, which the target's Mosek-backed solver
+already handles natively (`MPGCSInstance.default_solver_options`), so this adds no
+new solver-capability requirement.
 
-- **Keep L∞ box for `order>2` too** (per-axis box on each consecutive control-point
-  pair's slope, still a `LinearConstraint`, no SOCP solver capability needed beyond
-  what's already used) — preserves exact behavioral continuity with `order==2` at
-  the same `vlimit`, at the cost of not matching `AGENT.md`'s F8 literally.
-- **Switch to L2 SOC per `AGENT.md` F8 verbatim** — matches the reference
-  implementation and its proofs exactly, but changes the reachable velocity set
-  shape relative to today's `order==2` baseline, and requires the solver to handle
-  `LorentzConeConstraint`s (Mosek already does, per `AGENT/stgcs.py`'s imports, so
-  this is feasible — but it's a solver-capability decision worth naming explicitly).
-
-Whichever is chosen, `stgcs.geometry_utils`, `dominance_check.py`'s
-`earliest_cone_containment`/`exact_cone_containment`, and `heuristics.py`'s
-`find_min_travel_time_state_to_spatial_point` all take `vmin`/`vmax` as an
-**outer bounding box** on velocity, not the exact constraint set — an L2 ball is
+`stgcs.geometry_utils`, `dominance_check.py`'s `earliest_cone_containment`/
+`exact_cone_containment`, and `heuristics.py`'s
+`find_min_travel_time_state_to_spatial_point` all take `vmin`/`vmax` as an **outer
+bounding box** on velocity, not the exact constraint set — an L2 ball is
 conservatively enclosed by its circumscribing box, so those functions stay sound
-(if loose) either way. **This choice only affects the vertex constraint construction
-in Step 2, nothing downstream** — but it must be made explicitly before writing that
-code, since copying `AGENT/stgcs.py`'s SOC constraint without noticing the box/ball
-mismatch would silently change `order==2` vs `order>2` behavior parity.
+(if loose) under the SOC constraint with no changes needed there.
 
 ### 3.3 Class-level GCS cache doesn't key on `order` — a latent correctness bug once order varies
 
@@ -324,17 +348,19 @@ priori).
 ## 4. Suggested execution order (concrete, this-repo version of the porting doc §7)
 
 1. Step 1 (Tier-1 geometry) — standalone, testable against T1/T3/T5, zero solver risk.
-2. Step 2 + Step 3 together (`order`-aware `STGCS`, cache-key fix) — **make the L∞-vs-L2
-   decision (§3.2) before writing the velocity constraint.** Regression-test:
-   `order=2` behavior must be bit-identical before/after.
+2. Step 2 + Step 3 together (`order`-aware `STGCS`, cache-key fix) — velocity constraint
+   is the L2/SOC form (§3.2, resolved). Regression-test: `order=2` behavior must be
+   bit-identical before/after.
 3. Step 4 (decode branch in `gcs_solver.py`).
-4. Step 6 (audit `.points[...]` call sites) — do this *before* wiring
-   `STSplineTrajectory` into `SearchNode.sol` for real, since it's a search-correctness
-   prerequisite, not a follow-up cleanup.
+4. Step 6 (confirm the search loop, run with `AStarDominanceCheck` only, never touches
+   the three descoped raw-indexing sites in `dominance_check.py` — §3.1) before wiring
+   `STSplineTrajectory` into `SearchNode.sol` for real.
 5. Step 5 (ECD reservation) — verify against T7 using the real graph.
 6. Step 7 (heuristics) — `h_mot` needs nothing; fix `h_tab`'s hardcoded
    `CartesianPower(..., 2)` before enabling it for `order>2` runs.
 7. Step 8 (tests) throughout, not only at the end — particularly T2(b)/T3/T7 depend on
    Steps 2 and 5 respectively and should be written alongside them.
 8. Resolve §3.4 and §3.5 as explicit scoping decisions (not code) before running any
-   `order>2` benchmark that includes `h_tri`/`h_tab` or `MICPPlanner`.
+   `order>2` benchmark that includes `h_tri`/`h_tab` or `MICPPlanner`. Dominance-check
+   re-derivation (§3.1's deferred remainder) is out of scope for this pass entirely —
+   revisit only when picked back up explicitly.
