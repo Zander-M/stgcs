@@ -1,0 +1,32 @@
+[workspace]
+authors = ["Zander Mao <zma40@sfu.ca>"]
+channels = ["conda-forge", "pypi"]
+name = "stgcs-devel"
+platforms = [{ platform = "linux-64", glibc = "2.35" }, { name = "mac-arm64", platform = "osx-arm64", macos = "14.0" }]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]
+python = "3.12.*"
+gmp = "*"
+cddlib = "*"
+pkg-config = "*"
+jupyterlab = ">=4.6.1,<5"
+
+[pypi-dependencies]
+drake = "==1.36.0"
+matplotlib = "==3.10.1"
+networkx = "==3.4.2"
+numpy = "==2.2.3"
+plotly = "==5.24.1"
+scipy = "==1.15.2"
+tqdm = "==4.67.1"
+shapely = ">=2.1.2, <3"
+pyvista = ">=0.44, <0.45"
+pyyaml = ">=6.0, <7"
+pillow = ">=11.0, <12"
+pycddlib = ">=3.0.0"
+
+[activation.env]
+MOSEKLM_LICENSE_FILE = "/Users/zdrrrm/mosek/mosek.lic"

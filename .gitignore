@@ -7,3 +7,4 @@
 *.pid
 *.egg-info
 build/*
+.pixi/*
