@@ -10,7 +10,7 @@ from pydrake.all import (
     Binding, HPolyhedron, Constraint, Cost,
     Point as DrakePoint,
     GraphOfConvexSets as GCS,
-    LinearConstraint, LinearEqualityConstraint,
+    LinearConstraint, LinearEqualityConstraint, LorentzConeConstraint,
     L2NormCost
 )
 from stgcs.gcs_solver import (
@@ -70,15 +70,20 @@ class STVertex:
 
 
 class STGCS:
-    _reusable_gcs_cache: Dict[Tuple[Tuple[Tuple[str, int], ...], Tuple[Tuple[str, str], ...]], GCS] = {}
+    _reusable_gcs_cache: Dict[Tuple[int, Tuple[Tuple[str, int], ...], Tuple[Tuple[str, str], ...]], GCS] = {}
 
     def __init__(
-        self, spatial_sets:List[np.ndarray], 
-        t0:float=0, tmax:float=1e2, vlimit:float=1.0, dt:float=1e-6
+        self, spatial_sets:List[np.ndarray],
+        t0:float=0, tmax:float=1e2, vlimit:float=1.0, dt:float=1e-6,
+        order:int=2,
     ) -> None:
-        
+
         self.spatial_sets = spatial_sets
         self.t0, self.tmax, self.vlimit, self.dt = t0, tmax, vlimit, dt
+        # order = joint control points per GCS vertex. 2 = today's linear segment
+        # (default, unchanged behavior); >2 = cubic (or general-order) Bezier
+        # segment per vertex (AGENT.md).
+        self.order = order
 
         self._spatial_hpolys = [make_hpolytope(r) for r in spatial_sets]
         self.dimension = self._spatial_hpolys[0].ambient_dimension()
@@ -116,7 +121,8 @@ class STGCS:
         ret = STGCS(
             spatial_sets = self.spatial_sets,
             t0 = self.t0, tmax = self.tmax,
-            vlimit = self.vlimit, dt = self.dt
+            vlimit = self.vlimit, dt = self.dt,
+            order = self.order,
         )
         for v_name in self.G.nodes:
             ret.G.add_node(v_name, **self.G.nodes[v_name])
@@ -255,26 +261,26 @@ class STGCS:
 
         # source vertex
         if self.source is not None:
-            src_gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(self.source.st_hpoly, 2), GCS_SOURCE_NAME)
+            src_gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(self.source.st_hpoly, self.order), GCS_SOURCE_NAME)
             src_gcs_vert.AddConstraint(Binding[Constraint](
-                LinearEqualityConstraint(np.eye((self.dimension + 1) * 2), np.tile(self.source_comp, 2)),
+                LinearEqualityConstraint(np.eye((self.dimension + 1) * self.order), np.tile(self.source_comp, self.order)),
                 src_gcs_vert.x()))
         else:
             src_gcs_vert = None
         
         # target & dummy-target vertices
         if self.target is not None:
-            tar_gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(self.target.st_hpoly, 2), GCS_TARGET_NAME)
+            tar_gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(self.target.st_hpoly, self.order), GCS_TARGET_NAME)
             assert len(self._dummy_targets) > 0, "No dummy targets found for the target vertex"
             for v_name in self._dummy_targets.keys():
-                dummy_target_gcs_vertex = _gcs.AddVertex(make_Cartesian_power_hpoly(self.target.st_hpoly, 2), v_name)
+                dummy_target_gcs_vertex = _gcs.AddVertex(make_Cartesian_power_hpoly(self.target.st_hpoly, self.order), v_name)
         else:
             tar_gcs_vert = None
 
         # all other vertices
         for v_name in self.G.nodes:
             vertex = self.get_vertex(v_name)
-            gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(vertex.st_hpoly, 2), v_name)
+            gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(vertex.st_hpoly, self.order), v_name)
             self._add_gcs_vertex_costs_constraints(gcs_vert)
         
         # all other edges
@@ -301,10 +307,20 @@ class STGCS:
     ) -> None:
         for cost in self.edge_costs:
             edge.AddCost(Binding[Cost](cost, np.append(tail_gcs_vert.x(), head_gcs_vert.x())))
-        for cstr in self.edge_constraints:
+
+        # Edges touching a source/target/dummy-target vertex get C0-only continuity:
+        # those vertices have no well-defined internal velocity, so requiring a C1
+        # tangent-match there would spuriously force a zero velocity at the
+        # start/end of the path. Edges between two real per-region vertices get the
+        # full C0+C1 constraint list. For order == 2 the two lists are identical
+        # (C0 only, as before), so this is a no-op behavior change there.
+        boundary_names = {GCS_SOURCE_NAME, GCS_TARGET_NAME, *self._dummy_targets.keys()}
+        is_boundary = tail_gcs_vert.name() in boundary_names or head_gcs_vert.name() in boundary_names
+        constraints = self.edge_constraints_boundary if is_boundary else self.edge_constraints
+        for cstr in constraints:
             edge.AddConstraint(Binding[Constraint](cstr, np.append(tail_gcs_vert.x(), head_gcs_vert.x())))
 
-    def _base_gcs_signature(self) -> Tuple[Tuple[Tuple[str, int], ...], Tuple[Tuple[str, str], ...]]:
+    def _base_gcs_signature(self) -> Tuple[int, Tuple[Tuple[str, int], ...], Tuple[Tuple[str, str], ...]]:
         planning_names = tuple(self._planning_vertex_names())
         planning_name_set = set(planning_names)
         planning_vertices = tuple(
@@ -316,7 +332,12 @@ class STGCS:
             for tail_name, head_name in self.G.edges
             if tail_name in planning_name_set and head_name in planning_name_set
         )
-        return planning_vertices, planning_edges
+        # `order` must be part of the signature: `_reusable_gcs_cache` is a class
+        # attribute shared across every STGCS instance regardless of order, so two
+        # instances with different `order` but the same vertex/edge signature would
+        # otherwise silently retrieve each other's cached GCS, built with the wrong
+        # CartesianPower.
+        return self.order, planning_vertices, planning_edges
 
     def _ensure_reusable_base_gcs(self) -> GCS:
         signature = self._base_gcs_signature()
@@ -329,11 +350,11 @@ class STGCS:
             return cached_gcs
 
         _gcs = GCS()
-        planning_vertices, planning_edges = signature
+        _, planning_vertices, planning_edges = signature
         planning_names = tuple(v_name for v_name, _ in planning_vertices)
         for v_name in planning_names:
             vertex = self.get_vertex(v_name)
-            gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(vertex.st_hpoly, 2), v_name)
+            gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(vertex.st_hpoly, self.order), v_name)
             self._add_gcs_vertex_costs_constraints(gcs_vert)
 
         for tail_name, head_name in planning_edges:
@@ -351,17 +372,17 @@ class STGCS:
         _gcs = self._ensure_reusable_base_gcs()
         query_vertices: List[GCS.Vertex] = []
 
-        src_gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(self.source.st_hpoly, 2), GCS_SOURCE_NAME)
+        src_gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(self.source.st_hpoly, self.order), GCS_SOURCE_NAME)
         src_gcs_vert.AddConstraint(Binding[Constraint](
-            LinearEqualityConstraint(np.eye((self.dimension + 1) * 2), np.tile(self.source_comp, 2)),
+            LinearEqualityConstraint(np.eye((self.dimension + 1) * self.order), np.tile(self.source_comp, self.order)),
             src_gcs_vert.x()))
         query_vertices.append(src_gcs_vert)
 
-        tar_gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(self.target.st_hpoly, 2), GCS_TARGET_NAME)
+        tar_gcs_vert = _gcs.AddVertex(make_Cartesian_power_hpoly(self.target.st_hpoly, self.order), GCS_TARGET_NAME)
         query_vertices.append(tar_gcs_vert)
         for v_name in self._dummy_targets.keys():
             query_vertices.append(
-                _gcs.AddVertex(make_Cartesian_power_hpoly(self.target.st_hpoly, 2), v_name)
+                _gcs.AddVertex(make_Cartesian_power_hpoly(self.target.st_hpoly, self.order), v_name)
             )
 
         planning_name_set = set(self._planning_vertex_names())
@@ -394,32 +415,98 @@ class STGCS:
 
     def _init_constraints_costs(self) -> None:
         self.vertex_costs, self.vertex_constraints = [], []
-        self.edge_costs, self.edge_constraints = [], []
+        self.edge_costs, self.edge_constraints, self.edge_constraints_boundary = [], [], []
 
-        # define constraint that time must be increasing for each vertex
-        A_vmax = np.hstack([
-             np.eye(self.dimension),  self.vlimit * np.ones((self.dimension, 1)),
-            -np.eye(self.dimension), -self.vlimit * np.ones((self.dimension, 1))])
-        A_vmin = np.hstack([
-            -np.eye(self.dimension),  self.vlimit * np.ones((self.dimension, 1)),
-             np.eye(self.dimension), -self.vlimit * np.ones((self.dimension, 1))])
-        A_dt = np.array([0] * (self.dimension) + [1] + [0] * (self.dimension) + [-1])
-        A = np.vstack([A_vmax, A_vmin, A_dt])
-        b = np.hstack([np.zeros(self.dimension), np.zeros(self.dimension), -self.dt])
+        d, order, block = self.dimension, self.order, self.dimension + 1
 
-        self.vertex_constraints.append(LinearConstraint(A, -np.inf*np.ones_like(b), b))
-        self.vertex_costs.append(L2NormCost(A_dt.reshape(1, -1), np.zeros(1)))
+        if order == 2:
+            # --- unchanged: today's linear segment, L-infinity velocity box ---
+            A_vmax = np.hstack([
+                 np.eye(d),  self.vlimit * np.ones((d, 1)),
+                -np.eye(d), -self.vlimit * np.ones((d, 1))])
+            A_vmin = np.hstack([
+                -np.eye(d),  self.vlimit * np.ones((d, 1)),
+                 np.eye(d), -self.vlimit * np.ones((d, 1))])
+            A_dt = np.array([0] * d + [1] + [0] * d + [-1])
+            A = np.vstack([A_vmax, A_vmin, A_dt])
+            b = np.hstack([np.zeros(d), np.zeros(d), -self.dt])
 
-        # define the continuity constraint for each edge
-        A_cont = np.block([
-            np.zeros((1+self.dimension, 1+self.dimension)),
-            np.eye(1+self.dimension),
-            -np.eye(1+self.dimension),
-            np.zeros((1+self.dimension, 1+self.dimension))
-        ])
-        b_cont = np.zeros(1 + self.dimension)
+            self.vertex_constraints.append(LinearConstraint(A, -np.inf * np.ones_like(b), b))
+            self.vertex_costs.append(L2NormCost(A_dt.reshape(1, -1), np.zeros(1)))
 
-        self.edge_constraints.append(LinearEqualityConstraint(A_cont, b_cont))
+            # define the continuity constraint for each edge (C0 only)
+            A_cont = np.block([
+                np.zeros((block, block)), np.eye(block), -np.eye(block), np.zeros((block, block))
+            ])
+            b_cont = np.zeros(block)
+            self.edge_constraints.append(LinearEqualityConstraint(A_cont, b_cont))
+            self.edge_constraints_boundary = list(self.edge_constraints)
+            return
+
+        # --- order > 2: cubic (or general-order) Bezier segment per GCS vertex ---
+        # Joint control points Q_0..Q_{order-1} = (P_i, T_i); flat layout per vertex
+        # is [P_0, T_0, P_1, T_1, ..., P_{order-1}, T_{order-1}], each block of size
+        # `block`.
+        n = order * block
+
+        def p_slice(i: int) -> slice:
+            offset = i * block
+            return slice(offset, offset + d)
+
+        def t_index(i: int) -> int:
+            return i * block + d
+
+        # Monotone time (F4/F5): each consecutive pair needs >= dt (implies
+        # monotonicity, and is strictly stronger than only an overall
+        # T_{order-1}-T_0 >= dt). A per-span floor rules out the solver collapsing
+        # an interior control-point spacing to ~0 while satisfying only the overall
+        # bound -- interior time *allocation* is still free (uncosted), just
+        # bounded away from zero.
+        A_mono = np.zeros((order - 1, n))
+        for i in range(order - 1):
+            A_mono[i, t_index(i)] = 1.0
+            A_mono[i, t_index(i + 1)] = -1.0
+        b_mono = np.full(order - 1, -self.dt)
+        self.vertex_constraints.append(LinearConstraint(A_mono, -np.inf * np.ones(order - 1), b_mono))
+
+        # cost is total segment duration only (T_{order-1} - T_0); interior time
+        # allocation between control points is unchanged in *kind* from order == 2,
+        # just at different indices.
+        A_dt_total = np.zeros(n)
+        A_dt_total[t_index(0)] = -1.0
+        A_dt_total[t_index(order - 1)] = 1.0
+        self.vertex_costs.append(L2NormCost(A_dt_total.reshape(1, -1), np.zeros(1)))
+
+        # Velocity (F8, isotropic L2 form): per-span second-order-cone constraint
+        # ||P_{i+1}-P_i|| <= vlimit*(T_{i+1}-T_i), one per consecutive control-point
+        # pair. Deliberately an L2 ball here, not this file's order == 2 L-infinity
+        # box above: F8's certificate (the Bezier derivative controls are scaled
+        # consecutive differences of the degree-3 controls) is inherently
+        # isotropic, so an L-infinity box would under-certify the curve's true
+        # worst-case speed between the directions it happens to check.
+        for i in range(order - 1):
+            A_soc = np.zeros((d + 1, n))
+            A_soc[0, t_index(i + 1)] = self.vlimit
+            A_soc[0, t_index(i)] = -self.vlimit
+            A_soc[1:, p_slice(i + 1)] = np.eye(d)
+            A_soc[1:, p_slice(i)] = -np.eye(d)
+            self.vertex_constraints.append(LorentzConeConstraint(A_soc, np.zeros(d + 1)))
+
+        # Edge continuity (F3): C0 always (tail's last control point == head's
+        # first); C1 additionally, only between two real per-region vertices (see
+        # _add_gcs_edge_costs_constraints for why boundary edges stay C0-only).
+        A_c0 = np.zeros((block, 2 * n))
+        A_c0[:, (order - 1) * block: order * block] = np.eye(block)
+        A_c0[:, n: n + block] = -np.eye(block)
+        self.edge_constraints_boundary.append(LinearEqualityConstraint(A_c0, np.zeros(block)))
+        self.edge_constraints.append(LinearEqualityConstraint(A_c0, np.zeros(block)))
+
+        A_c1 = np.zeros((block, 2 * n))
+        A_c1[:, (order - 1) * block: order * block] = np.eye(block)         # + Q_tail[-1]
+        A_c1[:, (order - 2) * block: (order - 1) * block] = -np.eye(block)  # - Q_tail[-2]
+        A_c1[:, n: n + block] = np.eye(block)                               # + Q_head[0]
+        A_c1[:, n + block: n + 2 * block] = -np.eye(block)                  # - Q_head[1]
+        self.edge_constraints.append(LinearEqualityConstraint(A_c1, np.zeros(block)))
 
     def _init_source_vertex(self, source:np.ndarray, t_start:float) -> bool:
         # assume source is contained in only one convex set of a vertex; 

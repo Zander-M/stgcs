@@ -13,7 +13,7 @@ authors = [
   {name = "Jingtao Tang", email = "todd.j.tang@gmail.com"},
 ]
 dependencies = [
-  "drake==1.36.0",
+  "drake==1.39.0",
   "matplotlib==3.10.1",
   "networkx==3.4.2",
   "numpy==2.2.3",

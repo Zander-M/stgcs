@@ -68,10 +68,11 @@ class MICPPlanner(STPlanner):
         if gcs_instance is None:
             logger.warning("Unsolveable instance; cannot find source/target vertices")
             return None, time.perf_counter() - ts, STPlanStatus.FAIL
-        sol = solve(gcs_instance, 
-              rounding = self.rounding, 
-              max_rounded_paths = self.max_rounded_paths, 
-              max_runtime = self.runtime_limit_secs
+        sol = solve(gcs_instance,
+              rounding = self.rounding,
+              max_rounded_paths = self.max_rounded_paths,
+              max_runtime = self.runtime_limit_secs,
+              order = stgcs.order,
         )
         return sol, time.perf_counter() - ts, STPlanStatus.from_solution(sol)
 

@@ -20,6 +20,7 @@ from pydrake.all import (
 )
 
 from stgcs.trajectory import STTrajectory
+from stgcs.spline_trajectory import STSplineTrajectory
 
 
 logger = logging.getLogger(__name__)
@@ -249,7 +250,8 @@ def averageVertexPositionGcs(gcs, result, source, target, flow_min=1e-3, **kwarg
 
 def solve(
     gcs_instance:MPGCSInstance, options:Optional[GraphOfConvexSetsOptions]=None,
-    rounding:bool=True, max_rounded_paths:int=1000, max_runtime:float=float('inf')
+    rounding:bool=True, max_rounded_paths:int=1000, max_runtime:float=float('inf'),
+    order:int=2,
 ) -> Optional[STTrajectory]:
     
     if options is None:
@@ -279,13 +281,17 @@ def solve(
     else:
         edge_path = best_path[:-2]
         points = [best_result.GetSolution(e.xv()) for e in edge_path]
-        space_dim = int(points[0].shape[0] // 2) - 1
+        space_dim = int(points[0].shape[0] // order) - 1
         vertex_path = [e.v().name() for e in edge_path]
-        traj = STTrajectory(vertex_path, points, space_dim)
-    
+        traj: STTrajectory | STSplineTrajectory
+        if order == 2:
+            traj = STTrajectory(vertex_path, points, space_dim)
+        else:
+            traj = STSplineTrajectory(vertex_path, points, space_dim, order)
+
         for i in range(traj.size - 1):
-            p_t2 = traj.points[i][-1]
-            q_t1 = traj.points[i+1][space_dim]
+            p_t2 = traj.xB(i)[-1]
+            q_t1 = traj.xA(i + 1)[-1]
             if not np.allclose(p_t2, q_t1):
                 logger.warning(f"Invalid Solution: Time discontinuity.")
                 return
@@ -298,6 +304,7 @@ def solve_convex_restriction(
     vertex_path:List[str],
     options:Optional[GraphOfConvexSetsOptions]=None,
     edge_cache:Optional[Dict[Tuple[str, str], Any]]=None,
+    order:int=2,
 ) -> Optional[STTrajectory]:
     if options is None:
         options = MPGCSInstance.default_solver_options()
@@ -319,5 +326,7 @@ def solve_convex_restriction(
     res = gcs.SolveConvexRestriction(E, options)
     if res.is_success():
         points = [res.GetSolution(e.xu()) for e in E]
-        space_dim = int(points[0].shape[0] // 2) - 1
-        return STTrajectory(vertex_path[:-1], points, space_dim)
+        space_dim = int(points[0].shape[0] // order) - 1
+        if order == 2:
+            return STTrajectory(vertex_path[:-1], points, space_dim)
+        return STSplineTrajectory(vertex_path[:-1], points, space_dim, order)

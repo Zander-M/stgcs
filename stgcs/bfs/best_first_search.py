@@ -423,6 +423,9 @@ class SearchAlgorithm:
         )
         self._restriction_solver_options = MPGCSInstance.default_solver_options()
         self._edge_cache: Dict[Tuple[str, str], Any] = {}
+        # order of the STGCS being searched (2 = piecewise-linear, >2 = Bezier);
+        # set from the real value at the start of `run()`.
+        self._order: int = 2
 
         self._tiebreak = tiebreak
         self._record_trace = record_trace
@@ -458,6 +461,7 @@ class SearchAlgorithm:
             list(cache_key),
             options=self._restriction_solver_options,
             edge_cache=self._edge_cache,
+            order=self._order,
         )
         self._convex_restriction_time += time.perf_counter() - ts
         self._convex_restriction_calls += 1
@@ -480,6 +484,7 @@ class SearchAlgorithm:
     
         self._ts = time.perf_counter()
         self._timeout_seconds = timeout_seconds
+        self._order = stgcs.order
         self._planning_time = time.perf_counter() - self._ts
         self.n_expanded = 0
         self.n_generated = 0

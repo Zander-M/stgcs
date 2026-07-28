@@ -9,7 +9,9 @@ from pydrake.all import HPolyhedron
 
 from stgcs.graph import STGCS, STVertex
 from stgcs.interval import Interval, AABB
-from stgcs.geometry_utils import get_hpoly_bounds
+from stgcs.geometry_utils import get_hpoly_bounds, make_hpolytope
+from stgcs.spline_trajectory import STSplineTrajectory
+from stgcs.hulls import inflate_hull, minkowski_sum_vertices
 
 @dataclass
 class ECDPair:
@@ -43,14 +45,47 @@ def _ecd_pair_cache_key(
     )
 
 
+def _apply_ecd_pairs(stgcs: STGCS, ecd_pairs: List[ECDPair]) -> STGCS:
+    """ Split every STGCS vertex whose space-time region overlaps one of
+        `ecd_pairs` into the convex free-space pieces `slice()` produces, and
+        reconnect the graph.
+
+        Shared by `reserve()` (order == 2) and `reserve_spline()` (order > 2):
+        this part is generic over `HPolyhedron`/`Interval` and never inspects how
+        many halfspaces are in `mid_halfspaces` or how the bounds were derived, so
+        it's identical for the parallelotope-tube and general-hull cases. """
+    E = list(stgcs.G.edges)
+    split_list = defaultdict(list)
+    for ecd_pair in ecd_pairs:
+        for v_name in stgcs.G.nodes:
+            vertex: STVertex = stgcs.get_vertex(v_name)
+            if AABB(ecd_pair.bounds, vertex.space_itvls + [vertex.time_itvl]):
+                split_list[v_name].append(ecd_pair)
+    if not split_list:
+        return stgcs
+
+    split_map = {v_name: [v_name] for v_name in stgcs.G.nodes}
+    for v_name, pairs in split_list.items():
+        v = stgcs.get_vertex(v_name)
+        stgcs.remove_vertex_from_graph(v_name)
+        for hpoly, time_itvl in slice(v.st_hpoly, pairs, v.time_itvl.start, v.time_itvl.end):
+            new_v = stgcs.add_vertex(
+                hpoly,
+                time_itvl,
+                parent=v,
+                remove_redundancies=False,
+            )
+            if new_v is not None:
+                split_map[v_name].append(new_v.name)
+
+    return update_edge(stgcs, E, split_map)
+
+
 def reserve(
-    stgcs:STGCS, trajectory:List[np.ndarray], safe_radius:float, 
+    stgcs:STGCS, trajectory:List[np.ndarray], safe_radius:float,
     x0_staying:bool=True, xt_staying:bool=True, eps:float=1e-9,
     ecd_pair_cache: Optional[Dict[ECDPairCacheKey, List[ECDPair]]]=None,
 ) -> STGCS:
-    E = list(stgcs.G.edges)
-
-    split_list = defaultdict(list)
     tmin = stgcs.t0 if x0_staying else None
     tmax = stgcs.tmax if xt_staying else None
     cache_key = None
@@ -64,31 +99,8 @@ def reserve(
         if ecd_pair_cache is not None:
             assert cache_key is not None
             ecd_pair_cache[cache_key] = ecd_pairs
-    for ecd_pair in ecd_pairs:
-        for v_name in stgcs.G.nodes:
-            vertex: STVertex = stgcs.get_vertex(v_name)
-            if AABB(ecd_pair.bounds, vertex.space_itvls + [vertex.time_itvl]):
-                split_list[v_name].append(ecd_pair)
-    if not split_list:
-        return stgcs
 
-    split_map = {v_name:[v_name] for v_name in stgcs.G.nodes}
-    for v_name, ecd_pairs in split_list.items():
-        v = stgcs.get_vertex(v_name)
-        stgcs.remove_vertex_from_graph(v_name)
-        for hpoly, time_itvl in slice(v.st_hpoly, ecd_pairs, v.time_itvl.start, v.time_itvl.end):
-            new_v = stgcs.add_vertex(
-                hpoly,
-                time_itvl,
-                parent=v,
-                remove_redundancies=False,
-            )
-            if new_v is not None:
-                split_map[v_name].append(new_v.name)
-    
-    stgcs = update_edge(stgcs, E, split_map)
-    
-    return stgcs
+    return _apply_ecd_pairs(stgcs, ecd_pairs)
 
 
 def update_edge(stgcs:STGCS, E:List[Tuple[str, str]], split_map:Dict[str, List[str]]) -> STGCS:
@@ -275,3 +287,192 @@ def parallelotope_side_halfspace_kd(
         halfspaces.append(HPolyhedron(A_high, b_high))
 
     return halfspaces
+
+
+# ---------------------------------------------------------------------------
+# order > 2 (Bezier-per-region) reservation path.
+#
+# A GCS vertex already corresponds to exactly one Bezier segment in this
+# architecture (AGENT.md SS3), so there is no separate "split policy" step here --
+# one convex hull per segment is already what the order == 2 path above does per
+# linear segment. Only the obstacle geometry differs (Minkowski-inflated
+# control-point hull instead of a direction-aligned parallelotope tube, via
+# `stgcs.hulls.inflate_hull`); `slice`/`update_edge` (through `_apply_ecd_pairs`)
+# are exactly the same code the order == 2 path uses.
+# ---------------------------------------------------------------------------
+
+
+def _segment_ecd_pair(
+    control_points: np.ndarray, footprint_vertices: np.ndarray, dim: int,
+) -> Optional[ECDPair]:
+    """ Build one ECDPair from a segment's joint (space, time) control points,
+        Minkowski-inflated by the footprint.
+
+        `mid_halfspaces` are the inflated hull's own (reduced) H-representation
+        rows, negated to the "outside this facet" convention `slice()` expects --
+        exactly what `parallelotope_side_halfspace_kd` already builds directly for
+        the linear-segment tube, just from a general hull's actual facets instead
+        of a fixed `2*space_dim` axis-aligned set.
+
+        Bounds come from the raw Minkowski-sum point cloud
+        (`minkowski_sum_vertices`), not from re-deriving the hull's vertices via
+        `VPolytope`: a set's per-axis min/max is achieved at an extreme point, so
+        any non-extreme points already present in the raw sum can't change it. """
+    control_points = np.asarray(control_points, dtype=float)
+    t_lo, t_hi = control_points[0, -1], control_points[-1, -1]
+    if t_hi - t_lo <= 0:
+        return None
+
+    raw_vertices = minkowski_sum_vertices(control_points, footprint_vertices)
+    inflated_hpoly = make_hpolytope(raw_vertices).ReduceInequalities()
+
+    bounds = [
+        Interval(float(raw_vertices[:, d].min()), float(raw_vertices[:, d].max()))
+        for d in range(dim - 1)
+    ]
+    bounds.append(Interval(t_lo, t_hi))
+
+    bot_hs, top_hs = time_cropping_bot_top(dim, t_lo, t_hi)
+    A, b = inflated_hpoly.A(), inflated_hpoly.b()
+    mid_hs_list = [HPolyhedron(-A[i:i + 1], -b[i:i + 1]) for i in range(A.shape[0])]
+    return ECDPair(bot_hs, top_hs, mid_hs_list, bounds)
+
+
+def generate_all_ECD_pairs_spline(
+    stgcs: STGCS, trajectory: STSplineTrajectory, footprint_vertices: np.ndarray,
+    staying_tmin: Optional[float] = None, staying_tmax: Optional[float] = None,
+) -> List[ECDPair]:
+    """ order > 2 counterpart to `generate_all_ECD_pairs`: one Minkowski-inflated
+        hull per GCS-vertex segment, instead of a parallelotope tube per linear
+        segment. """
+    dim = stgcs.dimension + 1
+    ret: List[ECDPair] = []
+
+    x0 = trajectory.control_points(0)[0]
+    if staying_tmin is not None and x0[-1] != staying_tmin:
+        park = np.array([np.hstack([x0[:-1], staying_tmin]), x0])
+        pair = _segment_ecd_pair(park, footprint_vertices, dim)
+        if pair is not None:
+            ret.append(pair)
+
+    for idx in range(trajectory.size):
+        pair = _segment_ecd_pair(trajectory.control_points(idx), footprint_vertices, dim)
+        if pair is not None:
+            ret.append(pair)
+
+    xT = trajectory.control_points(trajectory.size - 1)[-1]
+    if staying_tmax is not None and xT[-1] != staying_tmax:
+        park = np.array([xT, np.hstack([xT[:-1], staying_tmax])])
+        pair = _segment_ecd_pair(park, footprint_vertices, dim)
+        if pair is not None:
+            ret.append(pair)
+
+    return ret
+
+
+def reserve_spline(
+    stgcs: STGCS, trajectory: STSplineTrajectory, safe_radius: float,
+    x0_staying: bool = True, xt_staying: bool = True,
+    ecd_pair_cache: Optional[Dict[ECDPairCacheKey, List[ECDPair]]] = None,
+) -> STGCS:
+    """ order > 2 counterpart to `reserve()`. `safe_radius` gives the same
+        isotropic per-axis margin semantics as the linear path, built into an
+        axis-aligned box footprint via `parallelotope_verts_offset` (zero
+        time-extent -- a footprint doesn't occupy a time interval, only a spatial
+        one). """
+    tmin = stgcs.t0 if x0_staying else None
+    tmax = stgcs.tmax if xt_staying else None
+    cache_key = None
+    if ecd_pair_cache is not None:
+        cache_key = _ecd_pair_cache_key(stgcs, trajectory.points, safe_radius, tmin, tmax, 0.0)
+        ecd_pairs = ecd_pair_cache.get(cache_key)
+    else:
+        ecd_pairs = None
+    if ecd_pairs is None:
+        footprint_vertices = safe_radius * parallelotope_verts_offset(stgcs.dimension + 1)
+        ecd_pairs = generate_all_ECD_pairs_spline(stgcs, trajectory, footprint_vertices, tmin, tmax)
+        if ecd_pair_cache is not None:
+            assert cache_key is not None
+            ecd_pair_cache[cache_key] = ecd_pairs
+
+    return _apply_ecd_pairs(stgcs, ecd_pairs)
+
+
+# ---------------------------------------------------------------------------
+# Single-region, single-segment reservation.
+#
+# `reserve_spline` above loops over an entire STSplineTrajectory and lets
+# `_apply_ecd_pairs` scan every vertex in the graph, splitting whichever ones the
+# swept hulls happen to overlap (AABB-gated). That is the right behavior for "a
+# robot's full reservation", but it presupposes a whole trajectory. The three
+# functions below are the atomic step underneath it, exposed directly: given
+# exactly one already-known GCS vertex (one region traversal) and exactly one
+# Bezier segment's control points (a GCS vertex already *is* one Bezier segment,
+# AGENT.md F1-F3), build that segment's decision boundaries and slice only that
+# named region against them. Useful wherever the caller already knows which
+# region a segment lives in, without paying for a graph-wide overlap scan.
+# ---------------------------------------------------------------------------
+
+
+def bezier_segment_hull(control_points: np.ndarray, footprint_vertices: np.ndarray) -> HPolyhedron:
+    """ Step 1: the segment's Minkowski-inflated space-time control-point hull
+        (F1, F7). Thin, named wrapper around `hulls.inflate_hull` -- kept as its
+        own step so the pipeline below reads as the same stages AGENT.md SS3's
+        reservation pipeline lists (hull -> decision boundaries -> subtract). """
+    return inflate_hull(control_points, footprint_vertices)
+
+
+def bezier_decision_boundaries(inflated_hull: HPolyhedron) -> List[HPolyhedron]:
+    """ Step 2: the inflated hull's own facets, as "outside this facet"
+        halfspaces. Each row of the hull's (reduced) H-representation
+        `A @ x <= b` is a supporting hyperplane of the obstacle; negating it flips
+        "inside the obstacle" to "outside it", which is the convention `slice()`
+        peels pieces against. Identical construction to what `_segment_ecd_pair`
+        inlines for `mid_halfspaces`; separated out here so a caller can
+        inspect/plot the boundaries themselves before slicing. """
+    A, b = inflated_hull.A(), inflated_hull.b()
+    return [HPolyhedron(-A[i:i + 1], -b[i:i + 1]) for i in range(A.shape[0])]
+
+
+def reserve_region_bezier(
+    stgcs: STGCS, region_name: str, control_points: np.ndarray, footprint_vertices: np.ndarray,
+) -> STGCS:
+    """ Reserve one Bezier segment against exactly one named STGCS region.
+
+        Not part of the production reservation path -- real callers want
+        `reserve_spline`, which does the whole-trajectory bookkeeping this
+        function deliberately omits. This exists as the single-region,
+        single-segment atomic primitive for testing/demonstration: it lets a
+        caller inspect or verify one region's slicing in isolation.
+
+        Step 3+4: build the segment's `ECDPair` (hull + decision boundaries +
+        time crop, via `_segment_ecd_pair` -- steps 1-2 above inlined, the same
+        construction `generate_all_ECD_pairs_spline` uses per segment) and slice
+        *only* `region_name` against it, reconnecting that region's neighbors to
+        whichever leftover pieces survive.
+
+        A segment whose swept, inflated hull never actually reaches into
+        `region_name` is a no-op: the AABB check below is the same gate
+        `_apply_ecd_pairs` uses, just evaluated for one vertex instead of
+        scanning the whole graph for it. """
+    dim = stgcs.dimension + 1
+    pair = _segment_ecd_pair(control_points, footprint_vertices, dim)
+    if pair is None:
+        return stgcs  # degenerate (zero-duration) segment: nothing to reserve
+
+    if region_name not in stgcs.G.nodes:
+        raise ValueError(f"region {region_name!r} is not a vertex in this STGCS graph")
+    vertex = stgcs.get_vertex(region_name)
+    if not AABB(pair.bounds, vertex.space_itvls + [vertex.time_itvl]):
+        return stgcs  # segment's reservation never enters this region
+
+    E = list(stgcs.G.edges)
+    stgcs.remove_vertex_from_graph(region_name)
+    split_map = {v_name: [v_name] for v_name in stgcs.G.nodes}
+    split_map[region_name] = []
+    for hpoly, time_itvl in slice(vertex.st_hpoly, [pair], vertex.time_itvl.start, vertex.time_itvl.end):
+        new_v = stgcs.add_vertex(hpoly, time_itvl, parent=vertex, remove_redundancies=False)
+        if new_v is not None:
+            split_map[region_name].append(new_v.name)
+
+    return update_edge(stgcs, E, split_map)
