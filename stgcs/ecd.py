@@ -1,5 +1,5 @@
 from __future__ import annotations
-from typing import Any, List, Tuple, Dict, Optional
+from typing import Any, List, Literal, Tuple, Dict, Optional
 from itertools import combinations, product
 from collections import defaultdict
 from dataclasses import dataclass
@@ -23,6 +23,13 @@ class ECDPair:
 
 ECDPairCacheKey = Tuple[Any, ...]
 
+# "fixed": peel `mid_halfspaces` in whatever order the caller built them
+#          (`slice()`'s original behavior).
+# "greedy": at each round, peel whichever remaining facet currently carves off
+#           the largest piece (bounding-box-volume proxy), recomputed against
+#           the shrinking remainder each round.
+SliceMethod = Literal["fixed", "greedy"]
+
 
 def _ecd_pair_cache_key(
     stgcs: STGCS,
@@ -45,7 +52,9 @@ def _ecd_pair_cache_key(
     )
 
 
-def _apply_ecd_pairs(stgcs: STGCS, ecd_pairs: List[ECDPair]) -> STGCS:
+def _apply_ecd_pairs(
+    stgcs: STGCS, ecd_pairs: List[ECDPair], slice_method: SliceMethod = "fixed",
+) -> STGCS:
     """ Split every STGCS vertex whose space-time region overlaps one of
         `ecd_pairs` into the convex free-space pieces `slice()` produces, and
         reconnect the graph.
@@ -68,7 +77,9 @@ def _apply_ecd_pairs(stgcs: STGCS, ecd_pairs: List[ECDPair]) -> STGCS:
     for v_name, pairs in split_list.items():
         v = stgcs.get_vertex(v_name)
         stgcs.remove_vertex_from_graph(v_name)
-        for hpoly, time_itvl in slice(v.st_hpoly, pairs, v.time_itvl.start, v.time_itvl.end):
+        for hpoly, time_itvl in slice(
+            v.st_hpoly, pairs, v.time_itvl.start, v.time_itvl.end, method=slice_method,
+        ):
             new_v = stgcs.add_vertex(
                 hpoly,
                 time_itvl,
@@ -85,6 +96,7 @@ def reserve(
     stgcs:STGCS, trajectory:List[np.ndarray], safe_radius:float,
     x0_staying:bool=True, xt_staying:bool=True, eps:float=1e-9,
     ecd_pair_cache: Optional[Dict[ECDPairCacheKey, List[ECDPair]]]=None,
+    slice_method: SliceMethod = "fixed",
 ) -> STGCS:
     tmin = stgcs.t0 if x0_staying else None
     tmax = stgcs.tmax if xt_staying else None
@@ -100,7 +112,7 @@ def reserve(
             assert cache_key is not None
             ecd_pair_cache[cache_key] = ecd_pairs
 
-    return _apply_ecd_pairs(stgcs, ecd_pairs)
+    return _apply_ecd_pairs(stgcs, ecd_pairs, slice_method=slice_method)
 
 
 def update_edge(stgcs:STGCS, E:List[Tuple[str, str]], split_map:Dict[str, List[str]]) -> STGCS:
@@ -182,9 +194,82 @@ def generate_all_ECD_pairs(
     return ret
 
 
-def slice(hpoly:HPolyhedron, ecd_pairs:List[ECDPair], tlow:float, thigh:float) -> List[Tuple[HPolyhedron, Interval]]:
-    # note: the ecd_pairs must be collected from a continuous piece-wise linear trajectory 
-    #       otherwise the slicing would be incorrect 
+def _peel_fixed(
+    mid: Optional[HPolyhedron], halfspaces: List[HPolyhedron],
+    st_dim: int, ret: List[Tuple[HPolyhedron, Interval]],
+) -> None:
+    """ Peel `halfspaces` off `mid` in the order given -- `slice()`'s original
+        behavior. """
+    for out_halfspace in halfspaces:
+        if mid is None or mid.IsEmpty():
+            break
+
+        in_halfspace = HPolyhedron(-out_halfspace.A(), -out_halfspace.b())
+        new_set = mid.Intersection(out_halfspace)
+        if not new_set.IsEmpty():
+            mid = mid.Intersection(in_halfspace)
+            itvl = Interval(*get_hpoly_bounds(new_set, dim=st_dim - 1))
+            ret.append((new_set, itvl))
+
+
+def _piece_volume(hpoly: HPolyhedron) -> float:
+    """ Bounding-box volume proxy for "how much free space would this piece
+        reserve" -- cheap relative to the exact polytope volume, and the same
+        per-axis LP bound `add_vertex` already computes for its own space_bounds. """
+    lo, hi = get_hpoly_bounds(hpoly, dim=list(range(hpoly.ambient_dimension())))
+    lo, hi = np.asarray(lo, dtype=float), np.asarray(hi, dtype=float)
+    return float(np.prod(np.maximum(hi - lo, 0.0)))
+
+
+def _peel_greedy(
+    mid: Optional[HPolyhedron], halfspaces: List[HPolyhedron],
+    st_dim: int, ret: List[Tuple[HPolyhedron, Interval]],
+) -> None:
+    """ At each round, peel whichever remaining facet currently carves off the
+        largest piece (by `_piece_volume`) off the shrinking `mid`, instead of a
+        fixed facet order -- biases leftover fragments towards fewer, larger
+        pieces rather than many slivers. O(n^2) `HPolyhedron.Intersection` calls
+        in the number of facets (n), vs. `_peel_fixed`'s O(n): each round
+        re-evaluates every not-yet-applied facet against the current `mid`. """
+    remaining = list(halfspaces)
+    while remaining and mid is not None and not mid.IsEmpty():
+        best = None  # (volume, index, new_set, in_halfspace)
+        for idx, out_halfspace in enumerate(remaining):
+            candidate = mid.Intersection(out_halfspace)
+            if candidate.IsEmpty():
+                continue
+            volume = _piece_volume(candidate)
+            if best is None or volume > best[0]:
+                in_halfspace = HPolyhedron(-out_halfspace.A(), -out_halfspace.b())
+                best = (volume, idx, candidate, in_halfspace)
+
+        if best is None:
+            break
+
+        _, idx, new_set, in_halfspace = best
+        remaining.pop(idx)
+        mid = mid.Intersection(in_halfspace)
+        itvl = Interval(*get_hpoly_bounds(new_set, dim=st_dim - 1))
+        ret.append((new_set, itvl))
+
+
+_PEEL_STRATEGIES = {
+    "fixed": _peel_fixed,
+    "greedy": _peel_greedy,
+}
+
+
+def slice(
+    hpoly:HPolyhedron, ecd_pairs:List[ECDPair], tlow:float, thigh:float,
+    method: SliceMethod = "fixed",
+) -> List[Tuple[HPolyhedron, Interval]]:
+    # note: the ecd_pairs must be collected from a continuous piece-wise linear trajectory
+    #       otherwise the slicing would be incorrect
+    try:
+        peel = _PEEL_STRATEGIES[method]
+    except KeyError:
+        raise ValueError(f"Unknown slice method {method!r}; expected one of {sorted(_PEEL_STRATEGIES)}")
+
     st_dim = hpoly.ambient_dimension()
     ret = []
     bot = ecd_pairs[0].bottom_halfspace.Intersection(hpoly)
@@ -200,17 +285,7 @@ def slice(hpoly:HPolyhedron, ecd_pairs:List[ECDPair], tlow:float, thigh:float) -
     for ecd_pair in sorted_pairs:
         mid_tlow, mid_thigh = ecd_pair.bounds[-1].start, ecd_pair.bounds[-1].end
         mid = time_cropping_mid(hpoly, mid_tlow, mid_thigh)
-        
-        for out_halfspace in ecd_pair.mid_halfspaces:
-            if mid is None or mid.IsEmpty():
-                break
-
-            in_halfspace = HPolyhedron(-out_halfspace.A(), -out_halfspace.b())
-            new_set = mid.Intersection(out_halfspace)
-            if not new_set.IsEmpty():
-                mid = mid.Intersection(in_halfspace)
-                itvl = Interval(*get_hpoly_bounds(new_set, dim=st_dim-1))
-                ret.append((new_set, itvl))
+        peel(mid, ecd_pair.mid_halfspaces, st_dim, ret)
 
     if len(ret) == 1:
         # TODO: do not slice if the set is not split
@@ -374,6 +449,7 @@ def reserve_spline(
     stgcs: STGCS, trajectory: STSplineTrajectory, safe_radius: float,
     x0_staying: bool = True, xt_staying: bool = True,
     ecd_pair_cache: Optional[Dict[ECDPairCacheKey, List[ECDPair]]] = None,
+    slice_method: SliceMethod = "fixed",
 ) -> STGCS:
     """ order > 2 counterpart to `reserve()`. `safe_radius` gives the same
         isotropic per-axis margin semantics as the linear path, built into an
@@ -395,7 +471,7 @@ def reserve_spline(
             assert cache_key is not None
             ecd_pair_cache[cache_key] = ecd_pairs
 
-    return _apply_ecd_pairs(stgcs, ecd_pairs)
+    return _apply_ecd_pairs(stgcs, ecd_pairs, slice_method=slice_method)
 
 
 # ---------------------------------------------------------------------------
@@ -436,6 +512,7 @@ def bezier_decision_boundaries(inflated_hull: HPolyhedron) -> List[HPolyhedron]:
 
 def reserve_region_bezier(
     stgcs: STGCS, region_name: str, control_points: np.ndarray, footprint_vertices: np.ndarray,
+    slice_method: SliceMethod = "fixed",
 ) -> STGCS:
     """ Reserve one Bezier segment against exactly one named STGCS region.
 
@@ -470,7 +547,9 @@ def reserve_region_bezier(
     stgcs.remove_vertex_from_graph(region_name)
     split_map = {v_name: [v_name] for v_name in stgcs.G.nodes}
     split_map[region_name] = []
-    for hpoly, time_itvl in slice(vertex.st_hpoly, [pair], vertex.time_itvl.start, vertex.time_itvl.end):
+    for hpoly, time_itvl in slice(
+        vertex.st_hpoly, [pair], vertex.time_itvl.start, vertex.time_itvl.end, method=slice_method,
+    ):
         new_v = stgcs.add_vertex(hpoly, time_itvl, parent=vertex, remove_redundancies=False)
         if new_v is not None:
             split_map[region_name].append(new_v.name)
