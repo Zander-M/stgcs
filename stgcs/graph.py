@@ -11,7 +11,7 @@ from pydrake.all import (
     Point as DrakePoint,
     GraphOfConvexSets as GCS,
     LinearConstraint, LinearEqualityConstraint, LorentzConeConstraint,
-    L2NormCost
+    L2NormCost, QuadraticCost
 )
 from stgcs.gcs_solver import (
     MPGCSInstance, GCS_SOURCE_NAME, GCS_TARGET_NAME, EDGE_KEY, make_Cartesian_power_hpoly
@@ -21,7 +21,6 @@ from stgcs.interval import Interval, AABB
 from stgcs.geometry_utils import (
     remove_hpoly_redundancies, get_hpoly_bounds, make_hpolytope
 )
-
 
 import logging
 logger = logging.getLogger(__name__)
@@ -75,7 +74,7 @@ class STGCS:
     def __init__(
         self, spatial_sets:List[np.ndarray],
         t0:float=0, tmax:float=1e2, vlimit:float=1.0, dt:float=1e-6,
-        order:int=2,
+        order:int=2, energy_weight:float=0.0, uniform_time:bool=False,
     ) -> None:
 
         self.spatial_sets = spatial_sets
@@ -83,7 +82,14 @@ class STGCS:
         # order = joint control points per GCS vertex. 2 = today's linear segment
         # (default, unchanged behavior); >2 = cubic (or general-order) Bezier
         # segment per vertex (AGENT.md).
-        self.order = order
+        self.order = order        # opt-in path-energy regularization for order>2 (see _init_constraints_costs);
+        # 0.0 preserves prior order>2 behavior (time cost only).
+        self.energy_weight = energy_weight
+        # opt-in for order>2 (see _init_constraints_costs): force each segment's
+        # time control points into an arithmetic sequence (equal consecutive
+        # gaps) instead of free interior allocation. False preserves prior
+        # order>2 behavior (AGENT.md F9).
+        self.uniform_time = uniform_time
 
         self._spatial_hpolys = [make_hpolytope(r) for r in spatial_sets]
         self.dimension = self._spatial_hpolys[0].ambient_dimension()
@@ -122,7 +128,8 @@ class STGCS:
             spatial_sets = self.spatial_sets,
             t0 = self.t0, tmax = self.tmax,
             vlimit = self.vlimit, dt = self.dt,
-            order = self.order,
+            order = self.order, energy_weight = self.energy_weight,
+            uniform_time = self.uniform_time,
         )
         for v_name in self.G.nodes:
             ret.G.add_node(v_name, **self.G.nodes[v_name])
@@ -157,7 +164,7 @@ class STGCS:
         if cvx_set.ambient_dimension() == self.dimension + 1:
             st_hpoly = remove_hpoly_redundancies(cvx_set) if remove_redundancies else cvx_set
         else:
-            raise "cvx_set must be a time-extruded set"
+            raise RuntimeError("cvx_set must be a time-extruded set")
 
         if space_bounds is None:
             space_bounds = []
@@ -184,7 +191,8 @@ class STGCS:
             return
         
         u, v = self.get_vertex(u_name), self.get_vertex(v_name)
-
+        assert u is not None, "invalid gcs vertex"
+        assert v is not None, "invalid gcs vertex"
         if AABB(u.space_itvls, v.space_itvls) and \
            u.st_hpoly.IntersectsWith(v.st_hpoly):
             if np.allclose(u.time_itvl.end, v.time_itvl.start) and u.time_itvl.start <= v.time_itvl.end:
@@ -201,9 +209,10 @@ class STGCS:
         vertex = self.get_vertex(name)
         if name in self.G.nodes:
             self.G.remove_node(name)
+        assert vertex is not None
         return vertex
 
-    def validate_query(self, mp_query:object) -> Tuple[bool, Optional[str]]:
+    def validate_query(self, mp_query:MPQuery) -> Tuple[bool, Optional[str]]:
         self._clean_source_targets()
         try:
             found_src = self._init_source_vertex(mp_query.start, mp_query.t_start)
@@ -469,6 +478,27 @@ class STGCS:
         b_mono = np.full(order - 1, -self.dt)
         self.vertex_constraints.append(LinearConstraint(A_mono, -np.inf * np.ones(order - 1), b_mono))
 
+        # Uniform time (opt-in via `uniform_time`, AGENT.md F9): force T_0..T_{order-1}
+        # into an arithmetic sequence (every consecutive gap equal), i.e. T(s) is
+        # exactly affine in s rather than merely monotone -- T''(s) == 0
+        # identically (a Bezier curve with equally-spaced control points reduces
+        # exactly to the line through its endpoints; this is not an
+        # approximation). This sacrifices order>2's free interior time
+        # allocation, in exchange for killing the -P'(s)*T''(s) cross term in
+        # d^2P/dt^2 = [P''(s)*T'(s) - P'(s)*T''(s)] / T'(s)^3 -- the term that
+        # otherwise blocks a sound acceleration certificate analogous to F8
+        # (see AGENT.md F9). With T''(s) == 0, d^2P/dt^2 = P''(s)/T'(s)^2, and
+        # T'(s) = T_{order-1}-T_0 is now a *constant* (not just positive), so
+        # F8's exact triangle-inequality/convex-hull argument carries over
+        # unchanged, one derivative order up.
+        if self.uniform_time and order > 2:
+            A_uniform = np.zeros((order - 2, n))
+            for i in range(1, order - 1):
+                A_uniform[i - 1, t_index(i - 1)] = 1.0
+                A_uniform[i - 1, t_index(i)] = -2.0
+                A_uniform[i - 1, t_index(i + 1)] = 1.0
+            self.vertex_constraints.append(LinearEqualityConstraint(A_uniform, np.zeros(order - 2)))
+
         # cost is total segment duration only (T_{order-1} - T_0); interior time
         # allocation between control points is unchanged in *kind* from order == 2,
         # just at different indices.
@@ -492,6 +522,29 @@ class STGCS:
             A_soc[1:, p_slice(i)] = -np.eye(d)
             self.vertex_constraints.append(LorentzConeConstraint(A_soc, np.zeros(d + 1)))
 
+        # Path energy regularization (opt-in via `energy_weight`, default 0.0 =
+        # off, preserving prior order>2 behavior). With time cost alone the
+        # solver has no incentive to spread a segment's control points into a
+        # rounded arc -- any feasible curve of minimum duration will do, which
+        # tends to bunch control points near a containment region's boundary
+        # (e.g. a tight corner) and produces a curve that is C1 on paper but
+        # visually kinks because the tangent sweeps its whole range over a tiny
+        # arc-length. Penalizing sum_i ||P_{i+1}-P_i||^2 (analogous to
+        # AGENT/bezier.py's addPathEnergyCost) gives the solver a reason to
+        # actually use the room available inside each region.
+        if self.energy_weight > 0:
+            for i in range(order - 1):
+                A_diff = np.zeros((d, n))
+                A_diff[:, p_slice(i + 1)] = np.eye(d)
+                A_diff[:, p_slice(i)] = -np.eye(d)
+                H = 2 * self.energy_weight * A_diff.T @ A_diff
+                # A_diff.T @ A_diff is PSD but rank-deficient (rank d out of n), so its
+                # nominal-zero eigenvalues can land a hair negative from fp roundoff and
+                # trip Drake's strict PSD check inside SolveConvexRestriction; a tiny
+                # diagonal nudge keeps them >= 0 without perturbing the cost meaningfully.
+                H = 0.5 * (H + H.T) + 1e-9 * np.eye(n)
+                self.vertex_costs.append(QuadraticCost(H, np.zeros(n), 0.0))
+
         # Edge continuity (F3): C0 always (tail's last control point == head's
         # first); C1 additionally, only between two real per-region vertices (see
         # _add_gcs_edge_costs_constraints for why boundary edges stay C0-only).
@@ -507,6 +560,34 @@ class STGCS:
         A_c1[:, n: n + block] = np.eye(block)                               # + Q_head[0]
         A_c1[:, n + block: n + 2 * block] = -np.eye(block)                  # - Q_head[1]
         self.edge_constraints.append(LinearEqualityConstraint(A_c1, np.zeros(block)))
+
+        # C2 (curvature/acceleration match), interior edges only, same rationale
+        # as C1's boundary exclusion. Matching raw second differences of the
+        # joint (space, time) control points on both sides is sufficient for true
+        # physical d^2P/dt^2 continuity, not just d^2P/ds^2: since C1 already
+        # forces dP/ds and dt/ds to agree exactly at the joint, and this
+        # constraint forces d^2P/ds^2 and d^2t/ds^2 to agree too, the
+        # inverse-function-rule terms that convert s-derivatives to t-derivatives
+        # match on both sides for free.
+        #
+        # Gated to order >= 4: matching up to C^c consumes (c+1) control points
+        # from each side of a segment; free per-segment DOF is ~order-(c+1). At
+        # order=3 (quadratic) that's 0 free control points once C2 is added --
+        # empirically infeasible on anything but a trivially loose region. At
+        # order=4 (today's cubic) it's 1 free point/segment, tight but verified
+        # working (incl. down to a 0.1-wide bent corridor and a 3-bend zigzag
+        # chain) -- no need to jump straight to a quintic the way MIT's
+        # manipulation.csail.mit.edu/trajectories.html does to support snap
+        # (C^4), which needs far more consumed DOF per side (5, not 3).
+        if order >= 4:
+            A_c2 = np.zeros((block, 2 * n))
+            A_c2[:, (order - 1) * block: order * block] = np.eye(block)         # + Q_tail[-1]
+            A_c2[:, (order - 2) * block: (order - 1) * block] = -2 * np.eye(block)  # - 2 Q_tail[-2]
+            A_c2[:, (order - 3) * block: (order - 2) * block] = np.eye(block)   # + Q_tail[-3]
+            A_c2[:, n: n + block] = -np.eye(block)                              # - Q_head[0]
+            A_c2[:, n + block: n + 2 * block] = 2 * np.eye(block)               # + 2 Q_head[1]
+            A_c2[:, n + 2 * block: n + 3 * block] = -np.eye(block)              # - Q_head[2]
+            self.edge_constraints.append(LinearEqualityConstraint(A_c2, np.zeros(block)))
 
     def _init_source_vertex(self, source:np.ndarray, t_start:float) -> bool:
         # assume source is contained in only one convex set of a vertex; 

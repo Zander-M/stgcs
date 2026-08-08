@@ -3,6 +3,7 @@ from typing import Any, List, Literal, Tuple, Dict, Optional
 from itertools import combinations, product
 from collections import defaultdict
 from dataclasses import dataclass
+import heapq
 
 import numpy as np
 from pydrake.all import HPolyhedron
@@ -67,7 +68,7 @@ def _apply_ecd_pairs(
     split_list = defaultdict(list)
     for ecd_pair in ecd_pairs:
         for v_name in stgcs.G.nodes:
-            vertex: STVertex = stgcs.get_vertex(v_name)
+            vertex: STVertex | None = stgcs.get_vertex(v_name)
             if AABB(ecd_pair.bounds, vertex.space_itvls + [vertex.time_itvl]):
                 split_list[v_name].append(ecd_pair)
     if not split_list:
@@ -75,7 +76,8 @@ def _apply_ecd_pairs(
 
     split_map = {v_name: [v_name] for v_name in stgcs.G.nodes}
     for v_name, pairs in split_list.items():
-        v = stgcs.get_vertex(v_name)
+        v : STVertex | None = stgcs.get_vertex(v_name)
+        assert v is not None, "vertex is not valid"
         stgcs.remove_vertex_from_graph(v_name)
         for hpoly, time_itvl in slice(
             v.st_hpoly, pairs, v.time_itvl.start, v.time_itvl.end, method=slice_method,
@@ -228,29 +230,51 @@ def _peel_greedy(
     """ At each round, peel whichever remaining facet currently carves off the
         largest piece (by `_piece_volume`) off the shrinking `mid`, instead of a
         fixed facet order -- biases leftover fragments towards fewer, larger
-        pieces rather than many slivers. O(n^2) `HPolyhedron.Intersection` calls
-        in the number of facets (n), vs. `_peel_fixed`'s O(n): each round
-        re-evaluates every not-yet-applied facet against the current `mid`. """
-    remaining = list(halfspaces)
-    while remaining and mid is not None and not mid.IsEmpty():
-        best = None  # (volume, index, new_set, in_halfspace)
-        for idx, out_halfspace in enumerate(remaining):
-            candidate = mid.Intersection(out_halfspace)
-            if candidate.IsEmpty():
-                continue
-            volume = _piece_volume(candidate)
-            if best is None or volume > best[0]:
-                in_halfspace = HPolyhedron(-out_halfspace.A(), -out_halfspace.b())
-                best = (volume, idx, candidate, in_halfspace)
+        pieces rather than many slivers.
 
-        if best is None:
-            break
+        Lazy/CELF-style selection: a candidate's volume can only shrink or stay
+        the same as `mid` gains more constraints (`mid' ∩ halfspace ⊆ mid ∩
+        halfspace` whenever `mid' ⊆ mid`), so a cached volume is always a valid
+        upper bound on that facet's *true current* volume. Track each remaining
+        facet's last-known (volume, mid_version) in a max-heap; each round, pop
+        the top and only recompute it if its cache predates the current `mid` --
+        if it's already fresh, it beats every other entry's upper bound and is
+        provably the true max, no other facet needs checking. This reproduces
+        the exact same peel order/output as a naive full-recompute-every-round
+        greedy (still O(n^2) `Intersection`/`_piece_volume` calls worst case),
+        but in practice needs far fewer of them: only the first round requires
+        touching every facet, since after that most cached volumes survive
+        several rounds unchanged. """
+    NEG_INF = float("-inf")
+    heap: List[Tuple[float, int]] = [(NEG_INF, idx) for idx in range(len(halfspaces))]
+    heapq.heapify(heap)
+    fresh_as_of: Dict[int, int] = {}  # idx -> mid_version its cached candidate/volume reflect
+    cached_candidate: Dict[int, HPolyhedron] = {}
+    mid_version = 0
 
-        _, idx, new_set, in_halfspace = best
-        remaining.pop(idx)
-        mid = mid.Intersection(in_halfspace)
-        itvl = Interval(*get_hpoly_bounds(new_set, dim=st_dim - 1))
-        ret.append((new_set, itvl))
+    while heap and mid is not None and not mid.IsEmpty():
+        neg_volume, idx = heapq.heappop(heap)
+        if fresh_as_of.get(idx) == mid_version:
+            # cached value already reflects the current `mid` -- since it beat
+            # every other entry's (possibly stale, but still an upper bound)
+            # cached value, it is the true current max.
+            new_set = cached_candidate.pop(idx)
+            out_halfspace = halfspaces[idx]
+            in_halfspace = HPolyhedron(-out_halfspace.A(), -out_halfspace.b())
+            mid = mid.Intersection(in_halfspace)
+            mid_version += 1
+            itvl = Interval(*get_hpoly_bounds(new_set, dim=st_dim - 1))
+            ret.append((new_set, itvl))
+            continue
+
+        candidate = mid.Intersection(halfspaces[idx])
+        if candidate.IsEmpty():
+            continue  # stays empty forever as `mid` only shrinks further -- drop for good
+
+        volume = _piece_volume(candidate)
+        cached_candidate[idx] = candidate
+        fresh_as_of[idx] = mid_version
+        heapq.heappush(heap, (-volume, idx))
 
 
 _PEEL_STRATEGIES = {
